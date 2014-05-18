@@ -144,7 +144,7 @@ static inline float sign(float value)
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismissHelpView) name:kNotificationDismissHelpView object:nil];
         
-        NSString *documentsDir= [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+        NSString *documentsDir= NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
         NSString *userSettingsFilePath = [documentsDir stringByAppendingPathComponent:@"Settings.plist"];
         
         _settings = [[[Settings alloc] initWithSettingsFile:userSettingsFilePath] retain];
@@ -254,7 +254,7 @@ static inline float sign(float value)
     [[BasicInfoManager sharedManager] setDebugTextView:debugTextView];
     [[BasicInfoManager sharedManager] setOsdView:osdView];
 
-    warningLabel.text = getLocalizeString(@"not connected");
+    warningLabel.text = NSLocalizedString(@"not connected", nil);
     
     [self setSwitchButton:altHoldSwitchButton withValue:_settings.isAltHoldMode];
     
@@ -276,10 +276,10 @@ static inline float sign(float value)
     
     
     if (_settings.isBeginnerMode) {
-        UIAlertView *alertView = [[UIAlertView alloc]       initWithTitle:getLocalizeString(@"Beginner Mode")
-                message:getLocalizeString(@"Beginner Mode Info")
+        UIAlertView *alertView = [[UIAlertView alloc]       initWithTitle:NSLocalizedString(@"Beginner Mode", nil)
+                message:NSLocalizedString(@"Beginner Mode Info", nil)
                                                            delegate:self
-                                                  cancelButtonTitle:getLocalizeString(@"OK")
+                                                  cancelButtonTitle:NSLocalizedString(@"OK", nil)
                                                   otherButtonTitles:nil];
         [alertView show];
         [alertView release];
@@ -583,15 +583,15 @@ static inline float sign(float value)
 - (void)updateStatusInfoLabel{
     if(throttleIsLocked){
         if(rudderIsLocked){
-            statusInfoLabel.text = getLocalizeString(@"Throttle Rudder Locked");
+            statusInfoLabel.text = NSLocalizedString(@"Throttle Rudder Locked", nil);
         }
         else {
-            statusInfoLabel.text = getLocalizeString(@"Throttle Locked");
+            statusInfoLabel.text = NSLocalizedString(@"Throttle Locked", nil);
         }
     }
     else {
         if(rudderIsLocked){
-            statusInfoLabel.text = getLocalizeString(@"Rudder Locked");
+            statusInfoLabel.text = NSLocalizedString(@"Rudder Locked", nil);
         }
         else {
             statusInfoLabel.text = @"";
@@ -621,26 +621,26 @@ static inline float sign(float value)
 }
 
 - (void)checkTransmitterState{
-    NSLog(@"checkTransmitterState");
+    NSLog(@"checkTransmitterState", nil);
     
     TransmitterState inputState = [[Transmitter sharedTransmitter] inputState];
     TransmitterState outputState = [[Transmitter sharedTransmitter] outputState];
     
     if ((inputState == TransmitterStateOk) && (outputState == TransmitterStateOk)) {
-        warningLabel.text = getLocalizeString(@"connected");
+        warningLabel.text = NSLocalizedString(@"connected", nil);
         [warningLabel setTextColor:[batteryLevelLabel textColor]];
         warningView.hidden = YES;
     }
     else if((inputState == TransmitterStateOk) && (outputState != TransmitterStateOk)){
        // warningLabel.text = @"Can‘t to send data to WiFi Module, please check the connection is OK.";
-        warningLabel.text = getLocalizeString(@"not connected");
+        warningLabel.text = NSLocalizedString(@"not connected", nil);
         [warningLabel setTextColor:[UIColor redColor]];
         warningView.hidden = NO;
         
     }
     else if((inputState != TransmitterStateOk) && (outputState == TransmitterStateOk)){
         //warningLabel.text = @"Can't get data from WiFi modual, please check the connection is OK.";
-        warningLabel.text = getLocalizeString(@"not connected");
+        warningLabel.text = NSLocalizedString(@"not connected", nil);
         [warningLabel setTextColor:[UIColor redColor]];
         warningView.hidden = NO;
         
@@ -1628,7 +1628,7 @@ static inline float sign(float value)
     static float hpf_gyro_x, hpf_gyro_y, hpf_gyro_z;
     static float last_angle_gyro_x, last_angle_gyro_y, last_angle_gyro_z;
     
-    float phi, theta;
+    float phi = 0.0, theta = 0.0;
     
     //dt calculus function of real elapsed time
     if(sTimebaseInfo.denom == 0) (void) mach_timebase_info(&sTimebaseInfo);
@@ -1661,7 +1661,6 @@ static inline float sign(float value)
        || fabs(current_acceleration.x) > 10 || fabs(current_acceleration.y) > 10 || fabs(current_acceleration.z)>10)
     {
         static uint32_t count = 0;
-        static BOOL popUpWasDisplayed = NO;
         NSLog (@"Accelero errors : %f, %f, %f (count = %d)", current_acceleration.x, current_acceleration.y, current_acceleration.z, count);
         NSLog (@"Accelero raw : %f/%f, %f/%f, %f/%f", motionManager.deviceMotion.gravity.x, motionManager.deviceMotion.userAcceleration.x, motionManager.deviceMotion.gravity.y, motionManager.deviceMotion.userAcceleration.y, motionManager.deviceMotion.gravity.z, motionManager.deviceMotion.userAcceleration.z);
         NSLog (@"Attitude : %f / %f / %f", motionManager.deviceMotion.attitude.roll, motionManager.deviceMotion.attitude.pitch, motionManager.deviceMotion.attitude.yaw);

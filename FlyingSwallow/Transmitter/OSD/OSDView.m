@@ -325,7 +325,7 @@
     tickStepValue = (int)(kAttitudeTraceInterval / kAttitudeTraceTicksPerInterval);
     
     CGPoint traceStartPos = CGPointMake(self.frame.size.width * kAttitudeTraceX,  self.frame.size.height / 2.0 -  self.frame.size.height * kAttitudeTraceLen / 2.0);
-    CGPoint traceEndPos = CGPointMake(traceStartPos.x, traceStartPos.y + self.frame.size.height * kAttitudeTraceLen);
+    //CGPoint traceEndPos = CGPointMake(traceStartPos.x, traceStartPos.y + self.frame.size.height * kAttitudeTraceLen);
     
     CGContextMoveToPoint(context, traceStartPos.x, traceStartPos.y);
     //CGContextAddLineToPoint(context, traceEndPos.x, traceEndPos.y);
@@ -357,10 +357,10 @@
             tickEndPos = CGPointMake(traceStartPos.x + kAttitudeTraceIntervalMarkLen / 2, (traceStartPos.y + yOffset + tickIdx * tickLen));
             NSString *traceValueStr = [NSString stringWithFormat:@"%d", traceValue];
             CGPoint traceValueStrPos = CGPointMake(tickEndPos.x + 5, tickEndPos.y + 4);
-            CGContextShowTextAtPoint(context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr cString], traceValueStr.length);
+            CGContextShowTextAtPoint(context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr UTF8String], traceValueStr.length);
             
             traceValueStrPos = CGPointMake(tickStartPos.x - 25, tickEndPos.y + 4);
-            CGContextShowTextAtPoint(context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr cString], traceValueStr.length);
+            CGContextShowTextAtPoint(context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr UTF8String], traceValueStr.length);
             
             CGContextMoveToPoint(context, tickStartPos.x, tickStartPos.y);
             CGContextAddLineToPoint(context, tickEndPos.x, tickEndPos.y);
@@ -467,10 +467,10 @@
             tickEndPos = CGPointMake(traceStartPos.x + kAttitudeTraceIntervalMarkLen / 2, (traceStartPos.y + yOffset + tickIdx * tickLen));
             NSString *traceValueStr = [NSString stringWithFormat:@"%d", traceValue];
             CGPoint traceValueStrPos = CGPointMake(tickEndPos.x + 5, tickEndPos.y + 4);
-            CGContextShowTextAtPoint(context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr cString], traceValueStr.length);
+            CGContextShowTextAtPoint(context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr UTF8String], traceValueStr.length);
             
             traceValueStrPos = CGPointMake(tickStartPos.x - 25, tickEndPos.y + 4);
-            CGContextShowTextAtPoint(context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr cString], traceValueStr.length);
+            CGContextShowTextAtPoint(context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr UTF8String], traceValueStr.length);
             
             CGContextMoveToPoint(context, tickStartPos.x, tickStartPos.y);
             CGContextAddLineToPoint(context, tickEndPos.x, tickEndPos.y);
@@ -528,7 +528,7 @@
     
     CGPoint middlePoint = CGPointMake(traceStartPos.x, traceStartPos.y + (traceEndPos.y - traceStartPos.y) / 2.0);
     NSString *altitudeValueStr = [NSString stringWithFormat:@"%.1f", altitude / 10.0];
-    CGContextShowTextAtPoint(context, middlePoint.x -30, middlePoint.y + 2,[altitudeValueStr cString], altitudeValueStr.length);
+    CGContextShowTextAtPoint(context, middlePoint.x -30, middlePoint.y + 2,[altitudeValueStr UTF8String], altitudeValueStr.length);
     
     
     CGContextMoveToPoint(context, traceStartPos.x, traceStartPos.y);
@@ -553,7 +553,7 @@
             tickEndPos = CGPointMake(traceStartPos.x + kAltitudeTraceIntervalMarkLen, (traceStartPos.y + tickIdx * tickLen));
             NSString *traceValueStr = [NSString stringWithFormat:@"%.1f", traceValue / 10.0];
             CGPoint traceValueStrPos = CGPointMake(tickEndPos.x + 5, tickEndPos.y + 4);
-            CGContextShowTextAtPoint(context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr cString], traceValueStr.length);
+            CGContextShowTextAtPoint(context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr UTF8String], traceValueStr.length);
         }
         else{//小刻度
             tickEndPos = CGPointMake(traceStartPos.x + kAltitudeTraceTickMarkLen, (traceStartPos.y + tickIdx * tickLen));
@@ -659,7 +659,7 @@
             }
             
             CGPoint traceValueStrPos = CGPointMake(tickEndPos.x - 4, tickEndPos.y - 2);
-            CGContextShowTextAtPoint(context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr cString], traceValueStr.length);
+            CGContextShowTextAtPoint(context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr UTF8String], traceValueStr.length);
             
             CGContextMoveToPoint(context, tickStartPos.x, tickStartPos.y);
             CGContextAddLineToPoint(context, tickEndPos.x, tickEndPos.y); 

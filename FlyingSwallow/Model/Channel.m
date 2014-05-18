@@ -49,7 +49,7 @@
         _ownerSettings = settings;
         _idx = idx;
         
-        _data = [[[settings.settingsData valueForKey:kKeySettingsChannels] objectAtIndex:idx] retain];
+        _data = [[settings.settingsData valueForKey:kKeySettingsChannels][idx] retain];
         
         _name = [[_data valueForKey:kKeyChannelName] retain];
         _isReversing = [[_data valueForKey:kKeyChannelIsReversed] boolValue];
@@ -77,22 +77,22 @@
 
 - (void)setIsReversed:(BOOL)isReversing{
     _isReversing = isReversing;
-    [_data setValue:[NSNumber numberWithBool:isReversing] forKey:kKeyChannelIsReversed];
+    [_data setValue:@(isReversing) forKey:kKeyChannelIsReversed];
 }
 
 - (void)setTrimValue:(float)trimValue{
     _trimValue = trimValue;
-    [_data setValue:[NSNumber numberWithFloat:_trimValue] forKey:kKeyChannelTrimValue];
+    [_data setValue:@(_trimValue) forKey:kKeyChannelTrimValue];
 }
 
 - (void)setOutputAdjustabledRange:(float)outputAdjustabledRange{
     _outputAdjustabledRange = outputAdjustabledRange;
-    [_data setValue:[NSNumber numberWithFloat:_outputAdjustabledRange] forKey:kKeyChannelOutputAdjustableRange];
+    [_data setValue:@(_outputAdjustabledRange) forKey:kKeyChannelOutputAdjustableRange];
 }
 
 - (void)setDefaultOutputValue:(float)defaultOutputValue{
     _defaultOutputValue = defaultOutputValue;
-    [_data setValue:[NSNumber numberWithFloat:_defaultOutputValue] forKey:kKeyChannelDefaultOutputValue];
+    [_data setValue:@(_defaultOutputValue) forKey:kKeyChannelDefaultOutputValue];
 }
 
 - (void)dealloc{

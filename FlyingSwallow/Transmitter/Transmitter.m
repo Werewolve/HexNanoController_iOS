@@ -1,4 +1,4 @@
-//
+ //
 //  PPMTransmitter.m
 //  RCTouch
 //
@@ -247,9 +247,9 @@ static Transmitter *sharedTransmitter;
     
     [self updatePpmPackage];
     
+    /*
     BOOL channelListIsChange = NO;
     
-    /*
     for(int channelIdx = 0; channelIdx < kPpmChannelCount; channelIdx++){
         if (fabs(channelList[channelIdx] - oldChannelList[channelIdx]) > 0.004f) {
             channelListIsChange = YES;

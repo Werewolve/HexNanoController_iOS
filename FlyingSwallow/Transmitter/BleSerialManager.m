@@ -43,15 +43,14 @@
             [_delegate bleSerialManager:self didDiscoverBleSerial:nil];
         }
         
-        CBUUID *serialServiceUUID = [self getSerialServiceUUID];
+//        CBUUID *serialServiceUUID = [self getSerialServiceUUID];
         
-        NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:CBCentralManagerScanOptionAllowDuplicatesKey, @"YES", nil];
+//        NSDictionary *options = @{@"YES": CBCentralManagerScanOptionAllowDuplicatesKey};
         
        // [_centralManager scanForPeripheralsWithServices:[NSArray arrayWithObject:serialServiceUUID]
                                                     //options:options];
         [_centralManager scanForPeripheralsWithServices:nil options:nil];
         
-//        [_centralManager scanForPeripheralsWithServices:nil options:nil];
         NSLog(@"Scanning started");
     }
 }
@@ -170,7 +169,7 @@
     
     CBUUID *serialServiceUUID = [self getSerialServiceUUID];
 
-    [peripheral discoverServices:[NSArray arrayWithObject:serialServiceUUID]];
+    [peripheral discoverServices:@[serialServiceUUID]];
 }
 
 - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error{
@@ -253,7 +252,7 @@
         return;
     }
     
-    NSArray *characteristicList = [NSArray arrayWithObject:[self getSerialCharacteristicUUID]];
+    NSArray *characteristicList = @[[self getSerialCharacteristicUUID]];
     
     // Discover the characteristic we want...
     // Loop through the newly filled peripheral.services array, just in case there's more than one.

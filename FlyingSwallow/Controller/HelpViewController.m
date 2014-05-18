@@ -35,19 +35,19 @@
     [super viewDidLoad];
 	
     [pageViewArray addObject:pageView01];
-    [pageTitleArray addObject:getLocalizeString(@"BLE DEVICES")];
+    [pageTitleArray addObject:NSLocalizedString(@"BLE DEVICES",nil)];
     
     [pageViewArray addObject:pageView02];
-    [pageTitleArray addObject:getLocalizeString(@"PERSONAL SETTINGS")];
+    [pageTitleArray addObject:NSLocalizedString(@"PERSONAL SETTINGS",nil)];
     
     [pageViewArray addObject:pageView03];
-    [pageTitleArray addObject:getLocalizeString(@"TRIM SETTINGS")];
+    [pageTitleArray addObject:NSLocalizedString(@"TRIM SETTINGS",nil)];
     
     [pageViewArray addObject:pageView04];
-    [pageTitleArray addObject:getLocalizeString(@"MODE SETTINGS")];
+    [pageTitleArray addObject:NSLocalizedString(@"MODE SETTINGS",nil)];
     
     [pageViewArray addObject:pageView05];
-    [pageTitleArray addObject:getLocalizeString(@"ABOUT")];
+    [pageTitleArray addObject:NSLocalizedString(@"ABOUT",nil)];
     
     pageCount = pageViewArray.count;
     
@@ -65,7 +65,7 @@
     [pageControl setNumberOfPages:pageCount];
     [pageControl setCurrentPage:0];
     
-    pageTitleLabel.text = getLocalizeString(@"BLE DEVICES");
+    pageTitleLabel.text = NSLocalizedString(@"BLE DEVICES",nil);
 }
 
 - (void)didReceiveMemoryWarning
@@ -94,7 +94,7 @@
 	int currentPage = (int) (settingsPageScrollView.contentOffset.x + .5f * settingsPageScrollView.frame.size.width) / settingsPageScrollView.frame.size.width;
     
     [pageControl setCurrentPage:currentPage];
-    [pageTitleLabel setText:[pageTitleArray objectAtIndex:currentPage]];
+    [pageTitleLabel setText:pageTitleArray[currentPage]];
 }
 
 - (IBAction)close:(id)sender {

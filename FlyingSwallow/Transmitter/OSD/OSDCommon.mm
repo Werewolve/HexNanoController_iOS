@@ -23,11 +23,6 @@ using namespace std;
 
 int mainInfoRequest[kOsdInfoRequestListLen] = {MSP_ATTITUDE, MSP_ALTITUDE};
 
-
-#ifdef __cplusplus
-extern "C"{
-#endif
-
 /*创建出特定的带参数的请求
  *@param msp 请求的命令
  *@param payload 请求命令的参数
@@ -103,7 +98,9 @@ void sendRequestMSP(const vector<byte>& msp) {
   //  serialCon->write(msp); // send the complete byte sequence in one go
 }
 
-
+#ifdef __cplusplus
+extern "C"{
+#endif
 
 NSData *getDefaultOSDDataRequest(){
     vector<byte> requestList = requestMSPList(mainInfoRequest, kOsdInfoRequestListLen);
@@ -120,7 +117,7 @@ NSData *getDefaultOSDDataRequest(){
     printf("end***");
     */
     
-    return [NSData dataWithBytes:requestList.data() length:requestList.size()];
+    return [NSData dataWithBytes:requestList.data() length:requestDataSize];
 }
 
 NSData *getSimpleCommand(unsigned char commandName){

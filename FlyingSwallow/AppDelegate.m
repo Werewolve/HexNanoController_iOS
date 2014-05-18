@@ -33,7 +33,7 @@
 }
 
 - (void)copyDefaultSettingsFileIfNeeded{
-    NSString *documentsDir= [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSString *documentsDir= NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
     NSString *userSettingsFilePath= [documentsDir stringByAppendingPathComponent:@"Settings.plist"];
 
     NSFileManager *fileManager = [NSFileManager defaultManager];

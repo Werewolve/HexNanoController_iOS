@@ -147,12 +147,12 @@
 {
     [super viewDidLoad];
     
-    isReversedTitleLabel.text            = getLocalizeString(@"IS REVERSING");
-    trimValueTitleLabel.text             = getLocalizeString(@"TRIM VALUE");
-    outputAdjustableRangeTitleLabel.text = getLocalizeString(@"OUTPUT ADJUSTABLE RANGE");
-    outputPpmRangeTitleLabel.text        = getLocalizeString(@"OUTPUT PPM RANGE");
-    defaultOuputValueTitleLabel.text     = getLocalizeString(@"DEFAULT OUTPUT VALUE");
-    [defaultButton setTitle:getLocalizeString(@"Default") forState:UIControlStateNormal];
+    isReversedTitleLabel.text            = NSLocalizedString(@"IS REVERSING",nil);
+    trimValueTitleLabel.text             = NSLocalizedString(@"TRIM VALUE",nil);
+    outputAdjustableRangeTitleLabel.text = NSLocalizedString(@"OUTPUT ADJUSTABLE RANGE",nil);
+    outputPpmRangeTitleLabel.text        = NSLocalizedString(@"OUTPUT PPM RANGE",nil);
+    defaultOuputValueTitleLabel.text     = NSLocalizedString(@"DEFAULT OUTPUT VALUE",nil);
+    [defaultButton setTitle:NSLocalizedString(@"Default",nil) forState:UIControlStateNormal];
     
     [self updateAllValueUI];
     [self udpateChannelSettingsTitleLabel];

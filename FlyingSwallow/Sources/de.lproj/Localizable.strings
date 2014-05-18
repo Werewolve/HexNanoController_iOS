@@ -1,0 +1,88 @@
+/* 
+  languages.strings
+  FlyingSwallow
+
+  Created by koupoo on 12-12-21.
+  Copyright (c) 2012年 www.hexairbot.com. All rights reserved.
+*/
+
+/* Settings Menu Text */
+"BLE DEVICES" = "Bluetooth";
+"PERSONAL SETTINGS" = "Persönliche Einstellungen";
+"TRIM SETTINGS" = "Trimming";
+"CHANNELS SETTINGS" = "Kanal Einstellungen";
+"MODE SETTINGS" = "Mode Einstellungen";
+"ABOUT" = "Über Flexbot";
+
+//PERSONAL SETTINGS
+"LEFT HANDED" = "Linkshänder";
+"INTERFACE OPACITY" = "Interface Transparenz";
+"Acc Mode" = "Acc Modus";
+
+//CHANNELS SETTINGS
+"CHANNELS" = "Kanäle";
+
+"IS REVERSING" = "Steuerung umgekehrt";
+"TRIM VALUE" = "Trim Wert";
+"OUTPUT ADJUSTABLE RANGE" = "Ausgang Steuerbereich";
+"OUTPUT PPM RANGE" = "Ausgang PPM Bereich";
+"DEFAULT OUTPUT VALUE" = "Default Ausgangswert";
+
+//MODE SETTINGS
+"PPM POLARITY REVERSED" = "PPM Polarität umgekehrt";
+"DEAD BAND" = "Totzone";
+"Headfree Mode" = "Headfree Modus";
+
+//Audio Warning
+"Increase Audio Volume" = "Lautstärke erhöhen";
+"Decrease Audio Volume" = "Lautstärke verringern";
+"Plug in PPM output cable" = "PPM Ausgangskabel einstecken";
+
+
+//Channel List Table View Cell
+"Trim" = "Trim";
+"Adjustable" = "Einstellbar";
+"Normal" = "Normal";
+"Reversed" = "Umgekehrt";
+
+"Beginner Mode" = "Anfängermodus";
+"Take Off Throttle" = "Startgas";
+
+"Aileron/Elevator Dead Band" = "Quer-&Höhenruder Totzone";
+"Rudder Dead Band" = "Ruder Totzone";
+
+//status info pane
+"Rudder Locked" = "Ruder gelockt";
+"Throttle Locked" = "Gas gelockt";
+"Throttle Rudder Locked" = "Gas & Ruder Locked";
+
+"Default Settings" = "Werkseinstellungen";
+"Default" = "Default";
+
+"Scan" = "Suche";
+"Stop Scan" = "Suche abbrechen";
+
+"connected" = "verbunden";
+"not connected" = "nicht verbunden";
+
+//BLE Device settings
+"Connecting..." = "Verbinde...";
+"Connection" = "Verbinden";
+"Connect" = "Verbindung";
+"Disconnect" = "Trennen";
+"Cancel" = "Abbrechen";
+"Connect to Flexbot?" = "Mit dem Flexbot verbinden?";
+"Disconnect to Flexbot?" = "Vom Flexbot trennen?";
+"Scanning Flexbot..." = "Suche...";
+
+"Calibrate Acc" = "Kalibriere Acc";
+"Calibrate Mag" = "Kalibriere Mag";
+
+"Calibrate" = "Kalibriere";
+"Calibrate the accelerator of Flexbot?" = "Beschleunigungssensor vom Flexbot kalibrieren?";
+"Calibrate the magnetometer of Flexbot?" = "Magnetometer vom Flexbot kalibrieren?";
+"Reset to defaut settings?" = "Auf Werkseinstellungen zurücksetzen?";
+"Reset" = "Zurücksetzen";
+
+"OK" = "OK";
+"Beginner Mode Info" = "Aktuell ist der Anfängermodus aktiviert. Über die Mode Einstellungen kann dieser deaktiviert werden.";

@@ -283,8 +283,8 @@ using namespace std;
                     [self evaluateCommand:cmd dataSize:dataSize];
                 }
             } else {
-                printf("invalid checksum for command %d: %d expected, got %d\n", ((int)(cmd&0xFF)), (checksum&0xFF), (int)(c&0xFF));
-                printf("<%d %d> {",(cmd&0xFF), (dataSize&0xFF));
+                NSLog(@"invalid checksum for command %d: %d expected, got %d\n", ((int)(cmd&0xFF)), (checksum&0xFF), (int)(c&0xFF));
+                NSLog(@"<%d %d> {",(cmd&0xFF), (dataSize&0xFF));
                 
                 for (idx = 0; idx < dataSize; idx++) {
                     if (idx != 0) { 
@@ -306,7 +306,7 @@ using namespace std;
     }
 }
 
-- (void)evaluateCommand:(byte)cmd_ dataSize:(int)dataSize{    
+- (void)evaluateCommand:(byte)cmd_ dataSize:(int)aDataSize{
     int i;
     int icmd = (int)(cmd_ & 0xFF);
     switch(icmd) {
@@ -408,7 +408,7 @@ using namespace std;
             _debug4 = [self read16];
             break;
         default:
-            printf("\n***error: Don't know how to handle reply:%d\n datasize:%d", icmd, dataSize);
+            NSLog(@"error: Don't know how to handle reply:%d datasize:%d", icmd, aDataSize);
             break;
            
     }

@@ -123,24 +123,24 @@ typedef enum settings_alert_dialog{
 {
     [super viewDidLoad];
     
-    leftHandedTitleLabel.text = getLocalizeString(@"LEFT HANDED");
-    interfaceOpacityTitleLabel.text = getLocalizeString(@"INTERFACE OPACITY");
-    accModeTitleLabel.text = getLocalizeString(@"Acc Mode");
+    leftHandedTitleLabel.text = NSLocalizedString(@"LEFT HANDED", nil);
+    interfaceOpacityTitleLabel.text = NSLocalizedString(@"INTERFACE OPACITY", nil);
+    accModeTitleLabel.text = NSLocalizedString(@"Acc Mode", nil);
 
     [pageViewArray addObject:peripheralView];
-    [pageTitleArray addObject:getLocalizeString(@"BLE DEVICES")];
+    [pageTitleArray addObject:NSLocalizedString(@"BLE DEVICES", nil)];
     
     [pageViewArray addObject:personalSettingsPageView];
-    [pageTitleArray addObject:getLocalizeString(@"PERSONAL SETTINGS")];
+    [pageTitleArray addObject:NSLocalizedString(@"PERSONAL SETTINGS", nil)];
     
     [pageViewArray addObject:trimSettingsView];
-    [pageTitleArray addObject:getLocalizeString(@"TRIM SETTINGS")];
+    [pageTitleArray addObject:NSLocalizedString(@"TRIM SETTINGS", nil)];
     
     [pageViewArray addObject:modeSettingsPageView];
-    [pageTitleArray addObject:getLocalizeString(@"MODE SETTINGS")];
+    [pageTitleArray addObject:NSLocalizedString(@"MODE SETTINGS", nil)];
     
     [pageViewArray addObject:aboutPageView];
-    [pageTitleArray addObject:getLocalizeString(@"ABOUT")];
+    [pageTitleArray addObject:NSLocalizedString(@"ABOUT", nil)];
 
     pageCount = pageViewArray.count;
     
@@ -158,26 +158,26 @@ typedef enum settings_alert_dialog{
     [pageControl setNumberOfPages:pageCount];
     [pageControl setCurrentPage:0];
     
-    pageTitleLabel.text = getLocalizeString(@"BLE DEVICES");
-    ppmPolarityReversedTitleLabel.text = getLocalizeString(@"PPM POLARITY REVERSED");
-    takeOffThrottleTitleLabel.text = getLocalizeString(@"Take Off Throttle");
-    aileronElevatorDeadBandTitleLabel.text = getLocalizeString(@"Aileron/Elevator Dead Band");
-    rudderDeadBandTitleLabel.text = getLocalizeString(@"Rudder Dead Band");
-    beginnerModeTitleLabel.text = getLocalizeString(@"Beginner Mode");
-    headfreeModeTitleLabel.text = getLocalizeString(@"Headfree Mode");
+    pageTitleLabel.text = NSLocalizedString(@"BLE DEVICES", nil);
+    ppmPolarityReversedTitleLabel.text = NSLocalizedString(@"PPM POLARITY REVERSED", nil);
+    takeOffThrottleTitleLabel.text = NSLocalizedString(@"Take Off Throttle", nil);
+    aileronElevatorDeadBandTitleLabel.text = NSLocalizedString(@"Aileron/Elevator Dead Band", nil);
+    rudderDeadBandTitleLabel.text = NSLocalizedString(@"Rudder Dead Band", nil);
+    beginnerModeTitleLabel.text = NSLocalizedString(@"Beginner Mode", nil);
+    headfreeModeTitleLabel.text = NSLocalizedString(@"Headfree Mode", nil);
     
-    [defaultSettingsButton setTitle:getLocalizeString(@"Default Settings") forState:UIControlStateNormal];
-    [peripheralListScanButton setTitle:getLocalizeString(@"Scan") forState:UIControlStateNormal];
+    [defaultSettingsButton setTitle:NSLocalizedString(@"Default Settings", nil) forState:UIControlStateNormal];
+    [peripheralListScanButton setTitle:NSLocalizedString(@"Scan", nil) forState:UIControlStateNormal];
     
-    isScanningTextLabel.text = getLocalizeString(@"Scanning Flexbot...");
+    isScanningTextLabel.text = NSLocalizedString(@"Scanning Flexbot...", nil);
     
-    [magCalibrateButton setTitle:getLocalizeString(@"Calibrate Mag") forState:UIControlStateNormal];
-    [accCalibrateButton setTitle:getLocalizeString(@"Calibrate Acc") forState:UIControlStateNormal];
+    [magCalibrateButton setTitle:NSLocalizedString(@"Calibrate Mag", nil) forState:UIControlStateNormal];
+    [accCalibrateButton setTitle:NSLocalizedString(@"Calibrate Acc", nil) forState:UIControlStateNormal];
     
     channelListTableView.backgroundColor = [UIColor clearColor];
     channelListTableView.backgroundView.hidden = YES;
     
-    NSString *currentLan = [[NSLocale preferredLanguages] objectAtIndex:0];
+    NSString *currentLan = [NSLocale preferredLanguages][0];
     
     NSURL *aboutFileURL = nil;
     
@@ -222,17 +222,17 @@ typedef enum settings_alert_dialog{
         TransmitterState outputState = [[Transmitter sharedTransmitter] outputState];
         
         if ((inputState == TransmitterStateOk) && (outputState == TransmitterStateOk)) {
-            connectionStateTextLabel.text = [NSString stringWithFormat:getLocalizeString(@"connected")];
+            connectionStateTextLabel.text = [NSString stringWithFormat:NSLocalizedString(@"connected", nil)];
             connectionActivityIndicatorView.hidden = YES;
         }
         else if((inputState == TransmitterStateOk) && (outputState != TransmitterStateOk)){
-            connectionStateTextLabel.text = [NSString stringWithFormat:getLocalizeString(@"not connected")];
+            connectionStateTextLabel.text = [NSString stringWithFormat:NSLocalizedString(@"not connected", nil)];
         }
         else if((inputState != TransmitterStateOk) && (outputState == TransmitterStateOk)){
-            connectionStateTextLabel.text = [NSString stringWithFormat:getLocalizeString(@"not connected")];
+            connectionStateTextLabel.text = [NSString stringWithFormat:NSLocalizedString(@"not connected", nil)];
         }
         else {
-            connectionStateTextLabel.text = [NSString stringWithFormat:getLocalizeString(@"not connected")];
+            connectionStateTextLabel.text = [NSString stringWithFormat:NSLocalizedString(@"not connected", nil)];
         }
     }
     
@@ -485,26 +485,28 @@ typedef enum settings_alert_dialog{
     }
     }
     else if(tableView.tag == kPeripheralDeviceListTabelView){
-        CBPeripheral *peripheral = [peripheralList objectAtIndex:[indexPath row]];
+        CBPeripheral *peripheral = peripheralList[[indexPath row]];
         NSString *deviceName = peripheral.name;
 
         [selectedPeripheral release];
         selectedPeripheral = [peripheral retain];
         
+        NSString *title = [NSString stringWithFormat:@"%@ - %@", NSLocalizedString(@"Connection", nil), deviceName];
+        
         if ([[[Transmitter sharedTransmitter] bleSerialManager] currentBleSerial] == peripheral) {
            // if ([peripheral isConnected]) {
             if ([[Transmitter sharedTransmitter] isConnected]) {
-                NSString *msg = getLocalizeString(@"Disconnect to Flexbot?");
-                [self showAlertViewWithTitle:getLocalizeString(@"Connection") cancelButtonTitle:getLocalizeString(@"Cancel") okButtonTitle:getLocalizeString(@"Disconnect") message:msg tag:settings_alert_dialog_disconnect];
+                NSString *msg = NSLocalizedString(@"Disconnect to Flexbot?", nil);
+                [self showAlertViewWithTitle:title cancelButtonTitle:NSLocalizedString(@"Cancel", nil) okButtonTitle:NSLocalizedString(@"Disconnect", nil) message:msg tag:settings_alert_dialog_disconnect];
             }
             else{
-                NSString *msg = getLocalizeString(@"Connect to Flexbot?");
-                [self showAlertViewWithTitle:getLocalizeString(@"Connection") cancelButtonTitle:getLocalizeString(@"Cancel") okButtonTitle:getLocalizeString(@"Connect") message:msg tag:settings_alert_dialog_connect];
+                NSString *msg = NSLocalizedString(@"Connect to Flexbot?", nil);
+                [self showAlertViewWithTitle:title cancelButtonTitle:NSLocalizedString(@"Cancel", nil) okButtonTitle:NSLocalizedString(@"Connect", nil) message:msg tag:settings_alert_dialog_connect];
             }
         }
         else{
-            NSString *msg = getLocalizeString(@"Connect to Flexbot?");
-            [self showAlertViewWithTitle:getLocalizeString(@"Connection") cancelButtonTitle:getLocalizeString(@"Cancel") okButtonTitle:getLocalizeString(@"Connect") message:msg tag:settings_alert_dialog_connect];
+            NSString *msg = NSLocalizedString(@"Connect to Flexbot?", nil);
+            [self showAlertViewWithTitle:title cancelButtonTitle:NSLocalizedString(@"Cancel", nil) okButtonTitle:NSLocalizedString(@"Connect", nil) message:msg tag:settings_alert_dialog_connect];
         }
     }
 }
@@ -537,7 +539,7 @@ typedef enum settings_alert_dialog{
     if (tableView.tag == kChannelListTableView) {
         switch (section) {
             case ChannelListTableViewSectionChannels:
-                return getLocalizeString(@"CHANNELS");
+                return NSLocalizedString(@"CHANNELS", nil);
                 break;
             default:
                 return @"";
@@ -570,7 +572,7 @@ typedef enum settings_alert_dialog{
                 
                 NSString *ppmRangeText = [NSString stringWithFormat:@"%d~%dus", minOutputPpm, maxOutputPpm];
                 
-                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ %@:%.2f %@:%.2f %@", [channel isReversing] ? getLocalizeString(@"Reversed"):getLocalizeString(@"Normal"), getLocalizeString(@"Trim"), [channel trimValue], getLocalizeString(@"Adjustable"), [channel outputAdjustabledRange], ppmRangeText];
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ %@:%.2f %@:%.2f %@", [channel isReversing] ? NSLocalizedString(@"Reversed", nil):NSLocalizedString(@"Normal", nil), NSLocalizedString(@"Trim", nil), [channel trimValue], NSLocalizedString(@"Adjustable", nil), [channel outputAdjustabledRange], ppmRangeText];
                 
                 return cell;
             }
@@ -586,10 +588,11 @@ typedef enum settings_alert_dialog{
             [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
         }
         
-        CBPeripheral *peripheral = [peripheralList objectAtIndex:[indexPath row]];
-        //cell.textLabel.text = peripheral.name;
-        cell.textLabel.text = @"Flexbot";
-        //cell.detailTextLabel.text = [NSString stringWithFormat:@"RRSI:%d", [peripheral.RSSI intValue]];
+        CBPeripheral *peripheral = peripheralList[[indexPath row]];
+        //        cell.textLabel.text = @"Flexbot";
+        cell.textLabel.text = peripheral.name;
+//        cell.detailTextLabel.text = [NSString stringWithFormat:@"RRSI:%d", [peripheral.RSSI intValue]];
+        cell.detailTextLabel.text = [peripheral.identifier UUIDString];
         return cell;
     }
 }
@@ -644,7 +647,7 @@ typedef enum settings_alert_dialog{
     }
     
     [pageControl setCurrentPage:currentPage];
-    [pageTitleLabel setText:[pageTitleArray objectAtIndex:currentPage]];
+    [pageTitleLabel setText:pageTitleArray[currentPage]];
 }
 
 - (void)showPreviousPageView{
@@ -697,7 +700,7 @@ typedef enum settings_alert_dialog{
 
 - (void)startConnect{
     isTryingConnect = YES;
-    connectionStateTextLabel.text = getLocalizeString(@"Connecting...");
+    connectionStateTextLabel.text = NSLocalizedString(@"Connecting...", nil);
     [connectionActivityIndicatorView startAnimating];
     connectionActivityIndicatorView.hidden = NO;
     isScanningTextLabel.hidden = YES;
@@ -707,7 +710,7 @@ typedef enum settings_alert_dialog{
     BleSerialManager *manager = [[Transmitter sharedTransmitter] bleSerialManager];
     
     if ([manager isScanning]) {
-        [peripheralListScanButton setTitle:getLocalizeString(@"Scan") forState:UIControlStateNormal];
+        [peripheralListScanButton setTitle:NSLocalizedString(@"Scan", nil) forState:UIControlStateNormal];
         isScanningTextLabel.hidden = YES;
         connectionActivityIndicatorView.hidden = YES;
         [manager stopScan];
@@ -718,7 +721,7 @@ typedef enum settings_alert_dialog{
         [manager scan];
         
         if ([manager isScanning]) {
-            [peripheralListScanButton setTitle:getLocalizeString(@"Stop Scan") forState:UIControlStateNormal];
+            [peripheralListScanButton setTitle:NSLocalizedString(@"Stop Scan", nil) forState:UIControlStateNormal];
             isScanningTextLabel.hidden = NO;
             connectionActivityIndicatorView.hidden = NO;
             [connectionActivityIndicatorView startAnimating];
@@ -755,19 +758,19 @@ typedef enum settings_alert_dialog{
         [self showNextPageView];
     }
     else if(sender == defaultSettingsButton){
-        NSString *msg = getLocalizeString(@"Reset to defaut settings?");
-        [self showAlertViewWithTitle:nil cancelButtonTitle:getLocalizeString(@"Cancel") okButtonTitle:getLocalizeString(@"Reset") message:msg tag:settings_alert_dialog_default];
+        NSString *msg = NSLocalizedString(@"Reset to defaut settings?", nil);
+        [self showAlertViewWithTitle:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) okButtonTitle:NSLocalizedString(@"Reset", nil) message:msg tag:settings_alert_dialog_default];
     }
     else if(sender == peripheralListScanButton){
         [self switchScan];
     }
     else if(sender == accCalibrateButton){
-        NSString *msg = getLocalizeString(@"Calibrate the accelerator of Flexbot?");
-        [self showAlertViewWithTitle:nil cancelButtonTitle:getLocalizeString(@"Cancel") okButtonTitle:getLocalizeString(@"Calibrate") message:msg tag:settings_alert_dialog_calibrate_acc];
+        NSString *msg = NSLocalizedString(@"Calibrate the accelerator of Flexbot?", nil);
+        [self showAlertViewWithTitle:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) okButtonTitle:NSLocalizedString(@"Calibrate", nil) message:msg tag:settings_alert_dialog_calibrate_acc];
     }
     else if(sender == magCalibrateButton){
-        NSString *msg = getLocalizeString(@"Calibrate the magnetometer of Flexbot?");
-        [self showAlertViewWithTitle:nil cancelButtonTitle:getLocalizeString(@"Cancel") okButtonTitle:getLocalizeString(@"Calibrate") message:msg tag:settings_alert_dialog_calibrate_mag];
+        NSString *msg = NSLocalizedString(@"Calibrate the magnetometer of Flexbot?", nil);
+        [self showAlertViewWithTitle:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) okButtonTitle:NSLocalizedString(@"Calibrate", nil) message:msg tag:settings_alert_dialog_calibrate_mag];
     }
     else if(sender == upTrimButton){
         [[Transmitter sharedTransmitter] transmmitSimpleCommand:MSP_TRIM_UP];

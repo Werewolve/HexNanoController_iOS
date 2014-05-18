@@ -99,13 +99,13 @@
         [_minLabel setFont:[UIFont fontWithName:HELVETICA size:labelSize]];
         [_minLabel setTextColor:WHITE(1.f)];
         [_minLabel setBackgroundColor:[UIColor clearColor]];
-        [_minLabel setText:[NSString stringWithFormat:[NSString stringWithUTF8String:formatStr], self.minimumValue]];
+        [_minLabel setText:[NSString stringWithFormat:@(formatStr), self.minimumValue]];
         [_minLabel sizeToFit];
         
         [_maxLabel setFont:[UIFont fontWithName:HELVETICA size:labelSize]];
         [_maxLabel setTextColor:WHITE(1.f)];
         [_maxLabel setBackgroundColor:[UIColor clearColor]];
-        [_maxLabel setText:[NSString stringWithFormat:[NSString stringWithUTF8String:formatStr], self.maximumValue]];
+        [_maxLabel setText:[NSString stringWithFormat:@(formatStr), self.maximumValue]];
         [_maxLabel sizeToFit];
         
         CGRect frame = _minLabel.frame;
