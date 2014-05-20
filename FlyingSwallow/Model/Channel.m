@@ -23,83 +23,57 @@
 #import "util.h"
 
 @interface Channel()
-
-@property(nonatomic, retain) NSMutableDictionary *data;
-
+@property(nonatomic, strong, readwrite) NSString *name;
+@property(nonatomic, strong) NSMutableDictionary *data;
 @end
 
-
 @implementation Channel
-@synthesize data = _data;
 
-@synthesize name = _name;
-@synthesize isReversing = _isReversing;
-@synthesize trimValue = _trimValue;
-@synthesize outputAdjustabledRange = _outputAdjustabledRange;
-@synthesize defaultOutputValue = _defaultOutputValue;
-@synthesize value = _value;
-@synthesize idx = _idx;
-@synthesize ownerSettings = _ownerSettings;
-
-
-- (id)initWithSetting:(Settings *)settings idx:(int)idx{
+- (id)initWithSetting:(Settings *)settings idx:(int)idx {
     self = [super init];
-    
-    if(self){
-        _ownerSettings = settings;
-        _idx = idx;
-        
-        _data = [[settings.settingsData valueForKey:kKeySettingsChannels][idx] retain];
-        
-        _name = [[_data valueForKey:kKeyChannelName] retain];
-        _isReversing = [[_data valueForKey:kKeyChannelIsReversed] boolValue];
-        _trimValue = [[_data valueForKey:kKeyChannelTrimValue] floatValue];
-        _outputAdjustabledRange = [[_data valueForKey:kKeyChannelOutputAdjustableRange] floatValue];
-        _defaultOutputValue = [[_data valueForKey:kKeyChannelDefaultOutputValue] floatValue];
-        
-        [self setValue:_defaultOutputValue];
+    if (self) {
+        self.ownerSettings = settings;
+        self.idx = idx;
+        self.data = [settings.settingsData valueForKey:kKeySettingsChannels][idx];
+        self.name = [_data valueForKey:kKeyChannelName];
+        self.isReversing = [[_data valueForKey:kKeyChannelIsReversed] boolValue];
+        self.trimValue = [[_data valueForKey:kKeyChannelTrimValue] floatValue];
+        self.outputAdjustabledRange = [[_data valueForKey:kKeyChannelOutputAdjustableRange] floatValue];
+        self.defaultOutputValue = [[_data valueForKey:kKeyChannelDefaultOutputValue] floatValue];
+        [self setValue:self.defaultOutputValue];
     }
-    
     return self;
 }
 
-- (void)setValue:(float)value{
+- (void)setValue:(float)value {
 	_value = clip(value, -1.0, 1.0);
-	float outputValue = clip(value + _trimValue, -1.0, 1.0); 
-	if (_isReversing) {
+	float outputValue = clip(value + self.trimValue, -1.0, 1.0);
+	if (self.isReversing) {
 		outputValue = -outputValue;
 	}
+	outputValue *= self.outputAdjustabledRange;
     
-	outputValue *= _outputAdjustabledRange;
-    
-    [[Transmitter sharedTransmitter] setPpmValue:outputValue atChannel:_idx];
+    [[Transmitter sharedTransmitter] setPpmValue:outputValue atChannel:self.idx];
 }
 
-- (void)setIsReversed:(BOOL)isReversing{
+- (void)setIsReversed:(BOOL)isReversing {
     _isReversing = isReversing;
-    [_data setValue:@(isReversing) forKey:kKeyChannelIsReversed];
+    [self.data setValue:@(self.isReversing) forKey:kKeyChannelIsReversed];
 }
 
-- (void)setTrimValue:(float)trimValue{
+- (void)setTrimValue:(float)trimValue {
     _trimValue = trimValue;
-    [_data setValue:@(_trimValue) forKey:kKeyChannelTrimValue];
+    [self.data setValue:@(self.trimValue) forKey:kKeyChannelTrimValue];
 }
 
-- (void)setOutputAdjustabledRange:(float)outputAdjustabledRange{
+- (void)setOutputAdjustabledRange:(float)outputAdjustabledRange {
     _outputAdjustabledRange = outputAdjustabledRange;
-    [_data setValue:@(_outputAdjustabledRange) forKey:kKeyChannelOutputAdjustableRange];
+    [self.data setValue:@(self.outputAdjustabledRange) forKey:kKeyChannelOutputAdjustableRange];
 }
 
-- (void)setDefaultOutputValue:(float)defaultOutputValue{
+- (void)setDefaultOutputValue:(float)defaultOutputValue {
     _defaultOutputValue = defaultOutputValue;
-    [_data setValue:@(_defaultOutputValue) forKey:kKeyChannelDefaultOutputValue];
+    [self.data setValue:@(self.defaultOutputValue) forKey:kKeyChannelDefaultOutputValue];
 }
-
-- (void)dealloc{
-    [_name release];
-    [_data release];
-    [super dealloc];
-}
-
 
 @end

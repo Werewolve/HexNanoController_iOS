@@ -59,24 +59,23 @@
 
 - (void)setupImages{
     NSString *imagePath = [[NSBundle mainBundle] pathForResource:@"world.jpg" ofType:nil];
-    worldImage = [[UIImage imageWithContentsOfFile:imagePath] retain];
+    worldImage = [UIImage imageWithContentsOfFile:imagePath];
     
     imagePath = [[NSBundle mainBundle] pathForResource:@"drone.png" ofType:nil];
-    droneImage = [[UIImage imageWithContentsOfFile:imagePath] retain];
+    droneImage = [UIImage imageWithContentsOfFile:imagePath];
 }
 
 
 - (id)initWithOsdData:(OSDData *)data{
     if(self = [super init]){
-        _osdData = [data retain];
+        _osdData = data;
         [self setupImages];
     }
     return self;
 }
  
 - (void)setOsdData:(OSDData *)osdData{
-    [_osdData release];
-    _osdData = [osdData retain];
+    _osdData = osdData;
     
     [self setNeedsDisplay];
 }
@@ -690,11 +689,11 @@
 -(void)drawRect:(CGRect)rect{
     context= UIGraphicsGetCurrentContext();
     
-    float roll = 10 - rand()% 20;
-    float pitch = 10 - rand()% 20;
+//    float roll = 10 - rand()% 20;
+//    float pitch = 10 - rand()% 20;
     
-    roll = 0;
-    pitch =40;
+//    float roll = 0;
+//    float pitch =40;
     
 //    [self drawWorldWithRoll:_roll pitch:_pitch];
 //    [self drawAttitudeTraceWithRoll:_roll picth:_pitch];
@@ -737,11 +736,5 @@
 
 
 
-- (void)dealloc{
-    [_osdData release];
-    [worldImage release];
-    [droneImage release];
-    [super dealloc];
-}
 
 @end

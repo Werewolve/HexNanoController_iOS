@@ -22,16 +22,6 @@
 
 @implementation AppDelegate
 
-@synthesize window = _window;
-@synthesize viewController = _viewController;
-
-- (void)dealloc
-{
-    [_window release];
-    [_viewController release];
-    [super dealloc];
-}
-
 - (void)copyDefaultSettingsFileIfNeeded{
     NSString *documentsDir= NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
     NSString *userSettingsFilePath= [documentsDir stringByAppendingPathComponent:@"Settings.plist"];
@@ -50,23 +40,26 @@
 {
     [self copyDefaultSettingsFileIfNeeded];
     
-    self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
     
+    HudViewController *viewController = nil;
+    
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-        self.viewController = [[[HudViewController alloc] initWithNibName:@"HudViewController" bundle:nil] autorelease];
+        viewController = [[HudViewController alloc] initWithNibName:@"HudViewController" bundle:nil];
     } else {
         if (isIphone5()) {
-            self.viewController = [[[HudViewController alloc] initWithNibName:@"HudViewController_iPhone_tall" bundle:nil] autorelease];
+            viewController = [[HudViewController alloc] initWithNibName:@"HudViewController_iPhone_tall" bundle:nil];
         }
         else{
-            self.viewController = [[[HudViewController alloc] initWithNibName:@"HudViewController_iPhone" bundle:nil] autorelease];
+            viewController = [[HudViewController alloc] initWithNibName:@"HudViewController_iPhone" bundle:nil];
         }
     }
     
     //[self.window addSubview:_viewController.view];
-     self.window.rootViewController = _viewController;
+    self.window.rootViewController = viewController;
+    self.viewController = viewController;
     
     [self.window makeKeyAndVisible];
     

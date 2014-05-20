@@ -40,75 +40,56 @@ typedef enum settings_alert_dialog{
     settings_alert_dialog_calibrate_acc
 }settings_alert_dialog;
 
-@interface SettingsMenuViewController (){
-    UITableViewCell *reorderTableViewCell;
-    
-    NSMutableArray *pageViewArray;
-    NSMutableArray *pageTitleArray;
-    
-    int pageCount;
-    
-    Settings *settings;
-    
-    ChannelSettingsViewController *channelSettingsVC;
-    
-    NSArray *peripheralList;
-    
-    CBPeripheral *selectedPeripheral;
-    
-    BOOL isTryingConnect;
-}
-
+@interface SettingsMenuViewController ()
+@property (nonatomic, strong) NSMutableArray *pageViewArray;
+@property (nonatomic, strong) NSMutableArray *pageTitleArray;
+@property (nonatomic, assign) NSUInteger pageCount;
+@property (nonatomic, strong) Settings *settings;
+@property (nonatomic, strong) ChannelSettingsViewController *channelSettingsVC;
+@property (nonatomic, strong) NSArray *peripheralList;
+@property (nonatomic, strong) CBPeripheral *selectedPeripheral;
+@property (nonatomic, assign) BOOL isTryingConnect;
+@property (nonatomic, assign) BOOL isTryingDisconnect;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil;
-
-
 @end
 
 @implementation SettingsMenuViewController
-@synthesize delegate = _delegate;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {  
-    }
-    
-    return self;
-}
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil settings:(Settings *)settings_{
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
-        pageViewArray = [[NSMutableArray alloc] initWithCapacity:5];
-        pageTitleArray = [[NSMutableArray alloc] initWithCapacity:5];
-
-        settings = [settings_ retain];
-        
-         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismissChannelSetttingsView) name:kNotificationDismissChannelSettingsView object:nil];
     }
-    
     return self;
 }
 
-- (void)awakeFromNib{
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil settings:(Settings *)settings {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        self.pageViewArray = [[NSMutableArray alloc] initWithCapacity:5];
+        self.pageTitleArray = [[NSMutableArray alloc] initWithCapacity:5];
+        self.settings = settings;
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismissChannelSetttingsView) name:kNotificationDismissChannelSettingsView object:nil];
+    }
+    return self;
+}
+
+- (void)awakeFromNib {
     [super awakeFromNib];
-    
-    channelListTableView.tag = kChannelListTableView;
-    peripheralListTableView.tag = kPeripheralDeviceListTabelView;
+    self.channelListTableView.tag = kChannelListTableView;
+    self.peripheralListTableView.tag = kPeripheralDeviceListTabelView;
 }
 
 
-- (void)updateSettingsUI{
-    [self setSwitchButton:leftHandedSwitchButton withValue:settings.isLeftHanded];
-    [self setSwitchButton:accModeSwitchButton withValue:settings.isAccMode];
-    [self setSwitchButton:beginnerModeSwitchButton withValue:settings.isBeginnerMode];
-    [self setSwitchButton:headfreeModeSwitchButton withValue:settings.isHeadFreeMode];
+- (void)updateSettingsUI {
+    [self setSwitchButton:self.leftHandedSwitchButton withValue:self.settings.isLeftHanded];
+    [self setSwitchButton:self.accModeSwitchButton withValue:self.settings.isAccMode];
+    [self setSwitchButton:self.beginnerModeSwitchButton withValue:self.settings.isBeginnerMode];
+    [self setSwitchButton:self.headfreeModeSwitchButton withValue:self.settings.isHeadFreeMode];
     
-    interfaceOpacitySlider.value = settings.interfaceOpacity * 100;
-    interfaceOpacityLabel.text = [NSString stringWithFormat:@"%d%%", (int)(settings.interfaceOpacity * 100)];
-    [self setSwitchButton:ppmPolarityReversedSwitchButton withValue:settings.ppmPolarityIsNegative];
-    takeOffThrottleSlider.value = settings.takeOffThrottle;
+    self.interfaceOpacitySlider.value = self.settings.interfaceOpacity * 100;
+    self.interfaceOpacityLabel.text = [NSString stringWithFormat:@"%d%%", (int)(self.settings.interfaceOpacity * 100)];
+    [self setSwitchButton:self.ppmPolarityReversedSwitchButton withValue:self.settings.ppmPolarityIsNegative];
+    self.takeOffThrottleSlider.value = self.settings.takeOffThrottle;
     [self updateTakeOffThrottleLabel];
     
     [self updateAileronElevatorDeadBandLabel];
@@ -116,66 +97,65 @@ typedef enum settings_alert_dialog{
     [self updateRudderDeadBandLabel];
     [self updateRudderDeadBandSlider];
     
-    [channelListTableView reloadData];
+    [self.channelListTableView reloadData];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    leftHandedTitleLabel.text = NSLocalizedString(@"LEFT HANDED", nil);
-    interfaceOpacityTitleLabel.text = NSLocalizedString(@"INTERFACE OPACITY", nil);
-    accModeTitleLabel.text = NSLocalizedString(@"Acc Mode", nil);
-
-    [pageViewArray addObject:peripheralView];
-    [pageTitleArray addObject:NSLocalizedString(@"BLE DEVICES", nil)];
+    self.leftHandedTitleLabel.text = NSLocalizedString(@"LEFT HANDED", nil);
+    self.interfaceOpacityTitleLabel.text = NSLocalizedString(@"INTERFACE OPACITY", nil);
+    self.accModeTitleLabel.text = NSLocalizedString(@"Acc Mode", nil);
     
-    [pageViewArray addObject:personalSettingsPageView];
-    [pageTitleArray addObject:NSLocalizedString(@"PERSONAL SETTINGS", nil)];
+    [self.pageViewArray addObject:self.peripheralView];
+    [self.pageTitleArray addObject:NSLocalizedString(@"BLE DEVICES", nil)];
     
-    [pageViewArray addObject:trimSettingsView];
-    [pageTitleArray addObject:NSLocalizedString(@"TRIM SETTINGS", nil)];
+    [self.pageViewArray addObject:self.personalSettingsPageView];
+    [self.pageTitleArray addObject:NSLocalizedString(@"PERSONAL SETTINGS", nil)];
     
-    [pageViewArray addObject:modeSettingsPageView];
-    [pageTitleArray addObject:NSLocalizedString(@"MODE SETTINGS", nil)];
+    [self.pageViewArray addObject:self.trimSettingsView];
+    [self.pageTitleArray addObject:NSLocalizedString(@"TRIM SETTINGS", nil)];
     
-    [pageViewArray addObject:aboutPageView];
-    [pageTitleArray addObject:NSLocalizedString(@"ABOUT", nil)];
-
-    pageCount = pageViewArray.count;
+    [self.pageViewArray addObject:self.modeSettingsPageView];
+    [self.pageTitleArray addObject:NSLocalizedString(@"MODE SETTINGS", nil)];
+    
+    [self.pageViewArray addObject:self.aboutPageView];
+    [self.pageTitleArray addObject:NSLocalizedString(@"ABOUT", nil)];
+    
+    self.pageCount = self.pageViewArray.count;
     
     CGFloat x = 0.f;
-    for (UIView *pageView in pageViewArray)
-    {
+    for (UIView *pageView in self.pageViewArray) {
         CGRect frame = pageView.frame;
         frame.origin.x = x;
         [pageView setFrame:frame];
-        [settingsPageScrollView addSubview:pageView];
+        [self.settingsPageScrollView addSubview:pageView];
         x += pageView.frame.size.width;
     }
-    [settingsPageScrollView  setContentSize:CGSizeMake(x, settingsPageScrollView.frame.size.height)];
+    [self.settingsPageScrollView  setContentSize:CGSizeMake(x, self.settingsPageScrollView.frame.size.height)];
     
-    [pageControl setNumberOfPages:pageCount];
-    [pageControl setCurrentPage:0];
+    [self.pageControl setNumberOfPages:self.pageCount];
+    [self.pageControl setCurrentPage:0];
     
-    pageTitleLabel.text = NSLocalizedString(@"BLE DEVICES", nil);
-    ppmPolarityReversedTitleLabel.text = NSLocalizedString(@"PPM POLARITY REVERSED", nil);
-    takeOffThrottleTitleLabel.text = NSLocalizedString(@"Take Off Throttle", nil);
-    aileronElevatorDeadBandTitleLabel.text = NSLocalizedString(@"Aileron/Elevator Dead Band", nil);
-    rudderDeadBandTitleLabel.text = NSLocalizedString(@"Rudder Dead Band", nil);
-    beginnerModeTitleLabel.text = NSLocalizedString(@"Beginner Mode", nil);
-    headfreeModeTitleLabel.text = NSLocalizedString(@"Headfree Mode", nil);
+    self.pageTitleLabel.text = NSLocalizedString(@"BLE DEVICES", nil);
+    self.ppmPolarityReversedTitleLabel.text = NSLocalizedString(@"PPM POLARITY REVERSED", nil);
+    self.takeOffThrottleTitleLabel.text = NSLocalizedString(@"Take Off Throttle", nil);
+    self.aileronElevatorDeadBandTitleLabel.text = NSLocalizedString(@"Aileron/Elevator Dead Band", nil);
+    self.rudderDeadBandTitleLabel.text = NSLocalizedString(@"Rudder Dead Band", nil);
+    self.beginnerModeTitleLabel.text = NSLocalizedString(@"Beginner Mode", nil);
+    self.headfreeModeTitleLabel.text = NSLocalizedString(@"Headfree Mode", nil);
     
-    [defaultSettingsButton setTitle:NSLocalizedString(@"Default Settings", nil) forState:UIControlStateNormal];
-    [peripheralListScanButton setTitle:NSLocalizedString(@"Scan", nil) forState:UIControlStateNormal];
+    [self.defaultSettingsButton setTitle:NSLocalizedString(@"Default Settings", nil) forState:UIControlStateNormal];
+    [self.peripheralListScanButton setTitle:NSLocalizedString(@"Scan", nil) forState:UIControlStateNormal];
     
-    isScanningTextLabel.text = NSLocalizedString(@"Scanning Flexbot...", nil);
+    self.isScanningTextLabel.text = NSLocalizedString(@"Scanning Flexbot...", nil);
     
-    [magCalibrateButton setTitle:NSLocalizedString(@"Calibrate Mag", nil) forState:UIControlStateNormal];
-    [accCalibrateButton setTitle:NSLocalizedString(@"Calibrate Acc", nil) forState:UIControlStateNormal];
+    [self.magCalibrateButton setTitle:NSLocalizedString(@"Calibrate Mag", nil) forState:UIControlStateNormal];
+    [self.accCalibrateButton setTitle:NSLocalizedString(@"Calibrate Acc", nil) forState:UIControlStateNormal];
     
-    channelListTableView.backgroundColor = [UIColor clearColor];
-    channelListTableView.backgroundView.hidden = YES;
+    self.channelListTableView.backgroundColor = [UIColor clearColor];
+    self.channelListTableView.backgroundView.hidden = YES;
     
     NSString *currentLan = [NSLocale preferredLanguages][0];
     
@@ -185,247 +165,104 @@ typedef enum settings_alert_dialog{
         NSBundle *enBundle =[NSBundle bundleWithPath:[[NSBundle mainBundle] pathForResource:@"en" ofType:@"lproj"]];
         
         aboutFileURL = [NSURL fileURLWithPath:[enBundle pathForResource:@"About" ofType:@"html"]];
-    }
-    else{
+    } else {
         aboutFileURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"About" ofType:@"html"]];
     }
     
     NSURLRequest *request = [NSURLRequest requestWithURL:aboutFileURL];
-    [aboutWebView loadRequest:request];
+    [self.aboutWebView loadRequest:request];
     
     [self updateSettingsUI];
     
-    if(peripheralList == nil){
+    if (self.peripheralList == nil) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleNotificationPeripheralListDidChange) name:kNotificationPeripheralListDidChange object:nil];
         
-        peripheralList =  [[[[Transmitter sharedTransmitter] bleSerialManager] bleSerialList] retain];
+        self.peripheralList =  [[[Transmitter sharedTransmitter] bleSerialManager] bleSerialList];
         
         [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(updateConnectionState) userInfo:nil repeats:YES];
-
-        [connectionActivityIndicatorView stopAnimating];
-        connectionActivityIndicatorView.hidden = YES;
+        
+        [self.connectionActivityIndicatorView stopAnimating];
+        self.connectionActivityIndicatorView.hidden = YES;
     }
+    
+    self.selectedPeripheral = [[Transmitter sharedTransmitter] bleSerialManager].currentBleSerial;
 }
 
-- (void)updateConnectionState{    
+- (void)updateConnectionState {
     CBPeripheral *peripheral = [[[Transmitter sharedTransmitter] bleSerialManager] currentBleSerial];
-
-    if(isTryingConnect && ![peripheral isConnected]){
+    
+    if (self.isTryingConnect && ![peripheral isConnected]) {
         return;
-    }
-    else{
+    } else {
         if ([peripheral isConnected]) {
-            isTryingConnect = NO;
+            if (self.isTryingConnect) {
+                NSInteger i = [self.peripheralList indexOfObject:self.selectedPeripheral];
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+                if (indexPath) {
+                    [self.peripheralListTableView beginUpdates];
+                    [self.peripheralListTableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                    [self.peripheralListTableView endUpdates];
+                }
+                self.isTryingConnect = NO;
+            }
+        } else {
+            if (self.isTryingDisconnect) {
+                NSInteger i = [self.peripheralList indexOfObject:self.selectedPeripheral];
+                self.selectedPeripheral = nil;
+                NSIndexPath *indexPath = [NSIndexPath indexPathForRow:i inSection:0];
+                if (indexPath) {
+                    [self.peripheralListTableView beginUpdates];
+                    [self.peripheralListTableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                    [self.peripheralListTableView endUpdates];
+                }
+                self.isTryingDisconnect = NO;
+            }
         }
         
         TransmitterState inputState = [[Transmitter sharedTransmitter] inputState];
         TransmitterState outputState = [[Transmitter sharedTransmitter] outputState];
         
         if ((inputState == TransmitterStateOk) && (outputState == TransmitterStateOk)) {
-            connectionStateTextLabel.text = [NSString stringWithFormat:NSLocalizedString(@"connected", nil)];
-            connectionActivityIndicatorView.hidden = YES;
-        }
-        else if((inputState == TransmitterStateOk) && (outputState != TransmitterStateOk)){
-            connectionStateTextLabel.text = [NSString stringWithFormat:NSLocalizedString(@"not connected", nil)];
-        }
-        else if((inputState != TransmitterStateOk) && (outputState == TransmitterStateOk)){
-            connectionStateTextLabel.text = [NSString stringWithFormat:NSLocalizedString(@"not connected", nil)];
-        }
-        else {
-            connectionStateTextLabel.text = [NSString stringWithFormat:NSLocalizedString(@"not connected", nil)];
+            self.connectionStateTextLabel.text = [NSString stringWithFormat:NSLocalizedString(@"connected", nil)];
+            self.connectionActivityIndicatorView.hidden = YES;
+        } else if ((inputState == TransmitterStateOk) && (outputState != TransmitterStateOk)) {
+            self.connectionStateTextLabel.text = [NSString stringWithFormat:NSLocalizedString(@"not connected", nil)];
+        } else if ((inputState != TransmitterStateOk) && (outputState == TransmitterStateOk)) {
+            self.connectionStateTextLabel.text = [NSString stringWithFormat:NSLocalizedString(@"not connected", nil)];
+        } else {
+            self.connectionStateTextLabel.text = [NSString stringWithFormat:NSLocalizedString(@"not connected", nil)];
         }
     }
     
-    peripheralListTableView.backgroundColor = [UIColor clearColor];
-
+    self.peripheralListTableView.backgroundColor = [UIColor clearColor];
 }
 
-- (void)viewDidUnload
-{
-    [personalSettingsPageView release];
-    personalSettingsPageView = nil;
-    [channelSetttingsPageView release];
-    channelSetttingsPageView = nil;
-    [modeSettingsPageView release];
-    modeSettingsPageView = nil;
-    [settingsPageScrollView release];
-    settingsPageScrollView = nil;
-    [previousPageButton release];
-    previousPageButton = nil;
-    [nextPageButton release];
-    nextPageButton = nil;
-    [pageTitleLabel release];
-    pageTitleLabel = nil;
-    [okButton release];
-    okButton = nil;
-    
-    [pageViewArray release], pageViewArray = nil;
-    [pageTitleArray release], pageViewArray = nil;
-    
-    [pageControl release];
-    pageControl = nil;
-    [aboutPageView release];
-    aboutPageView = nil;
-    [leftHandedTitleLabel release];
-    leftHandedTitleLabel = nil;
-    [leftHandedSwitchButton release];
-    leftHandedSwitchButton = nil;
-    [interfaceOpacityTitleLabel release];
-    interfaceOpacityTitleLabel = nil;
-    [interfaceOpacitySlider release];
-    interfaceOpacitySlider = nil;
-    [interfaceOpacityLabel release];
-    interfaceOpacityLabel = nil;
-    [channelListTableView release];
-    channelListTableView = nil;
-    
-    [reorderTableViewCell release], reorderTableViewCell = nil;
-    
-    [ppmPolarityReversedTitleLabel release];
-    ppmPolarityReversedTitleLabel = nil;
-    [ppmPolarityReversedSwitchButton release];
-    ppmPolarityReversedSwitchButton = nil;
-    [defaultSettingsButton release];
-    defaultSettingsButton = nil;
-    [takeOffThrottleTitleLabel release];
-    takeOffThrottleTitleLabel = nil;
-    [takeOffThrottleLabel release];
-    takeOffThrottleLabel = nil;
-    [takeOffThrottleSlider release];
-    takeOffThrottleSlider = nil;
-    [aileronElevatorDeadBandTitleLabel release];
-    aileronElevatorDeadBandTitleLabel = nil;
-    [aileronElevatorDeadBandSlider release];
-    aileronElevatorDeadBandSlider = nil;
-    [aileronElevatorDeadBandLabel release];
-    aileronElevatorDeadBandLabel = nil;
-    [rudderDeadBandTitleLabel release];
-    rudderDeadBandTitleLabel = nil;
-    [rudderDeadBandSlider release];
-    rudderDeadBandSlider = nil;
-    [rudderDeadBandLabel release];
-    rudderDeadBandLabel = nil;
-    [aboutWebView release];
-    aboutWebView = nil;
-    [peripheralView release];
-    peripheralView = nil;
-    [peripheralListTableView release];
-    peripheralListTableView = nil;
-    [peripheralListScanButton release];
-    peripheralListScanButton = nil;
-    [connectionActivityIndicatorView release];
-    connectionActivityIndicatorView = nil;
-    [connectionStateTextLabel release];
-    connectionStateTextLabel = nil;
-    [isScanningTextLabel release];
-    isScanningTextLabel = nil;
-    [accCalibrateButton release];
-    accCalibrateButton = nil;
-    [magCalibrateButton release];
-    magCalibrateButton = nil;
-    [upTrimButton release];
-    upTrimButton = nil;
-    [downTrimButton release];
-    downTrimButton = nil;
-    [rightTrimButton release];
-    rightTrimButton = nil;
-    [leftTrimButton release];
-    leftTrimButton = nil;
-    [trimSettingsView release];
-    trimSettingsView = nil;
-    [accModeTitleLabel release];
-    accModeTitleLabel = nil;
-    [accModeSwitchButton release];
-    accModeSwitchButton = nil;
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-}
-
-- (void)didReceiveMemoryWarning{
+- (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     
-    if([channelSettingsVC.view superview] == nil)
-        [channelSettingsVC release], channelSettingsVC = nil;
-
+    if ([self.channelSettingsVC.view superview] == nil) {
+        self.channelSettingsVC = nil;
+    }
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNotificationDismissChannelSettingsView object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kNotificationPeripheralListDidChange object:nil];
-
-    [personalSettingsPageView release];
-    [channelSetttingsPageView release];
-    [modeSettingsPageView release];
-    [settingsPageScrollView release];
-    [previousPageButton release];
-    [nextPageButton release];
-    [pageTitleLabel release];
-    [okButton release];
-    
-    [pageViewArray release];
-    [pageTitleArray release];
-    
-    [pageControl release];
-    [aboutPageView release];
-    [leftHandedTitleLabel release];
-    [leftHandedSwitchButton release];
-    [interfaceOpacityTitleLabel release];
-    [interfaceOpacitySlider release];
-    [interfaceOpacityLabel release];
-    [channelListTableView release];
-    [reorderTableViewCell release];
-    [settings release];
-    [channelSettingsVC release];
-    [ppmPolarityReversedTitleLabel release];
-    [ppmPolarityReversedSwitchButton release];
-    [defaultSettingsButton release];
-    [takeOffThrottleTitleLabel release];
-    [takeOffThrottleLabel release];
-    [takeOffThrottleSlider release];
-    [aileronElevatorDeadBandTitleLabel release];
-    [aileronElevatorDeadBandSlider release];
-    [aileronElevatorDeadBandLabel release];
-    [rudderDeadBandTitleLabel release];
-    [rudderDeadBandSlider release];
-    [rudderDeadBandLabel release];
-    [aboutWebView release];
-    [peripheralView release];
-    [peripheralListTableView release];
-    [peripheralListScanButton release];
-    [connectionActivityIndicatorView release];
-    [connectionStateTextLabel release];
-    [selectedPeripheral release];
-    [isScanningTextLabel release];
-    [accCalibrateButton release];
-    [magCalibrateButton release];
-    [upTrimButton release];
-    [downTrimButton release];
-    [rightTrimButton release];
-    [leftTrimButton release];
-    [trimSettingsView release];
-    [accModeTitleLabel release];
-    [accModeSwitchButton release];
-    [beginnerModeSwitchButton release];
-    [beginnerModeTitleLabel release];
-    [headfreeModeTitleLabel release];
-    [headfreeModeSwitchButton release];
-    [super dealloc];
 }
 
-- (void)dismissChannelSetttingsView{
-    [channelSettingsVC.view removeFromSuperview];
-    [channelListTableView reloadData];
+- (void)dismissChannelSetttingsView {
+    [self.channelSettingsVC.view removeFromSuperview];
+    [self.channelListTableView reloadData];
 }
 
-- (void)updateTakeOffThrottleLabel{
-    Channel *throttleChannel = [settings channelByName:kChannelNameThrottle];
+- (void)updateTakeOffThrottleLabel {
+    Channel *throttleChannel = [self.settings channelByName:kChannelNameThrottle];
     
-    float outputValue = clip(-1 + settings.takeOffThrottle * 2 + throttleChannel.trimValue, -1.0, 1.0); 
+    float outputValue = clip(-1 + self.settings.takeOffThrottle * 2 + throttleChannel.trimValue, -1.0, 1.0);
     
     if (throttleChannel.isReversing) {
         outputValue = -outputValue;
@@ -433,23 +270,23 @@ typedef enum settings_alert_dialog{
     
     float takeOffThrottle = 1500 + 500 * (outputValue * throttleChannel.outputAdjustabledRange);
     
-    takeOffThrottleLabel.text = [NSString stringWithFormat:@"%.2f, %dus", settings.takeOffThrottle, (int)takeOffThrottle];
+    self.takeOffThrottleLabel.text = [NSString stringWithFormat:@"%.2f, %dus", self.settings.takeOffThrottle, (int)takeOffThrottle];
 }
 
-- (void)updateRudderDeadBandLabel{
-    rudderDeadBandLabel.text = [NSString stringWithFormat:@"%.2f%%", settings.rudderDeadBand * 100];
+- (void)updateRudderDeadBandLabel {
+    self.rudderDeadBandLabel.text = [NSString stringWithFormat:@"%.2f%%", self.settings.rudderDeadBand * 100];
 }
 
-- (void)updateRudderDeadBandSlider{
-    rudderDeadBandSlider.value = settings.rudderDeadBand / (float)kRudderMaxDeadBandRatio;
+- (void)updateRudderDeadBandSlider {
+    self.rudderDeadBandSlider.value = self.settings.rudderDeadBand / (float)kRudderMaxDeadBandRatio;
 }
 
-- (void)updateAileronElevatorDeadBandLabel{
-    aileronElevatorDeadBandLabel.text = [NSString stringWithFormat:@"%.2f%%", settings.aileronDeadBand * 100];
+- (void)updateAileronElevatorDeadBandLabel {
+    self.aileronElevatorDeadBandLabel.text = [NSString stringWithFormat:@"%.2f%%", self.settings.aileronDeadBand * 100];
 }
 
-- (void)updateAileronElevatorDeadBandSlider{
-    aileronElevatorDeadBandSlider.value = settings.aileronDeadBand / (float)kAileronElevatorMaxDeadBandRatio;
+- (void)updateAileronElevatorDeadBandSlider {
+    self.aileronElevatorDeadBandSlider.value = self.settings.aileronDeadBand / (float)kAileronElevatorMaxDeadBandRatio;
 }
 
 
@@ -469,42 +306,41 @@ typedef enum settings_alert_dialog{
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (tableView.tag == kChannelListTableView) {
-        if([indexPath section] == ChannelListTableViewSectionChannels){
-            Channel *channel = [settings channelAtIndex:[indexPath row]];
+        if ([indexPath section] == ChannelListTableViewSectionChannels) {
+            Channel *channel = [self.settings channelAtIndex:[indexPath row]];
             
-            if(channelSettingsVC == nil){
+            if (self.channelSettingsVC == nil) {
                 if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-                    channelSettingsVC  = [[ChannelSettingsViewController alloc] initWithNibName:@"ChannelSettingsViewController" bundle:nil channel:channel];
+                    self.channelSettingsVC  = [[ChannelSettingsViewController alloc] initWithNibName:@"ChannelSettingsViewController" bundle:nil channel:channel];
                 } else {
-                    channelSettingsVC  = [[ChannelSettingsViewController alloc] initWithNibName:@"ChannelSettingsViewController_iPhone" bundle:nil channel:channel];
+                    self.channelSettingsVC  = [[ChannelSettingsViewController alloc] initWithNibName:@"ChannelSettingsViewController_iPhone" bundle:nil channel:channel];
                 }
             }
-            channelSettingsVC.channel = channel;
+            self.channelSettingsVC.channel = channel;
             
-            [self.view addSubview:channelSettingsVC.view];
+            [self.view addSubview:self.channelSettingsVC.view];
+        }
     }
-    }
-    else if(tableView.tag == kPeripheralDeviceListTabelView){
-        CBPeripheral *peripheral = peripheralList[[indexPath row]];
+    else if (tableView.tag == kPeripheralDeviceListTabelView) {
+        CBPeripheral *peripheral = self.peripheralList[[indexPath row]];
         NSString *deviceName = peripheral.name;
-
-        [selectedPeripheral release];
-        selectedPeripheral = [peripheral retain];
+        
+        self.selectedPeripheral = peripheral;
         
         NSString *title = [NSString stringWithFormat:@"%@ - %@", NSLocalizedString(@"Connection", nil), deviceName];
         
         if ([[[Transmitter sharedTransmitter] bleSerialManager] currentBleSerial] == peripheral) {
-           // if ([peripheral isConnected]) {
+            // if ([peripheral isConnected]) {
             if ([[Transmitter sharedTransmitter] isConnected]) {
                 NSString *msg = NSLocalizedString(@"Disconnect to Flexbot?", nil);
                 [self showAlertViewWithTitle:title cancelButtonTitle:NSLocalizedString(@"Cancel", nil) okButtonTitle:NSLocalizedString(@"Disconnect", nil) message:msg tag:settings_alert_dialog_disconnect];
             }
-            else{
+            else {
                 NSString *msg = NSLocalizedString(@"Connect to Flexbot?", nil);
                 [self showAlertViewWithTitle:title cancelButtonTitle:NSLocalizedString(@"Cancel", nil) okButtonTitle:NSLocalizedString(@"Connect", nil) message:msg tag:settings_alert_dialog_connect];
             }
         }
-        else{
+        else {
             NSString *msg = NSLocalizedString(@"Connect to Flexbot?", nil);
             [self showAlertViewWithTitle:title cancelButtonTitle:NSLocalizedString(@"Cancel", nil) okButtonTitle:NSLocalizedString(@"Connect", nil) message:msg tag:settings_alert_dialog_connect];
         }
@@ -516,7 +352,7 @@ typedef enum settings_alert_dialog{
 #pragma mark UITableViewDataSource Methods
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-        return 1;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
@@ -529,9 +365,8 @@ typedef enum settings_alert_dialog{
                 return 0;
                 break;
         }
-    }
-    else{
-        return  [peripheralList count];
+    } else {
+        return self.peripheralList.count;
     }
 }
 
@@ -545,9 +380,7 @@ typedef enum settings_alert_dialog{
                 return @"";
                 break;
         }
-    }
-    else{
-       // return @"找到的BLE设备";
+    } else {
         return nil;
     }
 }
@@ -559,13 +392,13 @@ typedef enum settings_alert_dialog{
                 NSString *cellId = [NSString stringWithFormat:@"CellType%d", kChannelListTableView];
                 UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
                 if (cell == nil) {
-                    cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellId] autorelease];
+                    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellId];
                     [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
                 }
                 
-                Channel *channel = [settings channelAtIndex:[indexPath row]];
+                Channel *channel = [self.settings channelAtIndex:[indexPath row]];
                 
-                cell.textLabel.text = [NSString stringWithFormat:@"%d: %@", [channel idx] + 1, [channel name]];
+                cell.textLabel.text = [NSString stringWithFormat:@"%u: %@", [channel idx] + 1, [channel name]];
                 
                 int minOutputPpm = (int)(1500 + 500 * clip(-1 + channel.trimValue, -1, 1) * channel.outputAdjustabledRange);
                 int maxOutputPpm = (int)(1500 + 500 * clip(1 + channel.trimValue, -1, 1) * channel.outputAdjustabledRange);
@@ -579,20 +412,24 @@ typedef enum settings_alert_dialog{
             default:
                 return nil;
         }
-    }
-    else{
+    } else {
         NSString *cellId = [NSString stringWithFormat:@"CellType%d", kPeripheralDeviceListTabelView];
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
         if (cell == nil) {
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellId] autorelease];
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellId];
             [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
         }
         
-        CBPeripheral *peripheral = peripheralList[[indexPath row]];
+        CBPeripheral *peripheral = self.peripheralList[[indexPath row]];
         //        cell.textLabel.text = @"Flexbot";
         cell.textLabel.text = peripheral.name;
-//        cell.detailTextLabel.text = [NSString stringWithFormat:@"RRSI:%d", [peripheral.RSSI intValue]];
+        //        cell.detailTextLabel.text = [NSString stringWithFormat:@"RRSI:%d", [peripheral.RSSI intValue]];
         cell.detailTextLabel.text = [peripheral.identifier UUIDString];
+        if ([peripheral isConnected] && [self.selectedPeripheral isEqual:peripheral]) {
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
+        } else {
+            cell.accessoryType = UITableViewCellAccessoryNone;
+        }
         return cell;
     }
 }
@@ -600,136 +437,122 @@ typedef enum settings_alert_dialog{
 #pragma mark UITableViewDataSource Methods end
 
 
-- (void)setSwitchButton:(UIButton *)switchButton withValue:(BOOL)active
-{
-    if (active)
-    {
+- (void)setSwitchButton:(UIButton *)switchButton withValue:(BOOL)active {
+    if (active) {
         switchButton.tag = SWITCH_BUTTON_CHECKED;
         [switchButton setImage:[UIImage imageNamed:@"Btn_ON.png"] forState:UIControlStateNormal];
-    }
-    else
-    {
+    } else {
         switchButton.tag = SWITCH_BUTTON_UNCHECKED;
         [switchButton setImage:[UIImage imageNamed:@"Btn_OFF.png"] forState:UIControlStateNormal];
     }
 }
 
-- (void)toggleSwitchButton:(UIButton *)switchButton
-{
+- (void)toggleSwitchButton:(UIButton *)switchButton {
     [self setSwitchButton:switchButton withValue:(SWITCH_BUTTON_UNCHECKED == switchButton.tag) ? YES : NO];
 }
 
 
-- (void)scrollViewDidScroll:(UIScrollView *)_scrollView
-{
-	int currentPage = (int) (settingsPageScrollView.contentOffset.x + .5f * settingsPageScrollView.frame.size.width) / settingsPageScrollView.frame.size.width;
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+	NSUInteger currentPage = (int) (self.settingsPageScrollView.contentOffset.x + .5f * self.settingsPageScrollView.frame.size.width) / self.settingsPageScrollView.frame.size.width;
     
-    if (currentPage == 0)
-    {
-        [previousPageButton setHidden:YES];
-        [nextPageButton setHidden:NO];
-    }
-    else if (currentPage == (pageCount - 1))
-    {
-        [previousPageButton setHidden:NO];
-        [nextPageButton setHidden:YES];
-    }
-    else if (currentPage >= pageCount)
-    {
-        currentPage = pageCount - 1;
-        [previousPageButton setHidden:NO];
-        [nextPageButton setHidden:YES];
-    }
-    else
-    {
-        [previousPageButton setHidden:NO];
-        [nextPageButton setHidden:NO];
+    if (currentPage == 0) {
+        [self.previousPageButton setHidden:YES];
+        [self.nextPageButton setHidden:NO];
+    } else if (currentPage == (self.pageCount - 1)) {
+        [self.previousPageButton setHidden:NO];
+        [self.nextPageButton setHidden:YES];
+    } else if (currentPage >= self.pageCount) {
+        currentPage = self.pageCount - 1;
+        [self.previousPageButton setHidden:NO];
+        [self.nextPageButton setHidden:YES];
+    } else {
+        [self.previousPageButton setHidden:NO];
+        [self.nextPageButton setHidden:NO];
     }
     
-    [pageControl setCurrentPage:currentPage];
-    [pageTitleLabel setText:pageTitleArray[currentPage]];
+    [self.pageControl setCurrentPage:currentPage];
+    [self.pageTitleLabel setText:self.pageTitleArray[currentPage]];
 }
 
-- (void)showPreviousPageView{
-    int nextPage = ((int) (settingsPageScrollView.contentOffset.x + .5f * settingsPageScrollView.frame.size.width) / settingsPageScrollView.frame.size.width) - 1;
-    if (0 > nextPage)
+- (void)showPreviousPageView {
+    int nextPage = ((int) (self.settingsPageScrollView.contentOffset.x + .5f * self.settingsPageScrollView.frame.size.width) / self.settingsPageScrollView.frame.size.width) - 1;
+    if (0 > nextPage) {
         nextPage = 0;
-    CGFloat nextOffset = nextPage * settingsPageScrollView.frame.size.width;
+    }
+    CGFloat nextOffset = nextPage * self.settingsPageScrollView.frame.size.width;
     
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDuration:0.3f];
-    [settingsPageScrollView setContentOffset:CGPointMake(nextOffset, 0.f) animated:NO];
+    [self.settingsPageScrollView setContentOffset:CGPointMake(nextOffset, 0.f) animated:NO];
     [UIView commitAnimations];
 }
 
 - (void)showNextPageView{
-    int nextPage = ((int) (settingsPageScrollView.contentOffset.x + .5f * settingsPageScrollView.frame.size.width) / settingsPageScrollView.frame.size.width) + 1;
-    if (pageCount <= nextPage)
-        nextPage = pageCount - 1;
-    CGFloat nextOffset = nextPage *settingsPageScrollView.frame.size.width;
+    NSUInteger nextPage = ((int) (self.settingsPageScrollView.contentOffset.x + .5f * self.settingsPageScrollView.frame.size.width) / self.settingsPageScrollView.frame.size.width) + 1;
+    if (self.pageCount <= nextPage) {
+        nextPage = self.pageCount - 1;
+    }
+    CGFloat nextOffset = nextPage * self.settingsPageScrollView.frame.size.width;
     
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDuration:0.3f];
-    [settingsPageScrollView setContentOffset:CGPointMake(nextOffset, 0.f) animated:NO];
+    [self.settingsPageScrollView setContentOffset:CGPointMake(nextOffset, 0.f) animated:NO];
     [UIView commitAnimations];
 }
 
-- (void)resetToDefaultSettings{
-    [settings resetToDefault];
-    [settings save];
+- (void)resetToDefaultSettings {
+    [self.settings resetToDefault];
+    [self.settings save];
     
     [self updateSettingsUI];
     
-    if([_delegate respondsToSelector:@selector(settingsMenuViewController:leftHandedValueDidChange:)]){
-        [_delegate settingsMenuViewController:self leftHandedValueDidChange:settings.isLeftHanded];
+    if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:leftHandedValueDidChange:)]) {
+        [self.delegate settingsMenuViewController:self leftHandedValueDidChange:self.settings.isLeftHanded];
     }
     
-    if([_delegate respondsToSelector:@selector(settingsMenuViewController:accModeValueDidChange:)]){
-        [_delegate settingsMenuViewController:self accModeValueDidChange:settings.isAccMode];
+    if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:accModeValueDidChange:)]) {
+        [self.delegate settingsMenuViewController:self accModeValueDidChange:self.settings.isAccMode];
     }
     
-    if([_delegate respondsToSelector:@selector(settingsMenuViewController:ppmPolarityReversed:)]){
-        [_delegate settingsMenuViewController:self ppmPolarityReversed:settings.ppmPolarityIsNegative];
+    if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:ppmPolarityReversed:)]) {
+        [self.delegate settingsMenuViewController:self ppmPolarityReversed:self.settings.ppmPolarityIsNegative];
     }
     
-    
-    if([_delegate respondsToSelector:@selector(settingsMenuViewController:interfaceOpacityValueDidChange:)]){
-        [_delegate settingsMenuViewController:self interfaceOpacityValueDidChange:settings.interfaceOpacity];
+    if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:interfaceOpacityValueDidChange:)]) {
+        [self.delegate settingsMenuViewController:self interfaceOpacityValueDidChange:self.settings.interfaceOpacity];
     }
 }
 
-- (void)startConnect{
-    isTryingConnect = YES;
-    connectionStateTextLabel.text = NSLocalizedString(@"Connecting...", nil);
-    [connectionActivityIndicatorView startAnimating];
-    connectionActivityIndicatorView.hidden = NO;
-    isScanningTextLabel.hidden = YES;
+- (void)startConnect {
+    self.isTryingConnect = YES;
+    self.isTryingDisconnect = NO;
+    self.connectionStateTextLabel.text = NSLocalizedString(@"Connecting...", nil);
+    [self.connectionActivityIndicatorView startAnimating];
+    self.connectionActivityIndicatorView.hidden = NO;
+    self.isScanningTextLabel.hidden = YES;
 }
 
-- (void)switchScan{
+- (void)switchScan {
     BleSerialManager *manager = [[Transmitter sharedTransmitter] bleSerialManager];
     
     if ([manager isScanning]) {
-        [peripheralListScanButton setTitle:NSLocalizedString(@"Scan", nil) forState:UIControlStateNormal];
-        isScanningTextLabel.hidden = YES;
-        connectionActivityIndicatorView.hidden = YES;
+        [self.peripheralListScanButton setTitle:NSLocalizedString(@"Scan", nil) forState:UIControlStateNormal];
+        self.isScanningTextLabel.hidden = YES;
+        self.connectionActivityIndicatorView.hidden = YES;
         [manager stopScan];
-    }
-    else{
+    } else {
         [[[Transmitter sharedTransmitter] bleSerialManager] disconnect];
-        
         [manager scan];
-        
         if ([manager isScanning]) {
-            [peripheralListScanButton setTitle:NSLocalizedString(@"Stop Scan", nil) forState:UIControlStateNormal];
-            isScanningTextLabel.hidden = NO;
-            connectionActivityIndicatorView.hidden = NO;
-            [connectionActivityIndicatorView startAnimating];
+            [self.peripheralListScanButton setTitle:NSLocalizedString(@"Stop Scan", nil) forState:UIControlStateNormal];
+            self.isScanningTextLabel.hidden = NO;
+            self.connectionActivityIndicatorView.hidden = NO;
+            [self.connectionActivityIndicatorView startAnimating];
         }
     }
 }
 
-- (NSData *)getSimpleSetCmd:(int)cmdName{
+- (NSData *)getSimpleSetCmd:(int)cmdName {
     unsigned char cmd[6];
     cmd[0] = '$';
     cmd[1] = 'M';
@@ -748,140 +571,116 @@ typedef enum settings_alert_dialog{
 }
 
 - (IBAction)buttonClick:(id)sender {
-    if(sender == okButton){
+    if (sender == self.okButton) {
         [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationDismissSettingsMenuView object:self userInfo:nil];
-    }
-    else if(sender == previousPageButton){
+    } else if (sender == self.previousPageButton) {
         [self showPreviousPageView];
-    }
-    else if(sender == nextPageButton){
+    } else if (sender == self.nextPageButton) {
         [self showNextPageView];
-    }
-    else if(sender == defaultSettingsButton){
+    } else if (sender == self.defaultSettingsButton) {
         NSString *msg = NSLocalizedString(@"Reset to defaut settings?", nil);
         [self showAlertViewWithTitle:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) okButtonTitle:NSLocalizedString(@"Reset", nil) message:msg tag:settings_alert_dialog_default];
-    }
-    else if(sender == peripheralListScanButton){
+    } else if (sender == self.peripheralListScanButton) {
         [self switchScan];
-    }
-    else if(sender == accCalibrateButton){
+    } else if (sender == self.accCalibrateButton) {
         NSString *msg = NSLocalizedString(@"Calibrate the accelerator of Flexbot?", nil);
         [self showAlertViewWithTitle:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) okButtonTitle:NSLocalizedString(@"Calibrate", nil) message:msg tag:settings_alert_dialog_calibrate_acc];
-    }
-    else if(sender == magCalibrateButton){
+    } else if (sender == self.magCalibrateButton) {
         NSString *msg = NSLocalizedString(@"Calibrate the magnetometer of Flexbot?", nil);
         [self showAlertViewWithTitle:nil cancelButtonTitle:NSLocalizedString(@"Cancel", nil) okButtonTitle:NSLocalizedString(@"Calibrate", nil) message:msg tag:settings_alert_dialog_calibrate_mag];
-    }
-    else if(sender == upTrimButton){
+    } else if (sender == self.upTrimButton) {
         [[Transmitter sharedTransmitter] transmmitSimpleCommand:MSP_TRIM_UP];
-    }
-    else if(sender == downTrimButton){
+    } else if (sender == self.downTrimButton) {
         [[Transmitter sharedTransmitter] transmmitSimpleCommand:MSP_TRIM_DOWN];
-    }
-    else if(sender == leftTrimButton){
+    } else if (sender == self.leftTrimButton) {
         [[Transmitter sharedTransmitter] transmmitSimpleCommand:MSP_TRIM_LEFT];
-    }
-    else if(sender == rightTrimButton){
+    } else if (sender == self.rightTrimButton) {
         [[Transmitter sharedTransmitter] transmmitSimpleCommand:MSP_TRIM_RIGHT];
-    }
-    else{
+    } else {
     }
 }
 
 - (IBAction)switchButtonClick:(id)sender {
     [self toggleSwitchButton:sender];
     
-    if(sender == leftHandedSwitchButton){
-        settings.isLeftHanded = (SWITCH_BUTTON_CHECKED == [sender tag]) ? YES : NO;
-        [settings save];
+    if (sender == self.leftHandedSwitchButton) {
+        self.settings.isLeftHanded = (SWITCH_BUTTON_CHECKED == [sender tag]) ? YES : NO;
+        [self.settings save];
         
-        if([_delegate respondsToSelector:@selector(settingsMenuViewController:leftHandedValueDidChange:)]){
-            [_delegate settingsMenuViewController:self leftHandedValueDidChange:settings.isLeftHanded];
+        if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:leftHandedValueDidChange:)]) {
+            [self.delegate settingsMenuViewController:self leftHandedValueDidChange:self.settings.isLeftHanded];
         }
-    }
-    else if(sender == ppmPolarityReversedSwitchButton){
-        settings.ppmPolarityIsNegative = (SWITCH_BUTTON_CHECKED == [sender tag]) ? YES : NO;
-        [settings save];
+    } else if (sender == self.ppmPolarityReversedSwitchButton) {
+        self.settings.ppmPolarityIsNegative = (SWITCH_BUTTON_CHECKED == [sender tag]) ? YES : NO;
+        [self.settings save];
         
-        if([_delegate respondsToSelector:@selector(settingsMenuViewController:ppmPolarityReversed:)]){
-            [_delegate settingsMenuViewController:self ppmPolarityReversed:settings.ppmPolarityIsNegative];
+        if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:ppmPolarityReversed:)]) {
+            [self.delegate settingsMenuViewController:self ppmPolarityReversed:self.settings.ppmPolarityIsNegative];
         }
-    }
-    else if(sender == accModeSwitchButton){
-        settings.isAccMode = (SWITCH_BUTTON_CHECKED == [sender tag]) ? YES : NO;
-        [settings save];
-
-        if ([_delegate respondsToSelector:@selector(settingsMenuViewController:accModeValueDidChange:)]) {
-            [_delegate settingsMenuViewController:self accModeValueDidChange:settings.isAccMode];
+    } else if (sender == self.accModeSwitchButton) {
+        self.settings.isAccMode = (SWITCH_BUTTON_CHECKED == [sender tag]) ? YES : NO;
+        [self.settings save];
+        
+        if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:accModeValueDidChange:)]) {
+            [self.delegate settingsMenuViewController:self accModeValueDidChange:self.settings.isAccMode];
         }
-    }
-    else if(sender == beginnerModeSwitchButton){
-        settings.isBeginnerMode = (SWITCH_BUTTON_CHECKED == [sender tag]) ? YES : NO;
-        [settings save];
+    } else if (sender == self.beginnerModeSwitchButton) {
+        self.settings.isBeginnerMode = (SWITCH_BUTTON_CHECKED == [sender tag]) ? YES : NO;
+        [self.settings save];
         
-        if ([_delegate respondsToSelector:@selector(settingsMenuViewController:beginnerModeValueDidChange:)]) {
-            [_delegate settingsMenuViewController:self beginnerModeValueDidChange:settings.isBeginnerMode];
+        if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:beginnerModeValueDidChange:)]) {
+            [self.delegate settingsMenuViewController:self beginnerModeValueDidChange:self.settings.isBeginnerMode];
         }
-    }
-    else if(sender == headfreeModeSwitchButton){
-        settings.isHeadFreeMode = (SWITCH_BUTTON_CHECKED == [sender tag]) ? YES : NO;
+    } else if (sender == self.headfreeModeSwitchButton) {
+        self.settings.isHeadFreeMode = (SWITCH_BUTTON_CHECKED == [sender tag]) ? YES : NO;
+        [self.settings save];
         
-        [settings save];
-        
-        if ([_delegate respondsToSelector:@selector(settingsMenuViewController:headfreeModeValueDidChange:)]) {
-            [_delegate settingsMenuViewController:self headfreeModeValueDidChange:settings.isHeadFreeMode];
+        if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:headfreeModeValueDidChange:)]) {
+            [self.delegate settingsMenuViewController:self headfreeModeValueDidChange:self.settings.isHeadFreeMode];
         }
     }
 }
 
 - (IBAction)sliderRelease:(id)sender {
-    if(sender == interfaceOpacitySlider){
-        [settings save];
-
-        if([_delegate respondsToSelector:@selector(settingsMenuViewController:interfaceOpacityValueDidChange:)]){
-            [_delegate settingsMenuViewController:self interfaceOpacityValueDidChange:settings.interfaceOpacity];
+    if (sender == self.interfaceOpacitySlider) {
+        [self.settings save];
+        
+        if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:interfaceOpacityValueDidChange:)]) {
+            [self.delegate settingsMenuViewController:self interfaceOpacityValueDidChange:self.settings.interfaceOpacity];
         }
-    }
-    else if(sender == takeOffThrottleSlider){
-        [settings save];
-    }
-    else if(sender == aileronElevatorDeadBandSlider) {
-        [settings save];
-    }
-    else if(sender == rudderDeadBandSlider){
-        [settings save];
+    } else if (sender == self.takeOffThrottleSlider) {
+        [self.settings save];
+    } else if (sender == self.aileronElevatorDeadBandSlider) {
+        [self.settings save];
+    } else if (sender == self.rudderDeadBandSlider) {
+        [self.settings save];
     }
 }
 
 - (IBAction)sliderValueChanged:(id)sender {
-    if(sender == interfaceOpacitySlider){
-        interfaceOpacityLabel.text = [NSString stringWithFormat:@"%d %%", (int)interfaceOpacitySlider.value];
-        settings.interfaceOpacity = interfaceOpacitySlider.value / 100.0f;
-    }
-    else if(sender == takeOffThrottleSlider){
-        settings.takeOffThrottle = takeOffThrottleSlider.value;
+    if (sender == self.interfaceOpacitySlider) {
+        self.interfaceOpacityLabel.text = [NSString stringWithFormat:@"%d %%", (int)self.interfaceOpacitySlider.value];
+        self.settings.interfaceOpacity = self.interfaceOpacitySlider.value / 100.0f;
+    } else if (sender == self.takeOffThrottleSlider) {
+        self.settings.takeOffThrottle = self.takeOffThrottleSlider.value;
         [self updateTakeOffThrottleLabel];
-    }
-    else if(sender == aileronElevatorDeadBandSlider){ //无效区在0~kAileronElevatorMaxDeadBandRatio之间
-        settings.aileronDeadBand = kAileronElevatorMaxDeadBandRatio * aileronElevatorDeadBandSlider.value;  
-        settings.elevatorDeadBand = settings.aileronDeadBand;
+    } else if (sender == self.aileronElevatorDeadBandSlider) { //无效区在0~kAileronElevatorMaxDeadBandRatio之间
+        self.settings.aileronDeadBand = kAileronElevatorMaxDeadBandRatio * self.aileronElevatorDeadBandSlider.value;
+        self.settings.elevatorDeadBand = self.settings.aileronDeadBand;
         
         [self updateAileronElevatorDeadBandLabel];
-    }
-    else if(sender == rudderDeadBandSlider){ //无效区在0~kRudderMaxDeadBandRatio之间
-        settings.rudderDeadBand = kRudderMaxDeadBandRatio * rudderDeadBandSlider.value;
+    } else if (sender == self.rudderDeadBandSlider) { //无效区在0~kRudderMaxDeadBandRatio之间
+        self.settings.rudderDeadBand = kRudderMaxDeadBandRatio * self.rudderDeadBandSlider.value;
         [self updateRudderDeadBandLabel];
-    }
-    else {
-        
+    } else {
     }
 }
 
-- (void)handleNotificationPeripheralListDidChange{
-    [peripheralListTableView reloadData];
+- (void)handleNotificationPeripheralListDidChange {
+    [self.peripheralListTableView reloadData];
 }
 
-- (void)showAlertViewWithTitle:(NSString *)title cancelButtonTitle:(NSString *)cancelButtonTitle okButtonTitle:(NSString *)okButtonTitle message:(NSString *)message tag:(int)tag{
+- (void)showAlertViewWithTitle:(NSString *)title cancelButtonTitle:(NSString *)cancelButtonTitle okButtonTitle:(NSString *)okButtonTitle message:(NSString *)message tag:(int)tag {
     UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
                                                         message:message
                                                        delegate:self
@@ -889,20 +688,24 @@ typedef enum settings_alert_dialog{
                                               otherButtonTitles:okButtonTitle, nil];
     alertView.tag = tag;
     [alertView show];
-    [alertView release];
 }
 
 #pragma mark UIAlertViewDelegate Methods
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (buttonIndex == 1) {
         switch (alertView.tag) {
             case settings_alert_dialog_connect:
+                if ([[[Transmitter sharedTransmitter] bleSerialManager] isScanning]) { // stop scanning
+                    [self switchScan];
+                }
                 [[[Transmitter sharedTransmitter] bleSerialManager] disconnect];
-                isTryingConnect = YES;
-                [[[Transmitter sharedTransmitter] bleSerialManager] connect:selectedPeripheral];
+                self.isTryingConnect = YES;
+                self.isTryingDisconnect = NO;
+                [[[Transmitter sharedTransmitter] bleSerialManager] connect:self.selectedPeripheral];
                 break;
             case settings_alert_dialog_disconnect:
-                isTryingConnect = NO;
+                self.isTryingConnect = NO;
+                self.isTryingDisconnect = YES;
                 [[[Transmitter sharedTransmitter] bleSerialManager] disconnect];
                 break;
             case settings_alert_dialog_default:
@@ -917,8 +720,7 @@ typedef enum settings_alert_dialog{
             default:
                 break;
         }
-    }
-    else{
+    } else {
     }
 }
 #pragma mark UIAlertViewDelegate Methods end

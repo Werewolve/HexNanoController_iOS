@@ -14,8 +14,8 @@
 @interface BasicInfoManager : NSObject {
 }
 
-@property (nonatomic, retain) UITextView *debugTextView;
-@property (nonatomic, retain) OSDView *osdView;
+@property (nonatomic, strong) UITextView *debugTextView;
+@property (nonatomic, strong) OSDView *osdView;
 @property (nonatomic, readonly)  CMMotionManager *motionManager;
 
 

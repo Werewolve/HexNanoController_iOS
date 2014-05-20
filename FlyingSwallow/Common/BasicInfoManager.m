@@ -32,11 +32,5 @@ static BasicInfoManager *sharedManager;
     return _motionManager;
 }
 
-- (void)dealloc{
-	[debugTextView release];
-    [osdView release];
-    [_motionManager release];
-	[super dealloc];
-}
 
 @end

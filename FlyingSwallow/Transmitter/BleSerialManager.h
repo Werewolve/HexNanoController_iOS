@@ -32,14 +32,14 @@
 
 @interface BleSerialManager : NSObject <CBCentralManagerDelegate, CBCentralManagerDelegate, CBPeripheralDelegate>
 
-@property(nonatomic, readonly) BOOL isAvailabel; //ble是否可用
-@property(nonatomic, readonly) BOOL isConnected; //连接上Ble
-@property(nonatomic, readonly) BOOL isReady;     //当Services和Charactristic都准备就绪，就可以传输数据了
-@property(nonatomic, readonly) BOOL isScanning;
-@property(nonatomic, readonly) CBCentralManager *centralManager;
-@property(nonatomic, readonly) NSArray *bleSerialList;
-@property(nonatomic, readonly) CBPeripheral *currentBleSerial;
-@property(nonatomic, assign) id<BleSerialManagerDelegate> delegate;
+@property(nonatomic, assign, readonly) BOOL isAvailabel; //ble是否可用
+@property(nonatomic, assign, readonly) BOOL isConnected; //连接上Ble
+@property(nonatomic, assign, readonly) BOOL isReady;     //当Services和Charactristic都准备就绪，就可以传输数据了
+@property(nonatomic, assign, readonly) BOOL isScanning;
+@property(nonatomic, strong, readonly) CBCentralManager *centralManager;
+@property(nonatomic, strong, readonly) NSMutableArray *bleSerialList;
+@property(nonatomic, strong, readonly) CBPeripheral *currentBleSerial;
+@property(nonatomic, weak) id<BleSerialManagerDelegate> delegate;
 
 //当isReady为NO时，scan不执行任何操作
 -(void)scan;

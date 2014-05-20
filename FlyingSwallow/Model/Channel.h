@@ -35,26 +35,14 @@
 #define kChannelNameAUX3 @"AUX3"
 #define kChannelNameAUX4 @"AUX4"
 
-
-
-@interface Channel : NSObject{
-   
-}
-
-@property(nonatomic, readonly) NSString *name;
-
-//设置下面4个值后，都不会自动保存到持久化文件中
-
+@interface Channel : NSObject
+@property(nonatomic, strong, readonly) NSString *name;
 @property(nonatomic, assign) BOOL isReversing;
 @property(nonatomic, assign) float trimValue;
 @property(nonatomic, assign) float outputAdjustabledRange;
 @property(nonatomic, assign) float defaultOutputValue;
-
 @property(nonatomic, assign) float value;
 @property(nonatomic, assign) int idx;
-@property(nonatomic, assign) Settings *ownerSettings;
-
-
+@property(nonatomic, weak) Settings *ownerSettings;
 - (id)initWithSetting:(Settings *)settings idx:(int)idx;
-
 @end

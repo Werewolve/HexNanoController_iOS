@@ -39,7 +39,7 @@ vector<byte> requestMSPWithPayload (int msp, const string & payload) {
     
     byte checksum=0;
     
-    int payloadLength = payload.length();
+    NSUInteger payloadLength = payload.length();
     
     byte pl_size = payloadLength != 0 ? (byte)payloadLength : 0;
     
@@ -105,7 +105,7 @@ extern "C"{
 NSData *getDefaultOSDDataRequest(){
     vector<byte> requestList = requestMSPList(mainInfoRequest, kOsdInfoRequestListLen);
     
-    int requestDataSize = requestList.size();
+    NSUInteger requestDataSize = requestList.size();
     
     /*
     printf("\nrequest \n");

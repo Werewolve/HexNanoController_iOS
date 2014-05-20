@@ -18,32 +18,20 @@ enum PpmPolarity {
 typedef enum {
     TransmitterStateError = 0,
     TransmitterStateOk = 1,
-}TransmitterState;
-
+} TransmitterState;
 
 #define kNotificationTransmitterStateDidChange @"NotificationTransmitterStateDidChange"
 
-
 @interface Transmitter: NSObject <OSDDataDelegate, BleSerialManagerDelegate>
-
+@property (nonatomic, assign) TransmitterState outputState;
+@property (nonatomic, assign) TransmitterState inputState ;
+@property (nonatomic, strong) OSDData *osdData;
+@property (nonatomic, strong, readonly) BleSerialManager *bleSerialManager;
 + (Transmitter *)sharedTransmitter;
-
-//以下的方法均非线程安全
 - (BOOL)start;
 - (BOOL)stop;
-- (void)setPpmValue:(float)value atChannel:(int)channelIdx;
-
+- (void)setPpmValue:(float)value atChannel:(NSUInteger)channelIdx;
 - (BOOL)isConnected;
-
 - (BOOL)transmmitData:(NSData *)data;
 - (BOOL)transmmitSimpleCommand:(unsigned char)commandName;
-
-- (BleSerialManager *)bleSerialManager;
-
-@property(nonatomic, assign) TransmitterState outputState;
-@property(nonatomic, assign) TransmitterState inputState ;
-
-
-@property(nonatomic, retain) OSDData *osdData;
-
 @end

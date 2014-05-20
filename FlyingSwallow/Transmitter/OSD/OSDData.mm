@@ -216,7 +216,7 @@ using namespace std;
 }
 
 - (void)parseRawData:(NSData *)data{
-//    if ((currentTime - mainInfoUpdateTime) >(double)(1000 / updateFreq)* CLOCKS_PER_SEC / 1000.0) {  
+//    if ((currentTime - mainInfoUpdateTime) >(double)(1000 / updateFreq)* CLOCKS_PER_SEC / 1000.0) {
 //        printf("\n***time durantion:%lfms", (currentTime - mainInfoUpdateTime) / (float)CLOCKS_PER_SEC * 1000);
 //        
 //        mainInfoUpdateTime = currentTime;
@@ -231,7 +231,7 @@ using namespace std;
 //        }
 //    }
     
-    int byteCount = data.length;
+    NSUInteger byteCount = data.length;
     
     byte * dataPtr = (byte *)data.bytes;
     

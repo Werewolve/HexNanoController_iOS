@@ -16,6 +16,6 @@
 @property(nonatomic, assign) float roll;
 @property(nonatomic, assign) float pitch;
 
-@property(nonatomic, retain) OSDData *osdData;
+@property(nonatomic, strong) OSDData *osdData;
 
 @end

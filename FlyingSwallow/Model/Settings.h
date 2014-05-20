@@ -39,7 +39,7 @@
     NSMutableArray *_channelArray;
 }
 
-@property(nonatomic, retain) NSMutableDictionary *settingsData;
+@property(nonatomic, strong) NSMutableDictionary *settingsData;
 
 //改变以下值，都不会自动保存到持久化文件中,需要持久化，需要调用save方法
 
@@ -58,11 +58,11 @@
 
 - (id)initWithSettingsFile:(NSString *)settingsFilePath; 
 
-- (int)channelCount;
-- (Channel *)channelAtIndex:(int)i;
+- (NSUInteger)channelCount;
+- (Channel *)channelAtIndex:(NSUInteger)i;
 - (Channel *)channelByName:(NSString*)name;
 
-- (void)changeChannelFrom:(int)from to:(int)to;
+- (void)changeChannelFrom:(NSUInteger)from to:(NSUInteger)to;
 
 //持久化
 - (void)save;

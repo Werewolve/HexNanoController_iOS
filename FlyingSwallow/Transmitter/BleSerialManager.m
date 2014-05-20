@@ -11,109 +11,116 @@
 #define kSerialService           0xFFE0
 #define kSerialCharacteristic    0xFFE1
 
-@interface BleSerialManager(){
-    BOOL isTryingConnect;
-    CBCharacteristic  *serialCharacteristic;
-}
+@interface BleSerialManager()
+@property(nonatomic, assign, readwrite) BOOL isAvailabel; //ble是否可用
+@property(nonatomic, assign, readwrite) BOOL isConnected; //连接上Ble
+@property(nonatomic, assign, readwrite) BOOL isReady;     //当Services和Charactristic都准备就绪，就可以传输数据了
+@property(nonatomic, assign, readwrite) BOOL isScanning;
+@property(nonatomic, strong, readwrite) CBCentralManager *centralManager;
+@property(nonatomic, strong) NSMutableArray *bleSerialList;
+@property(nonatomic, strong) CBPeripheral *currentBleSerial;
+
+@property(nonatomic, assign) BOOL isTryingConnect;
+@property(nonatomic, strong) CBCharacteristic  *serialCharacteristic;
 
 @end
 
 @implementation BleSerialManager
 
 - (id)init{
-    if(self = [super init]){
-       _centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
-       _bleSerialList = [[NSMutableArray alloc] init];
+    self = [super init];
+    
+    if (self) {
+       self.centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
+       self.bleSerialList = [[NSMutableArray alloc] init];
     }
     return self;
 }
 
 - (BOOL)isConnected{
-    return [_currentBleSerial isConnected];
+    return [self.currentBleSerial isConnected];
 }
 
 - (void)scan{
-    if (_isAvailabel == YES && _isScanning == NO) {
-        _isScanning = YES;
+    if (self.isAvailabel == YES && self.isScanning == NO) {
+        self.isScanning = YES;
         
-        [(NSMutableArray *)_bleSerialList removeAllObjects];
+        [self.bleSerialList removeAllObjects];
         [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationPeripheralListDidChange object:self userInfo:nil];
         
-        if ([_delegate respondsToSelector:@selector(bleSerialManager:didDiscoverBleSerial:)]) {
-            [_delegate bleSerialManager:self didDiscoverBleSerial:nil];
+        if ([self.delegate respondsToSelector:@selector(bleSerialManager:didDiscoverBleSerial:)]) {
+            [self.delegate bleSerialManager:self didDiscoverBleSerial:nil];
         }
         
 //        CBUUID *serialServiceUUID = [self getSerialServiceUUID];
         
 //        NSDictionary *options = @{@"YES": CBCentralManagerScanOptionAllowDuplicatesKey};
         
-       // [_centralManager scanForPeripheralsWithServices:[NSArray arrayWithObject:serialServiceUUID]
+       // [self.centralManager scanForPeripheralsWithServices:[NSArray arrayWithObject:serialServiceUUID]
                                                     //options:options];
-        [_centralManager scanForPeripheralsWithServices:nil options:nil];
+        [self.centralManager scanForPeripheralsWithServices:nil options:nil];
         
         NSLog(@"Scanning started");
     }
 }
 
 -(void)stopScan{
-    if (_centralManager != nil) {
-        [_centralManager stopScan];
+    if (self.centralManager != nil) {
+        [self.centralManager stopScan];
     }
-    _isScanning = NO;
+    self.isScanning = NO;
 }
 
 -(void)connect:(CBPeripheral *)peripheral{
-    if (peripheral == _currentBleSerial) {
+    if (peripheral == self.currentBleSerial) {
         if ([self isConnected]) {
             return;
         }
-        if (isTryingConnect) {
+        if (self.isTryingConnect) {
             return;
         }
         
-        isTryingConnect = YES;
-        [_centralManager connectPeripheral:peripheral options:nil];
+        self.isTryingConnect = YES;
+        [self.centralManager connectPeripheral:peripheral options:nil];
     }
     else{        
         [self disconnect];
-        isTryingConnect = YES;
-        _currentBleSerial = [peripheral retain];
-        [_centralManager connectPeripheral:peripheral options:nil];
+        self.isTryingConnect = YES;
+        self.currentBleSerial = peripheral;
+        [self.centralManager connectPeripheral:peripheral options:nil];
     }
 }
 
 -(void)disconnect{
-    if (_currentBleSerial != nil) {
-        [_centralManager cancelPeripheralConnection:_currentBleSerial];
-        [_currentBleSerial release];
-        _currentBleSerial = nil;
-        [serialCharacteristic release];
-        serialCharacteristic = nil;
+    if (self.currentBleSerial != nil) {
+        [self.centralManager cancelPeripheralConnection:_currentBleSerial];
+        self.currentBleSerial = nil;
+        self.serialCharacteristic = nil;
     }
 }
 
 -(void)sendData:(NSData *)data{
-    if(serialCharacteristic == nil){
-        if ([_delegate respondsToSelector:@selector(bleSerialManagerDidFailSendData:error:)]) {
-            [_delegate bleSerialManagerDidFailSendData:self error:nil];
+    if(self.serialCharacteristic == nil){
+        if ([self.delegate respondsToSelector:@selector(bleSerialManagerDidFailSendData:error:)]) {
+            [self.delegate bleSerialManagerDidFailSendData:self error:nil];
         }
     }
     else{
-        [_currentBleSerial writeValue:data forCharacteristic:serialCharacteristic type:CBCharacteristicWriteWithoutResponse];
+        [self.currentBleSerial writeValue:data forCharacteristic:self.serialCharacteristic type:CBCharacteristicWriteWithoutResponse];
     }
 }
 
 #pragma mark CBPeripheralDelegate Methods
 - (void)centralManagerDidUpdateState:(CBCentralManager *)central{
     if (central.state == CBCentralManagerStatePoweredOn) {
-        _isAvailabel = YES;
+        self.isAvailabel = YES;
     }
     else{
-        _isAvailabel = NO;
+        self.isAvailabel = NO;
     }
     
-    if([_delegate respondsToSelector:@selector(bleSerialManager:didUpdateState:)]){
-        [_delegate bleSerialManager:self didUpdateState:_isAvailabel];
+    if([self.delegate respondsToSelector:@selector(bleSerialManager:didUpdateState:)]){
+        [self.delegate bleSerialManager:self didUpdateState:self.isAvailabel];
     }
 }
 
@@ -134,25 +141,25 @@
 //    NSLog(@"Discovered %@ at %@", peripheral.name, RSSI);
     
     
-    if (![_bleSerialList containsObject:peripheral] && ([peripheral.name isEqualToString:@"AnyFlite"] || [peripheral.name isEqualToString:@"Hex Mini"] || [peripheral.name isEqualToString:@"HMSoft"] || [peripheral.name isEqualToString:@"Hex Nano"] || [peripheral.name isEqualToString:@"Any Flite"] || [peripheral.name isEqualToString:@"Flexbot"])) {
+    if (![self.bleSerialList containsObject:peripheral] && ([peripheral.name isEqualToString:@"AnyFlite"] || [peripheral.name isEqualToString:@"Hex Mini"] || [peripheral.name isEqualToString:@"HMSoft"] || [peripheral.name isEqualToString:@"Hex Nano"] || [peripheral.name isEqualToString:@"Any Flite"] || [peripheral.name isEqualToString:@"Flexbot"])) {
         [(NSMutableArray *)_bleSerialList addObject:peripheral];
 
         [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationPeripheralListDidChange object:self userInfo:nil];
         
-        if ([_delegate respondsToSelector:@selector(bleSerialManager:didDiscoverBleSerial:)]) {
-            [_delegate bleSerialManager:self didDiscoverBleSerial:nil];
+        if ([self.delegate respondsToSelector:@selector(bleSerialManager:didDiscoverBleSerial:)]) {
+            [self.delegate bleSerialManager:self didDiscoverBleSerial:nil];
         }
 	}
 }
 
 - (void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral{
-    if (peripheral != _currentBleSerial) {  //old peripheral just do nothing
+    if (peripheral != self.currentBleSerial) {  //old peripheral just do nothing
         return;
     }
     
-    isTryingConnect = NO;
+    self.isTryingConnect = NO;
     
-    _currentBleSerial = [peripheral retain];
+    self.currentBleSerial = peripheral;
     
 //    if(_delegate != nil){
 //        if ([_delegate respondsToSelector:@selector(bleSerialManager:didConnectPeripheral:)]) {
@@ -160,8 +167,8 @@
 //        }
 //    }
     
-    [_centralManager stopScan];
-    _isScanning = NO;
+    [self.centralManager stopScan];
+    self.isScanning = NO;
     
     NSLog(@"Peripheral Connected");;
     NSLog(@"Scanning stopped");
@@ -177,31 +184,29 @@
         return;
     }
     
-    isTryingConnect = NO;
+    self.isTryingConnect = NO;
 
     NSLog(@"Failed to connect to %@. (%@)", peripheral, [error localizedDescription]);
     
-    [_currentBleSerial release];
-    _currentBleSerial = nil;
+    self.currentBleSerial = nil;
 }
 
 //当非正常断开（cancelPeripheralConnection）时，error为断开的原因，
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error{    
-    if (_currentBleSerial != nil && peripheral != _currentBleSerial) {  //old peripheral just do nothing
+    if (self.currentBleSerial != nil && peripheral != self.currentBleSerial) {  //old peripheral just do nothing
         return;
     }
     
-    isTryingConnect = NO;
+    self.isTryingConnect = NO;
     if (error != nil) {
         NSLog(@"disconnect error:%@. (%@)", peripheral, [error localizedDescription]);
     }
     
-    [_currentBleSerial release];
-    _currentBleSerial = nil;
+    self.currentBleSerial = nil;
     
-    if(_delegate != nil){
-        if ([_delegate respondsToSelector:@selector(bleSerialManager:didDisconnectPeripheral:)]) {
-            [_delegate bleSerialManager:self didDisconnectPeripheral:peripheral];
+    if(self.delegate != nil){
+        if ([self.delegate respondsToSelector:@selector(bleSerialManager:didDisconnectPeripheral:)]) {
+            [self.delegate bleSerialManager:self didDisconnectPeripheral:peripheral];
         }
     }
 }
@@ -210,39 +215,37 @@
 
 - (void)cleanup
 {
-//    // Don't do anything if we're not connected
-//    if (!_currentBleSerial.isConnected) {
-//        return;
-//    }
-//    
-//    // See if we are subscribed to a characteristic on the peripheral
-//    if (_currentBleSerial.services != nil) {
-//        for (CBService *service in _currentBleSerial.services) {
-//            if (service.characteristics != nil) {
-//                for (CBCharacteristic *characteristic in service.characteristics) {
-//                    
-//                    if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:TRANSFER_CHARACTERISTIC_UUID]]) {
-//                        if (characteristic.isNotifying) {
-//                            // It is notifying, so unsubscribe
-//                            [_currentBleSerial setNotifyValue:NO forCharacteristic:characteristic];
-//                            
-//                            // And we're done.
-//                            return;
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-//    
-//    // If we've got this far, we're connected, but we're not subscribed, so we just disconnect
-//    [self.centralManager cancelPeripheralConnection:self.discoveredPeripheral];
+    // Don't do anything if we're not connected
+    if (!self.currentBleSerial.isConnected) {
+        return;
+    }
+    
+    // See if we are subscribed to a characteristic on the peripheral
+    if (self.currentBleSerial.services != nil) {
+        for (CBService *service in self.currentBleSerial.services) {
+            if (service.characteristics != nil) {
+                for (CBCharacteristic *characteristic in service.characteristics) {
+                    if ([[characteristic.UUID UUIDString] isEqualToString:[self.serialCharacteristic.UUID UUIDString]]) {
+                        if (characteristic.isNotifying) {
+                            // It is notifying, so unsubscribe
+                            [self.currentBleSerial setNotifyValue:NO forCharacteristic:characteristic];
+                            // And we're done.
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // If we've got this far, we're connected, but we're not subscribed, so we just disconnect
+    [self.centralManager cancelPeripheralConnection:self.currentBleSerial];
 }
 
 
 #pragma mark CBPeripheralDelegate Methods
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error{
-    if (peripheral != _currentBleSerial) {  //old peripheral just do nothing
+    if (peripheral != self.currentBleSerial) {  //old peripheral just do nothing
         return;
     }
     
@@ -266,7 +269,7 @@
  *  Once this has been found, we want to subscribe to it, which lets the peripheral know we want the data it contains
  */
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error{
-    if (peripheral != _currentBleSerial) {  //old peripheral just do nothing
+    if (peripheral != self.currentBleSerial) {  //old peripheral just do nothing
         return;
     }
 
@@ -282,14 +285,13 @@
     
             NSLog(@"****begin notify value for characteritic:%@", characteristic);
             
-            [serialCharacteristic release];
-            serialCharacteristic = [characteristic retain];
+            self.serialCharacteristic = characteristic;
             
             [peripheral setNotifyValue:YES forCharacteristic:characteristic];
             
-            if(_delegate != nil){
-                if ([_delegate respondsToSelector:@selector(bleSerialManager:didConnectPeripheral:)]) {
-                    [_delegate bleSerialManager:self didConnectPeripheral:peripheral];
+            if(self.delegate != nil){
+                if ([self.delegate respondsToSelector:@selector(bleSerialManager:didConnectPeripheral:)]) {
+                    [self.delegate bleSerialManager:self didConnectPeripheral:peripheral];
                 }
             }
             
@@ -300,7 +302,7 @@
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
     
-    if (peripheral != _currentBleSerial) {  //old peripheral just do nothing
+    if (peripheral != self.currentBleSerial) {  //old peripheral just do nothing
         return;
     }
 
@@ -309,12 +311,8 @@
         return;
     }
     
-    NSString *stringFromData = [[NSString alloc] initWithData:characteristic.value encoding:NSUTF8StringEncoding];
-    
-    NSLog(@"Received: %@", stringFromData);
-    
-    if ([_delegate respondsToSelector:@selector(bleSerialManager:didReceiveData:)]) {
-        [_delegate bleSerialManager:self didReceiveData:characteristic.value];
+    if ([self.delegate respondsToSelector:@selector(bleSerialManager:didReceiveData:)]) {
+        [self.delegate bleSerialManager:self didReceiveData:characteristic.value];
     }
     
 //    // Have we got everything we need?
@@ -338,7 +336,7 @@
 
 //Invoked upon completion of a -[setNotifyValue:forCharacteristic:] request.
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
-    if (peripheral != _currentBleSerial || characteristic != serialCharacteristic) {  //old, just do nothing
+    if (peripheral != self.currentBleSerial || characteristic != self.serialCharacteristic) {  //old, just do nothing
         return;
     }
     
@@ -359,18 +357,18 @@
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
-    if (peripheral != _currentBleSerial || characteristic != serialCharacteristic) { //old do nothing
+    if (peripheral != self.currentBleSerial || characteristic != self.serialCharacteristic) { //old do nothing
         return;
     }
 
     if (error != nil) {
-        if ([_delegate respondsToSelector:@selector(bleSerialManagerDidFailSendData:error:)]) {
-            [_delegate bleSerialManagerDidFailSendData:self error:error];
+        if ([self.delegate respondsToSelector:@selector(bleSerialManagerDidFailSendData:error:)]) {
+            [self.delegate bleSerialManagerDidFailSendData:self error:error];
         }
     }
     else{
-        if ([_delegate respondsToSelector:@selector(bleSerialManagerDidSendData:)]) {
-            [_delegate bleSerialManagerDidSendData:self];
+        if ([self.delegate respondsToSelector:@selector(bleSerialManagerDidSendData:)]) {
+            [self.delegate bleSerialManagerDidSendData:self];
         }
     }
 }
@@ -396,14 +394,14 @@
 - (CBUUID *)getSerialServiceUUID{
     UInt16 serialService = [self swap:kSerialService];
     
-    NSData *serialServiceData = [[[NSData alloc] initWithBytes:(char *)&serialService length:2] autorelease];
+    NSData *serialServiceData = [[NSData alloc] initWithBytes:(char *)&serialService length:2];
     return [CBUUID UUIDWithData:serialServiceData];
 }
 
 - (CBUUID *)getSerialCharacteristicUUID{
     UInt16 serialCharacteristic_ = [self swap:kSerialCharacteristic];
     
-    NSData *serialCharacteristicData = [[[NSData alloc] initWithBytes:(char *)&serialCharacteristic_ length:2] autorelease];
+    NSData *serialCharacteristicData = [[NSData alloc] initWithBytes:(char *)&serialCharacteristic_ length:2];
     
     return [CBUUID UUIDWithData:serialCharacteristicData];
 }
@@ -411,10 +409,6 @@
 
 - (void)dealloc{
     [self disconnect];
-    [_centralManager release];
-    [_bleSerialList release];
-    [serialCharacteristic release];
-    [super dealloc];
 }
 
 @end
