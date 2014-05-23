@@ -20,41 +20,22 @@
 #import "Settings.h"
 #import "Channel.h"
 
+@interface Settings () {
+    NSMutableArray *_channelArray;
+}
+@property (nonatomic, strong) NSString *path;
+@end
+
 @implementation Settings
-@synthesize settingsData = _settingsData;
-@synthesize interfaceOpacity = _interfaceOpacity;
-@synthesize isLeftHanded = _isLeftHanded;
-@synthesize ppmPolarityIsNegative = _ppmPolarityIsNegative;
-@synthesize isHeadFreeMode = _isHeadFreeMode;
-@synthesize isAltHoldMode = _isAltHoldMode;
-@synthesize isBeginnerMode = _isBeginnerMode;
-@synthesize aileronDeadBand = _aileronDeadBand;
-@synthesize elevatorDeadBand = _elevatorDeadBand;
-@synthesize rudderDeadBand = _rudderDeadBand;
-@synthesize takeOffThrottle = _takeOffThrottle;
-@synthesize isAccMode = _isAccMode;
 
 - (id)initWithSettingsFile:(NSString *)settingsFilePath{
     self = [super init];
     
     if(self){
-        _path = settingsFilePath;
+        self.path = settingsFilePath;
         
-        _settingsData = [[NSMutableDictionary alloc] initWithContentsOfFile:_path];
-        
-        _interfaceOpacity = [_settingsData[kKeySettingsInterfaceOpacity] floatValue];
-        _isLeftHanded = [_settingsData[kKeySettingsIsLeftHanded] boolValue];
-        _isAccMode = [_settingsData[kKeySettingsIsAccMode] boolValue];
-        _ppmPolarityIsNegative = [_settingsData[kKeySettingsPpmPolarityIsNegative] boolValue];
-        _isHeadFreeMode = [_settingsData[kKeySettingsIsHeadFreeMode] boolValue];
-        _isAltHoldMode =  [_settingsData[kKeySettingsIsAltHoldMode] boolValue];
-        _isBeginnerMode = [_settingsData[kKeySettingsIsBeginnerMode] boolValue];
-        _aileronDeadBand = [_settingsData[kKeySettingsAileronDeadBand] floatValue];
-        _elevatorDeadBand = [_settingsData[kKeySettingsElevatorDeadBand] floatValue];
-        _rudderDeadBand = [_settingsData[kKeySettingsRudderDeadBand] floatValue];
-        _takeOffThrottle = [_settingsData[kKeySettingsTakeOffThrottle] floatValue];
-        
-        NSArray *channelDataArray = _settingsData[kKeySettingsChannels];
+        self.settingsData = [[NSMutableDictionary alloc] initWithContentsOfFile:_path];
+        NSArray *channelDataArray = self.settingsData[kKeySettingsChannels];
         NSUInteger channelCount = [channelDataArray count];
         _channelArray = [[NSMutableArray alloc] initWithCapacity:channelCount];
 
@@ -69,75 +50,95 @@
 }
 
 - (void)setInterfaceOpacity:(float)interfaceOpacity{
-    _interfaceOpacity = interfaceOpacity;
-    
-    _settingsData[kKeySettingsInterfaceOpacity] = @(_interfaceOpacity);
+    self.settingsData[kKeySettingsInterfaceOpacity] = @(interfaceOpacity);
+}
+
+- (float)interfaceOpacity {
+    return [self.settingsData[kKeySettingsInterfaceOpacity] floatValue];
 }
 
 - (void)setIsLeftHanded:(BOOL)isLeftHanded{
-    _isLeftHanded = isLeftHanded;
-    
-     _settingsData[kKeySettingsIsLeftHanded] = @(_isLeftHanded);
+    self.settingsData[kKeySettingsIsLeftHanded] = @(isLeftHanded);
+}
+
+- (BOOL)isLeftHanded {
+    return [self.settingsData[kKeySettingsIsLeftHanded] boolValue];
 }
 
 - (void)setIsAccMode:(BOOL)isAccMode{
-    _isAccMode = isAccMode;
-    
-    _settingsData[kKeySettingsIsAccMode] = @(_isAccMode);
+    self.settingsData[kKeySettingsIsAccMode] = @(isAccMode);
 }
 
+- (BOOL)isAccMode {
+    return [self.settingsData[kKeySettingsIsAccMode] boolValue];
+}
 
 - (void)setIsHeadFreeMode:(BOOL)isHeadFreeMode{
-    _isHeadFreeMode = isHeadFreeMode;
-    
-    _settingsData[kKeySettingsIsHeadFreeMode] = @(_isHeadFreeMode);
+    self.settingsData[kKeySettingsIsHeadFreeMode] = @(isHeadFreeMode);
+}
+
+- (BOOL)isHeadFreeMode {
+    return [self.settingsData[kKeySettingsIsHeadFreeMode] boolValue];
 }
 
 - (void)setIsAltHoldMode:(BOOL)isAltHoldMode{
-    _isAltHoldMode = isAltHoldMode;
-    
-    _settingsData[kKeySettingsIsAltHoldMode] = @(_isAltHoldMode);
+    self.settingsData[kKeySettingsIsAltHoldMode] = @(isAltHoldMode);
+}
+
+- (BOOL)isAltHoldMode {
+    return [self.settingsData[kKeySettingsIsAltHoldMode] boolValue];
 }
 
 - (void)setIsBeginnerMode:(BOOL)isBeginnerMode{
-    _isBeginnerMode = isBeginnerMode;
-    
-    _settingsData[kKeySettingsIsBeginnerMode] = @(_isBeginnerMode);
+    self.settingsData[kKeySettingsIsBeginnerMode] = @(isBeginnerMode);
+}
+
+- (BOOL)isBeginnerMode {
+    return [self.settingsData[kKeySettingsIsBeginnerMode] boolValue];
 }
 
 - (void)setPpmPolarityIsNegative:(BOOL)ppmPolarityIsNegative{
-    _ppmPolarityIsNegative = ppmPolarityIsNegative;
+    self.settingsData[kKeySettingsPpmPolarityIsNegative] = @(ppmPolarityIsNegative);
+}
 
-     _settingsData[kKeySettingsPpmPolarityIsNegative] = @(_ppmPolarityIsNegative);
+- (BOOL)ppmPolarityIsNegative {
+    return [self.settingsData[kKeySettingsPpmPolarityIsNegative] boolValue];
 }
 
 - (void)setAileronDeadBand:(float)aileronDeadBand{
-    _aileronDeadBand = aileronDeadBand;
-    
-     _settingsData[kKeySettingsAileronDeadBand] = @(_aileronDeadBand);
+    self.settingsData[kKeySettingsAileronDeadBand] = @(aileronDeadBand);
+}
+
+- (float)aileronDeadBand {
+    return [self.settingsData[kKeySettingsAileronDeadBand] floatValue];
 }
 
 - (void)setElevatorDeadBand:(float)elevatorDeadBand{
-    _elevatorDeadBand = elevatorDeadBand;
-    
-     _settingsData[kKeySettingsElevatorDeadBand] = @(_elevatorDeadBand);
+    self.settingsData[kKeySettingsElevatorDeadBand] = @(elevatorDeadBand);
+}
+
+- (float)elevatorDeadBand {
+    return [self.settingsData[kKeySettingsElevatorDeadBand] floatValue];
 }
 
 - (void)setRudderDeadBand:(float)rudderDeadBand{
-    _rudderDeadBand = rudderDeadBand;
-    
-    _settingsData[kKeySettingsRudderDeadBand] = @(_rudderDeadBand);
+    self.settingsData[kKeySettingsRudderDeadBand] = @(rudderDeadBand);
 }
 
+- (float)rudderDeadBand {
+    return [self.settingsData[kKeySettingsRudderDeadBand] floatValue];
+}
 
 - (void)setTakeOffThrottle:(float)takeOffThrottle{
-    _takeOffThrottle = takeOffThrottle;
-    
-    _settingsData[kKeySettingsTakeOffThrottle] = @(_takeOffThrottle);
+    self.settingsData[kKeySettingsTakeOffThrottle] = @(takeOffThrottle);
+}
+
+- (float)takeOffThrottle {
+    return [self.settingsData[kKeySettingsTakeOffThrottle] floatValue];
 }
 
 - (void)save{
-    [_settingsData writeToFile:_path atomically:YES];
+    [self.settingsData writeToFile:_path atomically:YES];
 }
 
 - (NSUInteger)channelCount{
@@ -167,7 +168,7 @@
 	[_channelArray removeObjectAtIndex:from];
 	[_channelArray insertObject:channel atIndex:to];
     
-    NSMutableArray *channelDataArray = (NSMutableArray *)[_settingsData valueForKey:kKeySettingsChannels];
+    NSMutableArray *channelDataArray = (NSMutableArray *)[self.settingsData valueForKey:kKeySettingsChannels];
     
 	id channelData = channelDataArray[from];
 	[channelDataArray removeObjectAtIndex:from];
@@ -183,21 +184,8 @@
     NSString *defaultSettingsFilePath = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"plist"];
     
     Settings *defaultSettings = [[Settings alloc] initWithSettingsFile:defaultSettingsFilePath];
-    
-    NSDictionary *defaultSettingsData = defaultSettings.settingsData;
-    
-    self.interfaceOpacity = [defaultSettingsData[kKeySettingsInterfaceOpacity] floatValue];
-    self.isLeftHanded = [defaultSettingsData[kKeySettingsIsLeftHanded] boolValue];
-    self.isAccMode = [defaultSettingsData[kKeySettingsIsAccMode] boolValue];
-    self.ppmPolarityIsNegative = [defaultSettingsData[kKeySettingsPpmPolarityIsNegative] boolValue];
-    self.isHeadFreeMode = [defaultSettingsData[kKeySettingsIsHeadFreeMode] boolValue];
-    self.isAltHoldMode = [defaultSettingsData[kKeySettingsIsAltHoldMode] boolValue];
-    self.isBeginnerMode = [defaultSettingsData[kKeySettingsIsBeginnerMode] boolValue];
-    self.aileronDeadBand = [defaultSettingsData[kKeySettingsAileronDeadBand] floatValue];
-    self.elevatorDeadBand = [defaultSettingsData[kKeySettingsElevatorDeadBand] floatValue];
-    self.rudderDeadBand = [defaultSettingsData[kKeySettingsRudderDeadBand] floatValue];
-    self.takeOffThrottle = [defaultSettingsData[kKeySettingsTakeOffThrottle] floatValue];
-    
+    self.settingsData = [defaultSettings.settingsData mutableCopy];
+
     NSUInteger channelCount = [defaultSettings channelCount];
     
     for(NSUInteger defaultChannelIdx = 0; defaultChannelIdx < channelCount; defaultChannelIdx++){

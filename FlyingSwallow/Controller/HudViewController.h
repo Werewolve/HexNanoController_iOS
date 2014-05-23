@@ -32,45 +32,44 @@ typedef enum{
 
 float accelero_rotation[3][3];
 
-@interface HudViewController : UIViewController<SettingMenuViewControllerDelegate>{
-    IBOutlet UILabel *batteryLevelLabel;
+@interface HudViewController : UIViewController<SettingMenuViewControllerDelegate>
+@property (nonatomic, weak) IBOutlet UILabel *batteryLevelLabel;
     
-    IBOutlet UIImageView *batteryImageView;
+@property (nonatomic, weak) IBOutlet UIImageView *batteryImageView;
 
-    IBOutlet UIButton *setttingButton;
-    IBOutlet UIButton *joystickLeftButton;
-    IBOutlet UIButton *joystickRightButton;
+@property (nonatomic, weak) IBOutlet UIButton *setttingButton;
+@property (nonatomic, weak) IBOutlet UIButton *joystickLeftButton;
+@property (nonatomic, weak) IBOutlet UIButton *joystickRightButton;
     
-    IBOutlet UIImageView *joystickLeftThumbImageView;
-    IBOutlet UIImageView *joystickLeftBackgroundImageView;
-    IBOutlet UIImageView *joystickRightThumbImageView;
-    IBOutlet UIImageView *joystickRightBackgroundImageView;
+@property (nonatomic, weak) IBOutlet UIImageView *joystickLeftThumbImageView;
+@property (nonatomic, weak) IBOutlet UIImageView *joystickLeftBackgroundImageView;
+@property (nonatomic, weak) IBOutlet UIImageView *joystickRightThumbImageView;
+@property (nonatomic, weak) IBOutlet UIImageView *joystickRightBackgroundImageView;
     
-    IBOutlet UIView *warningView;    
-    IBOutlet UILabel *warningLabel;
-    IBOutlet UILabel *statusInfoLabel;
-    IBOutlet UILabel *throttleValueLabel;
-    IBOutlet UIButton *rudderLockButton;
+@property (nonatomic, weak) IBOutlet UIView *warningView;
+@property (nonatomic, weak) IBOutlet UILabel *warningLabel;
+@property (nonatomic, weak) IBOutlet UILabel *statusInfoLabel;
+@property (nonatomic, weak) IBOutlet UILabel *throttleValueLabel;
+@property (nonatomic, weak) IBOutlet UIButton *rudderLockButton;
     
-    IBOutlet UIButton *throttleUpButton;
-    IBOutlet UIButton *throttleDownButton;
-    IBOutlet UIImageView *downIndicatorImageView;
-    IBOutlet UIImageView *upIndicatorImageView;
+@property (nonatomic, weak) IBOutlet UIButton *throttleUpButton;
+@property (nonatomic, weak) IBOutlet UIButton *throttleDownButton;
+@property (nonatomic, weak) IBOutlet UIImageView *downIndicatorImageView;
+@property (nonatomic, weak) IBOutlet UIImageView *upIndicatorImageView;
     
-    IBOutlet OSDView *osdView;
+@property (nonatomic, weak) IBOutlet OSDView *osdView;
     
     
-    IBOutlet UILabel *rollValueTextLabel;
-    IBOutlet UILabel *pitchValueTextLabel;
-    IBOutlet UILabel *altValueTextLabel;
-    IBOutlet UILabel *headAngleValueTextLabel;
+@property (nonatomic, weak) IBOutlet UILabel *rollValueTextLabel;
+@property (nonatomic, weak) IBOutlet UILabel *pitchValueTextLabel;
+@property (nonatomic, weak) IBOutlet UILabel *altValueTextLabel;
+@property (nonatomic, weak) IBOutlet UILabel *headAngleValueTextLabel;
     
-    IBOutlet UIButton *altHoldSwitchButton;
+@property (nonatomic, weak) IBOutlet UIButton *altHoldSwitchButton;
     
-    IBOutlet UIButton *helpButton;
-    
-}
+@property (nonatomic, weak) IBOutlet UIButton *helpButton;
 @property (strong, nonatomic) IBOutlet UITextView *debugTextView;
+
 - (IBAction)switchButtonClick:(id)sender;
 
 - (IBAction)joystickButtonDidTouchDown:(id)sender forEvent:(UIEvent *)event;

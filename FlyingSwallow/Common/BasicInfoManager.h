@@ -11,16 +11,9 @@
 #import <CoreMotion/CMMotionManager.h>
 
 
-@interface BasicInfoManager : NSObject {
-}
-
+@interface BasicInfoManager : NSObject
 @property (nonatomic, strong) UITextView *debugTextView;
 @property (nonatomic, strong) OSDView *osdView;
-@property (nonatomic, readonly)  CMMotionManager *motionManager;
-
-
+@property (nonatomic, readonly, strong)  CMMotionManager *motionManager;
 + (id)sharedManager;
-
-
-
 @end

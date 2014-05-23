@@ -24,13 +24,7 @@ using namespace std;
 #define HEADER_CMD   5
 #define HEADER_ERR   6
 
-
-
-
-
-
-
-@interface OSDData(){
+@interface OSDData() {
     int c_state;
     bool err_rcvd;
     byte checksum;
@@ -39,81 +33,77 @@ using namespace std;
     byte inBuf[256];
     int p;
     
-    
     float mot[8], servo[8];
     long currentTime,mainInfoUpdateTime,attitudeUpdateTime;
 }
+@property(nonatomic, readwrite, assign) int version;
 
+@property(nonatomic, readwrite, assign) int multiType;
+
+@property(nonatomic, readwrite, assign) float gyroX;
+@property(nonatomic, readwrite, assign) float gyroY;
+@property(nonatomic, readwrite, assign) float gyroZ;
+
+@property(nonatomic, readwrite, assign) float accX;
+@property(nonatomic, readwrite, assign) float accY;
+@property(nonatomic, readwrite, assign) float accZ;
+
+@property(nonatomic, readwrite, assign) float magX;
+@property(nonatomic, readwrite, assign) float magY;
+@property(nonatomic, readwrite, assign) float magZ;
+
+@property(nonatomic, readwrite, assign) float altitude;
+@property(nonatomic, readwrite, assign) float head;
+@property(nonatomic, readwrite, assign) float angleX;
+@property(nonatomic, readwrite, assign) float angleY;
+
+@property(nonatomic, readwrite, assign) int gpsSatCount;
+@property(nonatomic, readwrite, assign) int gpsLongitude;
+@property(nonatomic, readwrite, assign) int gpsLatitude;
+@property(nonatomic, readwrite, assign) int gpsAltitude;
+@property(nonatomic, readwrite, assign) int gpsDistanceToHome;
+@property(nonatomic, readwrite, assign) int gpsDirectionToHome;
+@property(nonatomic, readwrite, assign) int gpsFix;
+@property(nonatomic, readwrite, assign) int gpsUpdate;
+@property(nonatomic, readwrite, assign) int gpsSpeed;
+
+@property(nonatomic, readwrite, assign) float rcThrottle;
+@property(nonatomic, readwrite, assign) float rcYaw;
+@property(nonatomic, readwrite, assign) float rcRoll;
+@property(nonatomic, readwrite, assign) float rcPitch;
+@property(nonatomic, readwrite, assign) float rcAux1;
+@property(nonatomic, readwrite, assign) float rcAux2;
+@property(nonatomic, readwrite, assign) float rcAux3;
+@property(nonatomic, readwrite, assign) float rcAux4;
+
+@property(nonatomic, readwrite, assign) float debug1;
+@property(nonatomic, readwrite, assign) float debug2;
+@property(nonatomic, readwrite, assign) float debug3;
+@property(nonatomic, readwrite, assign) float debug4;
+
+
+@property(nonatomic, readwrite, assign) int pMeterSum;
+@property(nonatomic, readwrite, assign) int byteVbat;
+
+@property(nonatomic, readwrite, assign) int cycleTime;
+@property(nonatomic, readwrite, assign) int i2cError;
+
+@property(nonatomic, readwrite, assign) int mode;
+@property(nonatomic, readwrite, assign) int present;
 @end
 
 @implementation OSDData
 
-@synthesize version = _version;
-
-@synthesize multiType = _multiType;
-
-@synthesize gyroX = _gyroX;
-@synthesize gyroY = _gyroY;
-@synthesize gyroZ = _gyroZ;
-
-@synthesize accX = _accX;
-@synthesize accY = _accY;
-@synthesize accZ = _accZ;
-
-@synthesize magX = _magX;
-@synthesize magY = _magY;
-@synthesize magZ = _magZ;
-
-@synthesize altitude = _altitude;
-@synthesize head = _head;
-@synthesize angleX = _angleX;
-@synthesize angleY = _angleY;
-
-@synthesize gpsSatCount = _gpsSatCount;
-@synthesize gpsLongitude = _gpsLongitude;
-@synthesize gpsLatitude = _gpsLatitude;
-@synthesize gpsAltitude = _gpsAltitude;
-@synthesize gpsDistanceToHome = _gpsDistanceToHome;
-@synthesize gpsDirectionToHome = _gpsDirectionToHome;
-@synthesize gpsFix = _gpsFix;
-@synthesize gpsUpdate = _gpsUpdate;
-@synthesize gpsSpeed = _gpsSpeed;
-
-@synthesize rcThrottle = _rcThrottle;
-@synthesize rcYaw = _rcYaw;
-@synthesize rcRoll = _rcRoll;
-@synthesize rcPitch = _rcPitch;
-@synthesize rcAux1 = _rcAux1;
-@synthesize rcAux2 = _rcAux2;
-@synthesize rcAux3 = _rcAux3;
-@synthesize rcAux4 = _rcAux4;
-
-@synthesize pMeterSum = _pMeterSum;
-@synthesize byteVbat = _byteVbat;
-
-@synthesize cycleTime = _cycleTime;
-@synthesize i2cError = _i2cError;
-
-@synthesize mode = _mode;
-@synthesize present = _present;
-
-@synthesize debug1 = _debug1;
-@synthesize debug2 = _debug2;
-@synthesize debug3 = _debug3;
-@synthesize debug4 = _debug4;
-
-@synthesize delegate = _delegate;
-
 - (id)init{
     if(self =[super init]){
-        _rcThrottle = 1500;
-        _rcRoll     = 1500;
-        _rcPitch    = 1500;
-        _rcYaw      =1500;
-        _rcAux1     =1500;
-        _rcAux2     =1500;
-        _rcAux3     =1500;
-        _rcAux4     =1500;
+        self.rcThrottle = 1500;
+        self.rcRoll     = 1500;
+        self.rcPitch    = 1500;
+        self.rcYaw      =1500;
+        self.rcAux1     =1500;
+        self.rcAux2     =1500;
+        self.rcAux3     =1500;
+        self.rcAux4     =1500;
 
     }
     
@@ -122,59 +112,59 @@ using namespace std;
 
 - (id)initWithOSDData:(OSDData *)osdData{
     if(self = [super init]){
-        _version = osdData.version;
+        self.version = osdData.version;
         
-        _multiType = osdData.multiType;
+        self.multiType = osdData.multiType;
         
-        _gyroX = osdData.gyroX;
-        _gyroY = osdData.gyroY;
-        _gyroZ = osdData.gyroZ;
+        self.gyroX = osdData.gyroX;
+        self.gyroY = osdData.gyroY;
+        self.gyroZ = osdData.gyroZ;
         
-        _accX = osdData.accX;
-        _accY = osdData.accY;
-        _accZ = osdData.accZ;
+        self.accX = osdData.accX;
+        self.accY = osdData.accY;
+        self.accZ = osdData.accZ;
         
-        _magX = osdData.magX;
-        _magY = osdData.magY;
-        _magZ = osdData.magZ;
+        self.magX = osdData.magX;
+        self.magY = osdData.magY;
+        self.magZ = osdData.magZ;
         
-        _altitude = osdData.altitude;
-        _head     = osdData.head;
-        _angleX   = osdData.angleX;
-        _angleY   = osdData.angleY;
+        self.altitude = osdData.altitude;
+        self.head     = osdData.head;
+        self.angleX   = osdData.angleX;
+        self.angleY   = osdData.angleY;
         
-        _gpsSatCount  = osdData.gpsSatCount;
-        _gpsLongitude = osdData.gpsLongitude;
-        _gpsLatitude  = osdData.gpsLatitude;
-        _gpsAltitude  = osdData.gpsAltitude;
-        _gpsDistanceToHome = osdData.gpsDistanceToHome;
-        _gpsDirectionToHome = osdData.gpsDirectionToHome;
-        _gpsFix = osdData.gpsFix;
-        _gpsUpdate = osdData.gpsUpdate;
-        _gpsSpeed = osdData.gpsSpeed;
+        self.gpsSatCount  = osdData.gpsSatCount;
+        self.gpsLongitude = osdData.gpsLongitude;
+        self.gpsLatitude  = osdData.gpsLatitude;
+        self.gpsAltitude  = osdData.gpsAltitude;
+        self.gpsDistanceToHome = osdData.gpsDistanceToHome;
+        self.gpsDirectionToHome = osdData.gpsDirectionToHome;
+        self.gpsFix = osdData.gpsFix;
+        self.gpsUpdate = osdData.gpsUpdate;
+        self.gpsSpeed = osdData.gpsSpeed;
         
-        _rcThrottle = osdData.rcThrottle;
-        _rcYaw      = osdData.rcYaw;
-        _rcRoll     = osdData.rcRoll;
-        _rcPitch    = osdData.rcPitch;
-        _rcAux1     = osdData.rcAux1;
-        _rcAux2     = osdData.rcAux2;
-        _rcAux3     = osdData.rcAux3;
-        _rcAux4     = osdData.rcAux4;
+        self.rcThrottle = osdData.rcThrottle;
+        self.rcYaw      = osdData.rcYaw;
+        self.rcRoll     = osdData.rcRoll;
+        self.rcPitch    = osdData.rcPitch;
+        self.rcAux1     = osdData.rcAux1;
+        self.rcAux2     = osdData.rcAux2;
+        self.rcAux3     = osdData.rcAux3;
+        self.rcAux4     = osdData.rcAux4;
         
-        _pMeterSum = osdData.pMeterSum;
-        _byteVbat = osdData.byteVbat;
+        self.pMeterSum = osdData.pMeterSum;
+        self.byteVbat = osdData.byteVbat;
         
-        _cycleTime = osdData.cycleTime;
-        _i2cError = osdData.i2cError;
+        self.cycleTime = osdData.cycleTime;
+        self.i2cError = osdData.i2cError;
         
-        _mode = osdData.mode;
-        _present = osdData.present;
+        self.mode = osdData.mode;
+        self.present = osdData.present;
         
-        _debug1 = osdData.debug1;
-        _debug2 = osdData.debug2;
-        _debug3 = osdData.debug3;
-        _debug4 = osdData.debug4;
+        self.debug1 = osdData.debug1;
+        self.debug2 = osdData.debug2;
+        self.debug3 = osdData.debug3;
+        self.debug4 = osdData.debug4;
     }
     
     return self;
@@ -182,7 +172,7 @@ using namespace std;
 
 - (Float32)read32{
 //    uint32_t part1 = (inBuf[p++]&0xff);
-//    uint32_t part2 = ((inBuf[p++]&0xff)<<8);
+//    uint32self.t part2 = ((inBuf[p++]&0xff)<<8);
 //    uint32_t part3 = ((inBuf[p++]&0xff)<<16);
 //    uint32_t part4 = ((inBuf[p++]&0xff)<<24);
 //    
@@ -311,27 +301,27 @@ using namespace std;
     int icmd = (int)(cmd_ & 0xFF);
     switch(icmd) {
         case MSP_IDENT:
-            _version = [self read8];
-            _multiType = [self read8];
+            self.version = [self read8];
+            self.multiType = [self read8];
             [self read8]; // MSP version
             [self read32];// capability
             break;
         case MSP_STATUS:
-            _cycleTime = [self read16];
-            _i2cError  = [self read16];
-            _present   = [self read16];
-            _mode      = [self read32];
+            self.cycleTime = [self read16];
+            self.i2cError  = [self read16];
+            self.present   = [self read16];
+            self.mode      = [self read32];
             break;
         case MSP_RAW_IMU:
-            _accX = [self read16];
-            _accY = [self read16];
-            _accZ = [self read16];
-            _gyroX = [self read16] / 8;
-            _gyroY = [self read16] / 8;
-            _gyroZ = [self read16] / 8;
-            _magX = [self read16] / 3;
-            _magY = [self read16] / 3;
-            _magZ = [self read16] / 3;             
+            self.accX = [self read16];
+            self.accY = [self read16];
+            self.accZ = [self read16];
+            self.gyroX = [self read16] / 8;
+            self.gyroY = [self read16] / 8;
+            self.gyroZ = [self read16] / 8;
+            self.magX = [self read16] / 3;
+            self.magY = [self read16] / 3;
+            self.magZ = [self read16] / 3;             
             break;
         case MSP_SERVO:
             for(i=0;i<8;i++) 
@@ -342,43 +332,43 @@ using namespace std;
                 mot[i] = [self read16]; 
             break;
         case MSP_RC:
-            _rcRoll     = [self read16];
-            _rcPitch    = [self read16];
-            _rcYaw      = [self read16];
-            _rcThrottle = [self read16];    
-            _rcAux1 = [self read16];
-            _rcAux2 = [self read16];
-            _rcAux3 = [self read16];
-            _rcAux4 = [self read16];
+            self.rcRoll     = [self read16];
+            self.rcPitch    = [self read16];
+            self.rcYaw      = [self read16];
+            self.rcThrottle = [self read16];    
+            self.rcAux1 = [self read16];
+            self.rcAux2 = [self read16];
+            self.rcAux3 = [self read16];
+            self.rcAux4 = [self read16];
             break;
         case MSP_RAW_GPS:
-            _gpsFix = [self read8];
-            _gpsSatCount = [self read8];
-            _gpsLatitude = [self read32];
-            _gpsLongitude = [self read32];
-            _gpsAltitude = [self read16];
-            _gpsSpeed = [self read16]; 
+            self.gpsFix = [self read8];
+            self.gpsSatCount = [self read8];
+            self.gpsLatitude = [self read32];
+            self.gpsLongitude = [self read32];
+            self.gpsAltitude = [self read16];
+            self.gpsSpeed = [self read16]; 
             break;
         case MSP_COMP_GPS:
-            _gpsDistanceToHome = [self read16];
-            _gpsDirectionToHome = [self read16];
-            _gpsUpdate = [self read8]; 
+            self.gpsDistanceToHome = [self read16];
+            self.gpsDirectionToHome = [self read16];
+            self.gpsUpdate = [self read8]; 
             break;
         case MSP_ATTITUDE:
-            _angleX = [self read16]/10;  //[-180,180]，往右roll时，为正数
-            _angleY = [self read16]/10;  //[-180,180]，头往上仰时，为负
-            _head = [self read16]; 
+            self.angleX = [self read16]/10;  //[-180,180]，往右roll时，为正数
+            self.angleY = [self read16]/10;  //[-180,180]，头往上仰时，为负
+            self.head = [self read16]; 
             
-            if(_delegate != nil) {
-                [_delegate osdDataDidUpdateOneFrame:self];
+            if(self.delegate != nil) {
+                [self.delegate osdDataDidUpdateOneFrame:self];
             }
             break;
         case MSP_ALTITUDE:
-            _altitude = (float) [self read32]; //[self int32ToFloat:[self read32]];
+            self.altitude = (float) [self read32]; //[self int32ToFloat:[self read32]];
             break;
         case MSP_BAT:
-            _byteVbat = [self read8];
-            _pMeterSum = [self read16]; 
+            self.byteVbat = [self read8];
+            self.pMeterSum = [self read16]; 
             break;
         case MSP_RC_TUNING:
             break;
@@ -402,10 +392,10 @@ using namespace std;
             NSLog(@"set rc: %d, %d, %d, %d", [self read16], [self read16], [self read16], [self read16]);
             break;
         case MSP_DEBUG:
-            _debug1 = [self read16];
-            _debug2 = [self read16];
-            _debug3 = [self read16];
-            _debug4 = [self read16];
+            self.debug1 = [self read16];
+            self.debug2 = [self read16];
+            self.debug3 = [self read16];
+            self.debug4 = [self read16];
             break;
         default:
             NSLog(@"error: Don't know how to handle reply:%d datasize:%d", icmd, aDataSize);

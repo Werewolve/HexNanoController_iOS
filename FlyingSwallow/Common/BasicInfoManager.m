@@ -8,26 +8,25 @@
 
 #import "BasicInfoManager.h"
 
-static BasicInfoManager *sharedManager;
+@interface BasicInfoManager ()
+@property (nonatomic, readwrite, strong)  CMMotionManager *motionManager;
+@end
 
 @implementation BasicInfoManager
 
-
-@synthesize debugTextView;
-@synthesize osdView;
-@synthesize motionManager = _motionManager;
-
 + (id)sharedManager{
-	if (sharedManager == nil) {
-		sharedManager = [[super alloc] init];
-		return sharedManager;
-	}
+    static BasicInfoManager* sharedManager = nil;
+	
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+		sharedManager = [[BasicInfoManager alloc] init];
+	});
 	return sharedManager;
 }
 
 - (CMMotionManager *)motionManager{
     if (_motionManager == nil) {
-        _motionManager =  [[CMMotionManager alloc] init];
+        self.motionManager =  [[CMMotionManager alloc] init];
     }
     return _motionManager;
 }

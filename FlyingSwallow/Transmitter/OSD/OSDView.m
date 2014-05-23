@@ -43,32 +43,28 @@
 #define kWorldRefreshFreq  5
 
 
-@interface OSDView(){
-    CGContextRef context;
-    UIImage *worldImage;
-    UIImage *droneImage;
-}
+@interface OSDView()
+@property (nonatomic, assign) CGContextRef context;
+@property (nonatomic, strong) UIImage *worldImage;
+@property (nonatomic, strong) UIImage *droneImage;
 @end
 
 
 @implementation OSDView
 
-@synthesize roll = _roll;
-@synthesize pitch = _pitch;
-@synthesize osdData = _osdData;
-
-- (void)setupImages{
+- (void)setupImages {
     NSString *imagePath = [[NSBundle mainBundle] pathForResource:@"world.jpg" ofType:nil];
-    worldImage = [UIImage imageWithContentsOfFile:imagePath];
+    self.worldImage = [UIImage imageWithContentsOfFile:imagePath];
     
     imagePath = [[NSBundle mainBundle] pathForResource:@"drone.png" ofType:nil];
-    droneImage = [UIImage imageWithContentsOfFile:imagePath];
+    self.droneImage = [UIImage imageWithContentsOfFile:imagePath];
 }
 
 
-- (id)initWithOsdData:(OSDData *)data{
-    if(self = [super init]){
-        _osdData = data;
+- (id)initWithOsdData:(OSDData *)data {
+    self = [super init];
+    if(self){
+        self.osdData = data;
         [self setupImages];
     }
     return self;
@@ -76,7 +72,6 @@
  
 - (void)setOsdData:(OSDData *)osdData{
     _osdData = osdData;
-    
     [self setNeedsDisplay];
 }
 
@@ -86,8 +81,7 @@
 }
 
 
-- (id)initWithFrame:(CGRect)frame
-{
+- (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
@@ -112,10 +106,10 @@
     
     imageRect.origin = CGPointMake((self.frame.size.width - imageRect.size.width) / 2.0, (self.frame.size.height- imageRect.size.height) / 2.0);
     
-    CGContextSaveGState(context);
+    CGContextSaveGState(self.context);
     
-    CGContextScaleCTM(context, 1.0, -1.0);//2
-    CGContextTranslateCTM(context, 0, -self.frame.size.height);//4
+    CGContextScaleCTM(self.context, 1.0, -1.0);//2
+    CGContextTranslateCTM(self.context, 0, -self.frame.size.height);//4
     
     
     float lenPerPitchDegree = kAttitudeTraceLen * self.frame.size.height / 50.0;
@@ -123,7 +117,7 @@
     if(pitch > 90){
         imageRect.origin.y -= lenPerPitchDegree * (90 - (pitch - 90));
         
-        CGContextTranslateCTM(context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0 - lenPerPitchDegree * (90 - (pitch - 90))) ;
+        CGContextTranslateCTM(self.context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0 - lenPerPitchDegree * (90 - (pitch - 90))) ;
         
         float refinedRoll;
         
@@ -134,20 +128,20 @@
             refinedRoll = -180 - roll;
         }
         
-        CGContextRotateCTM(context, refinedRoll / 180.0 * M_PI);
-        CGContextTranslateCTM(context, -self.frame.size.width / 2.0, -(self.frame.size.height / 2.0 - lenPerPitchDegree * (90 - (pitch - 90))));
+        CGContextRotateCTM(self.context, refinedRoll / 180.0 * M_PI);
+        CGContextTranslateCTM(self.context, -self.frame.size.width / 2.0, -(self.frame.size.height / 2.0 - lenPerPitchDegree * (90 - (pitch - 90))));
         
         
-        CGContextTranslateCTM(context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0) ;
-        CGContextRotateCTM(context, M_PI);
-        CGContextTranslateCTM(context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0);
+        CGContextTranslateCTM(self.context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0) ;
+        CGContextRotateCTM(self.context, M_PI);
+        CGContextTranslateCTM(self.context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0);
     }
     else if(pitch < -90){
         //  imageRect.origin.y -= lenPerPitchDegree * pitch;
         
         imageRect.origin.y -= lenPerPitchDegree * (-90 - (pitch - (-90)));
         
-        CGContextTranslateCTM(context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0 - lenPerPitchDegree * (-90 - (pitch - (-90)))) ;
+        CGContextTranslateCTM(self.context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0 - lenPerPitchDegree * (-90 - (pitch - (-90)))) ;
         
         
         float refinedRoll;
@@ -159,28 +153,28 @@
             refinedRoll = -180 - roll;
         }
         
-        CGContextRotateCTM(context, refinedRoll / 180.0 * M_PI);
-        CGContextTranslateCTM(context, -self.frame.size.width / 2.0, -(self.frame.size.height / 2.0 - lenPerPitchDegree * (-90 - (pitch - (-90)))));
+        CGContextRotateCTM(self.context, refinedRoll / 180.0 * M_PI);
+        CGContextTranslateCTM(self.context, -self.frame.size.width / 2.0, -(self.frame.size.height / 2.0 - lenPerPitchDegree * (-90 - (pitch - (-90)))));
         
         
-        CGContextTranslateCTM(context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0) ;
-        CGContextRotateCTM(context, M_PI);
-        CGContextTranslateCTM(context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0);
+        CGContextTranslateCTM(self.context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0) ;
+        CGContextRotateCTM(self.context, M_PI);
+        CGContextTranslateCTM(self.context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0);
     }
     else {
         imageRect.origin.y -= lenPerPitchDegree * pitch;
         
-        CGContextTranslateCTM(context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0 - lenPerPitchDegree * pitch) ;
-        CGContextRotateCTM(context, roll / 180.0 * M_PI);
-        CGContextTranslateCTM(context, -self.frame.size.width / 2.0, -(self.frame.size.height / 2.0 - lenPerPitchDegree * pitch));
+        CGContextTranslateCTM(self.context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0 - lenPerPitchDegree * pitch) ;
+        CGContextRotateCTM(self.context, roll / 180.0 * M_PI);
+        CGContextTranslateCTM(self.context, -self.frame.size.width / 2.0, -(self.frame.size.height / 2.0 - lenPerPitchDegree * pitch));
         
     }
     
     
     
-    CGContextDrawImage(context, imageRect, image);  //将图片画到context中，如果需要需要缩放，会自动缩放，imageRect用于定义在context中的哪个地方画image
+    CGContextDrawImage(self.context, imageRect, image);  //将图片画到context中，如果需要需要缩放，会自动缩放，imageRect用于定义在context中的哪个地方画image
     
-    CGContextRestoreGState(context);
+    CGContextRestoreGState(self.context);
 }
 
 //roll的值为[-180，180],负值为飞行器往左翻滚，正值为飞行器往右翻滚；pitch的值为[-180，180],负值为头往下翻滚，正值为头往上翻滚；
@@ -194,10 +188,10 @@
     
     imageRect.origin = CGPointMake((self.frame.size.width - imageRect.size.width) / 2.0, (self.frame.size.height- imageRect.size.height) / 2.0);
     
-    CGContextSaveGState(context);
+    CGContextSaveGState(self.context);
     
-    CGContextScaleCTM(context, 1.0, -1.0);//2
-    CGContextTranslateCTM(context, 0, -self.frame.size.height);//4
+    CGContextScaleCTM(self.context, 1.0, -1.0);//2
+    CGContextTranslateCTM(self.context, 0, -self.frame.size.height);//4
     
     
     float lenPerPitchDegree = kAttitudeTraceLen * self.frame.size.height / 50.0;
@@ -205,51 +199,51 @@
     if(pitch > 90){
         imageRect.origin.y -= lenPerPitchDegree * (90 - (pitch - 90));
         
-//        CGContextTranslateCTM(context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0) ;
-//        CGContextRotateCTM(context, M_PI);
-//        CGContextTranslateCTM(context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0);
+//        CGContextTranslateCTM(self.context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0) ;
+//        CGContextRotateCTM(self.context, M_PI);
+//        CGContextTranslateCTM(self.context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0);
         
-        CGContextTranslateCTM(context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0 - lenPerPitchDegree * (90 - (pitch - 90))) ;
-        
-        
-        CGContextRotateCTM(context, (180 - roll) / 180.0 * M_PI);
+        CGContextTranslateCTM(self.context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0 - lenPerPitchDegree * (90 - (pitch - 90))) ;
         
         
-        CGContextTranslateCTM(context, -self.frame.size.width / 2.0, -(self.frame.size.height / 2.0 - lenPerPitchDegree * (90 - (pitch - 90))));
+        CGContextRotateCTM(self.context, (180 - roll) / 180.0 * M_PI);
+        
+        
+        CGContextTranslateCTM(self.context, -self.frame.size.width / 2.0, -(self.frame.size.height / 2.0 - lenPerPitchDegree * (90 - (pitch - 90))));
     }
     else if(pitch < -90){
         //  imageRect.origin.y -= lenPerPitchDegree * pitch;
         
         imageRect.origin.y -= lenPerPitchDegree * (-90 - (pitch - (-90)));
         
-//        CGContextTranslateCTM(context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0) ;
-//        CGContextRotateCTM(context, M_PI);
-//        CGContextTranslateCTM(context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0);
+//        CGContextTranslateCTM(self.context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0) ;
+//        CGContextRotateCTM(self.context, M_PI);
+//        CGContextTranslateCTM(self.context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0);
         
-        CGContextTranslateCTM(context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0 - lenPerPitchDegree * (-90 - (pitch - (-90))));
-        CGContextRotateCTM(context, roll / 180.0 * M_PI);
-        CGContextTranslateCTM(context, -self.frame.size.width / 2.0, -(self.frame.size.height / 2.0 - lenPerPitchDegree * (-90 - (pitch - (-90)))));
+        CGContextTranslateCTM(self.context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0 - lenPerPitchDegree * (-90 - (pitch - (-90))));
+        CGContextRotateCTM(self.context, roll / 180.0 * M_PI);
+        CGContextTranslateCTM(self.context, -self.frame.size.width / 2.0, -(self.frame.size.height / 2.0 - lenPerPitchDegree * (-90 - (pitch - (-90)))));
     }
     else {
         imageRect.origin.y -= lenPerPitchDegree * pitch;
         
-        CGContextTranslateCTM(context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0 - lenPerPitchDegree * pitch) ;
-        CGContextRotateCTM(context, roll / 180.0 * M_PI);
-        CGContextTranslateCTM(context, -self.frame.size.width / 2.0, -(self.frame.size.height / 2.0 - lenPerPitchDegree * pitch));
+        CGContextTranslateCTM(self.context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0 - lenPerPitchDegree * pitch) ;
+        CGContextRotateCTM(self.context, roll / 180.0 * M_PI);
+        CGContextTranslateCTM(self.context, -self.frame.size.width / 2.0, -(self.frame.size.height / 2.0 - lenPerPitchDegree * pitch));
         
     }
     
-    CGContextDrawImage(context, imageRect, image);  //将图片画到context中，如果需要需要缩放，会自动缩放，imageRect用于定义在context中的哪个地方画image
+    CGContextDrawImage(self.context, imageRect, image);  //将图片画到context中，如果需要需要缩放，会自动缩放，imageRect用于定义在context中的哪个地方画image
     
-    CGContextRestoreGState(context);
+    CGContextRestoreGState(self.context);
 }
 
 //roll的值为[-180，180],负值为飞行器往左翻滚，正值为飞行器往右翻滚；pitch的值为[-180，180],负值为头往下翻滚，正值为头往上翻滚；
 - (void)drawAttitudeTraceWithRoll:(float)roll picth:(float)pitch{
-    CGContextSetRGBStrokeColor(context, 1.0, 1.0, 1.0, 1.0);
-	CGContextSetLineWidth(context, 2.0);
+    CGContextSetRGBStrokeColor(self.context, 1.0, 1.0, 1.0, 1.0);
+	CGContextSetLineWidth(self.context, 2.0);
     
-    CGContextSaveGState(context);
+    CGContextSaveGState(self.context);
     
 
     
@@ -272,13 +266,13 @@
             refinedRoll = -180 - roll;
         }
         
-        CGContextTranslateCTM(context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0);
-        CGContextRotateCTM(context, -refinedRoll / 180.0 * M_PI);
-        CGContextTranslateCTM(context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0 );
+        CGContextTranslateCTM(self.context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0);
+        CGContextRotateCTM(self.context, -refinedRoll / 180.0 * M_PI);
+        CGContextTranslateCTM(self.context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0 );
         
-        CGContextTranslateCTM(context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0) ;
-        CGContextRotateCTM(context, M_PI);
-        CGContextTranslateCTM(context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0);
+        CGContextTranslateCTM(self.context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0) ;
+        CGContextRotateCTM(self.context, M_PI);
+        CGContextTranslateCTM(self.context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0);
         
     }
     else if(pitch < -90){
@@ -298,24 +292,24 @@
             refinedRoll = -180 - roll;
         }
         
-        CGContextTranslateCTM(context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0);
-        CGContextRotateCTM(context, -refinedRoll / 180.0 * M_PI);
-        CGContextTranslateCTM(context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0 );
+        CGContextTranslateCTM(self.context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0);
+        CGContextRotateCTM(self.context, -refinedRoll / 180.0 * M_PI);
+        CGContextTranslateCTM(self.context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0 );
         
-        CGContextTranslateCTM(context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0) ;
-        CGContextRotateCTM(context, M_PI);
-        CGContextTranslateCTM(context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0);
+        CGContextTranslateCTM(self.context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0) ;
+        CGContextRotateCTM(self.context, M_PI);
+        CGContextTranslateCTM(self.context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0);
     }
     else{
         traceMiddleValue = pitch; 
     
-        CGContextTranslateCTM(context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0);
-        CGContextRotateCTM(context, - roll / 180.0 * M_PI);
-        CGContextTranslateCTM(context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0 );
+        CGContextTranslateCTM(self.context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0);
+        CGContextRotateCTM(self.context, - roll / 180.0 * M_PI);
+        CGContextTranslateCTM(self.context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0 );
         
-//        CGContextTranslateCTM(context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0) ;
-//        CGContextRotateCTM(context, M_PI);
-//        CGContextTranslateCTM(context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0);
+//        CGContextTranslateCTM(self.context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0) ;
+//        CGContextRotateCTM(self.context, M_PI);
+//        CGContextTranslateCTM(self.context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0);
     }
     
     traceStartValue = MIN(90, traceMiddleValue + (int)(kAttitudeTraceRange / 2));
@@ -326,26 +320,26 @@
     CGPoint traceStartPos = CGPointMake(self.frame.size.width * kAttitudeTraceX,  self.frame.size.height / 2.0 -  self.frame.size.height * kAttitudeTraceLen / 2.0);
     //CGPoint traceEndPos = CGPointMake(traceStartPos.x, traceStartPos.y + self.frame.size.height * kAttitudeTraceLen);
     
-    CGContextMoveToPoint(context, traceStartPos.x, traceStartPos.y);
-    //CGContextAddLineToPoint(context, traceEndPos.x, traceEndPos.y);
+    CGContextMoveToPoint(self.context, traceStartPos.x, traceStartPos.y);
+    //CGContextAddLineToPoint(self.context, traceEndPos.x, traceEndPos.y);
     
     CGPoint tickStartPos,tickEndPos;
     
     float tickLen =  (kAttitudeTraceInterval / (float)kAttitudeTraceTicksPerInterval / (float)kAttitudeTraceRange) * (self.frame.size.height * kAttitudeTraceLen);
     
-    CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0);
+    CGContextSetRGBFillColor(self.context, 1.0, 1.0, 1.0, 1.0);
     
     // Some initial setup for our text drawing needs.
     // First, we will be doing our drawing in Helvetica-36pt with the MacRoman encoding.
     // This is an 8-bit encoding that can reference standard ASCII characters
     // and many common characters used in the Americas and Western Europe.
-    CGContextSelectFont(context, "Helvetica", 14.0, kCGEncodingMacRoman);
+    CGContextSelectFont(self.context, "Helvetica", 14.0, kCGEncodingMacRoman);
     // Next we set the text matrix to flip our text upside down. We do this because the context itself
     // is flipped upside down relative to the expected orientation for drawing text (much like the case for drawing Images & PDF).
-    CGContextSetTextMatrix(context, CGAffineTransformMakeScale(1.0, -1.0));
+    CGContextSetTextMatrix(self.context, CGAffineTransformMakeScale(1.0, -1.0));
     // And now we actually draw some text. This screen will demonstrate the typical drawing modes used.
     
-    CGContextSetTextDrawingMode(context, kCGTextFill);
+    CGContextSetTextDrawingMode(self.context, kCGTextFill);
     
     float yOffset = (kAttitudeTraceRange / 2.0 - (traceStartValue - traceMiddleValue)) / (float)kAttitudeTraceRange * self.frame.size.height * kAttitudeTraceLen;
     
@@ -356,49 +350,49 @@
             tickEndPos = CGPointMake(traceStartPos.x + kAttitudeTraceIntervalMarkLen / 2, (traceStartPos.y + yOffset + tickIdx * tickLen));
             NSString *traceValueStr = [NSString stringWithFormat:@"%d", traceValue];
             CGPoint traceValueStrPos = CGPointMake(tickEndPos.x + 5, tickEndPos.y + 4);
-            CGContextShowTextAtPoint(context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr UTF8String], traceValueStr.length);
+            CGContextShowTextAtPoint(self.context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr UTF8String], traceValueStr.length);
             
             traceValueStrPos = CGPointMake(tickStartPos.x - 25, tickEndPos.y + 4);
-            CGContextShowTextAtPoint(context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr UTF8String], traceValueStr.length);
+            CGContextShowTextAtPoint(self.context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr UTF8String], traceValueStr.length);
             
-            CGContextMoveToPoint(context, tickStartPos.x, tickStartPos.y);
-            CGContextAddLineToPoint(context, tickEndPos.x, tickEndPos.y);
+            CGContextMoveToPoint(self.context, tickStartPos.x, tickStartPos.y);
+            CGContextAddLineToPoint(self.context, tickEndPos.x, tickEndPos.y);
         }
         else if(traceValue % kAttitudeTraceTicksPerInterval == 0){
             tickStartPos = CGPointMake(traceStartPos.x - kAttitudeTraceIntervalMarkLen / 3, (traceStartPos.y + yOffset + tickIdx * tickLen));
             tickEndPos = CGPointMake(traceStartPos.x + kAttitudeTraceIntervalMarkLen / 3, (traceStartPos.y + yOffset + tickIdx * tickLen));
             
-            CGContextMoveToPoint(context, tickStartPos.x, tickStartPos.y);
-            CGContextAddLineToPoint(context, tickEndPos.x, tickEndPos.y);
+            CGContextMoveToPoint(self.context, tickStartPos.x, tickStartPos.y);
+            CGContextAddLineToPoint(self.context, tickEndPos.x, tickEndPos.y);
         }
         else{//小刻度
             if(kOrientationTraceNeesDrawTicks){
                 tickStartPos = CGPointMake(traceStartPos.x -  kAttitudeTraceTickMarkLen / 2, (traceStartPos.y + yOffset + tickIdx * tickLen));
                 tickEndPos = CGPointMake(traceStartPos.x + kAttitudeTraceTickMarkLen / 2, (traceStartPos.y + yOffset + tickIdx * tickLen));
                 
-                CGContextMoveToPoint(context, tickStartPos.x, tickStartPos.y);
-                CGContextAddLineToPoint(context, tickEndPos.x, tickEndPos.y);
+                CGContextMoveToPoint(self.context, tickStartPos.x, tickStartPos.y);
+                CGContextAddLineToPoint(self.context, tickEndPos.x, tickEndPos.y);
             }
         }
         
         tickIdx++;
     }
     
-    CGContextStrokePath(context);
+    CGContextStrokePath(self.context);
     
-    CGContextRestoreGState(context);
+    CGContextRestoreGState(self.context);
 }
 
 //roll的值为[-180，180],负值为飞行器往左翻滚，正值为飞行器往右翻滚；pitch的值为[-180，180],负值为头往下翻滚，正值为头往上翻滚；
 - (void)drawAttitudeTraceWithRoll2:(float)roll picth:(float)pitch{
-    CGContextSetRGBStrokeColor(context, 1.0, 1.0, 1.0, 1.0);
-	CGContextSetLineWidth(context, 2.0);
+    CGContextSetRGBStrokeColor(self.context, 1.0, 1.0, 1.0, 1.0);
+	CGContextSetLineWidth(self.context, 2.0);
     
-    CGContextSaveGState(context);
+    CGContextSaveGState(self.context);
     
-    CGContextTranslateCTM(context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0);
-    CGContextRotateCTM(context, - roll / 180.0 * M_PI);
-    CGContextTranslateCTM(context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0 );
+    CGContextTranslateCTM(self.context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0);
+    CGContextRotateCTM(self.context, - roll / 180.0 * M_PI);
+    CGContextTranslateCTM(self.context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0 );
     
     int traceMiddleValue, traceStartValue, traceEndValue, tickStepValue;
     
@@ -423,9 +417,9 @@
     }
     
 //    if (pitch > 90 || pitch < -90) {
-//        CGContextTranslateCTM(context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0) ;
-//        CGContextRotateCTM(context, M_PI);
-//        CGContextTranslateCTM(context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0);
+//        CGContextTranslateCTM(self.context,self.frame.size.width / 2.0 , self.frame.size.height / 2.0) ;
+//        CGContextRotateCTM(self.context, M_PI);
+//        CGContextTranslateCTM(self.context, -self.frame.size.width / 2.0, -self.frame.size.height / 2.0);
 //    }
     
     traceStartValue = MIN(90, traceMiddleValue + (int)(kAttitudeTraceRange / 2));
@@ -436,26 +430,26 @@
     CGPoint traceStartPos = CGPointMake(self.frame.size.width * kAttitudeTraceX,  self.frame.size.height / 2.0 -  self.frame.size.height * kAttitudeTraceLen / 2.0);
     CGPoint traceEndPos = CGPointMake(traceStartPos.x, traceStartPos.y + self.frame.size.height * kAttitudeTraceLen);
     
-    CGContextMoveToPoint(context, traceStartPos.x, traceStartPos.y);
-    CGContextAddLineToPoint(context, traceEndPos.x, traceEndPos.y);
+    CGContextMoveToPoint(self.context, traceStartPos.x, traceStartPos.y);
+    CGContextAddLineToPoint(self.context, traceEndPos.x, traceEndPos.y);
     
     CGPoint tickStartPos,tickEndPos;
     
     float tickLen =  (kAttitudeTraceInterval / (float)kAttitudeTraceTicksPerInterval / (float)kAttitudeTraceRange) * (self.frame.size.height * kAttitudeTraceLen);
     
-    CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0);
+    CGContextSetRGBFillColor(self.context, 1.0, 1.0, 1.0, 1.0);
     
     // Some initial setup for our text drawing needs.
     // First, we will be doing our drawing in Helvetica-36pt with the MacRoman encoding.
     // This is an 8-bit encoding that can reference standard ASCII characters
     // and many common characters used in the Americas and Western Europe.
-    CGContextSelectFont(context, "Helvetica", 14.0, kCGEncodingMacRoman);
+    CGContextSelectFont(self.context, "Helvetica", 14.0, kCGEncodingMacRoman);
     // Next we set the text matrix to flip our text upside down. We do this because the context itself
     // is flipped upside down relative to the expected orientation for drawing text (much like the case for drawing Images & PDF).
-    CGContextSetTextMatrix(context, CGAffineTransformMakeScale(1.0, -1.0));
+    CGContextSetTextMatrix(self.context, CGAffineTransformMakeScale(1.0, -1.0));
     // And now we actually draw some text. This screen will demonstrate the typical drawing modes used.
     
-    CGContextSetTextDrawingMode(context, kCGTextFill);
+    CGContextSetTextDrawingMode(self.context, kCGTextFill);
     
     float yOffset = (kAttitudeTraceRange / 2.0 - (traceStartValue - traceMiddleValue)) / (float)kAttitudeTraceRange * self.frame.size.height * kAttitudeTraceLen;
     
@@ -466,72 +460,72 @@
             tickEndPos = CGPointMake(traceStartPos.x + kAttitudeTraceIntervalMarkLen / 2, (traceStartPos.y + yOffset + tickIdx * tickLen));
             NSString *traceValueStr = [NSString stringWithFormat:@"%d", traceValue];
             CGPoint traceValueStrPos = CGPointMake(tickEndPos.x + 5, tickEndPos.y + 4);
-            CGContextShowTextAtPoint(context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr UTF8String], traceValueStr.length);
+            CGContextShowTextAtPoint(self.context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr UTF8String], traceValueStr.length);
             
             traceValueStrPos = CGPointMake(tickStartPos.x - 25, tickEndPos.y + 4);
-            CGContextShowTextAtPoint(context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr UTF8String], traceValueStr.length);
+            CGContextShowTextAtPoint(self.context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr UTF8String], traceValueStr.length);
             
-            CGContextMoveToPoint(context, tickStartPos.x, tickStartPos.y);
-            CGContextAddLineToPoint(context, tickEndPos.x, tickEndPos.y);
+            CGContextMoveToPoint(self.context, tickStartPos.x, tickStartPos.y);
+            CGContextAddLineToPoint(self.context, tickEndPos.x, tickEndPos.y);
         }
         else if(traceValue % kAttitudeTraceTicksPerInterval == 0){
             tickStartPos = CGPointMake(traceStartPos.x - kAttitudeTraceIntervalMarkLen / 3, (traceStartPos.y + yOffset + tickIdx * tickLen));
             tickEndPos = CGPointMake(traceStartPos.x + kAttitudeTraceIntervalMarkLen / 3, (traceStartPos.y + yOffset + tickIdx * tickLen));
             
-            CGContextMoveToPoint(context, tickStartPos.x, tickStartPos.y);
-            CGContextAddLineToPoint(context, tickEndPos.x, tickEndPos.y);
+            CGContextMoveToPoint(self.context, tickStartPos.x, tickStartPos.y);
+            CGContextAddLineToPoint(self.context, tickEndPos.x, tickEndPos.y);
         }
         else{//小刻度
             if(kOrientationTraceNeesDrawTicks){
                 tickStartPos = CGPointMake(traceStartPos.x -  kAttitudeTraceTickMarkLen / 2, (traceStartPos.y + yOffset + tickIdx * tickLen));
                 tickEndPos = CGPointMake(traceStartPos.x + kAttitudeTraceTickMarkLen / 2, (traceStartPos.y + yOffset + tickIdx * tickLen));
                 
-                CGContextMoveToPoint(context, tickStartPos.x, tickStartPos.y);
-                CGContextAddLineToPoint(context, tickEndPos.x, tickEndPos.y);
+                CGContextMoveToPoint(self.context, tickStartPos.x, tickStartPos.y);
+                CGContextAddLineToPoint(self.context, tickEndPos.x, tickEndPos.y);
             }
         }
         
         tickIdx++;
     }
     
-    CGContextStrokePath(context);
+    CGContextStrokePath(self.context);
     
-    CGContextRestoreGState(context);
+    CGContextRestoreGState(self.context);
 }
 
 
 - (void)drawAltitudeTrace:(float)altitude{
-    CGContextSetRGBStrokeColor(context, 1.0, 1.0, 1.0, 1.0);
-	CGContextSetLineWidth(context, 2.0);
+    CGContextSetRGBStrokeColor(self.context, 1.0, 1.0, 1.0, 1.0);
+	CGContextSetLineWidth(self.context, 2.0);
     
-    CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0);
+    CGContextSetRGBFillColor(self.context, 1.0, 1.0, 1.0, 1.0);
     
     // Some initial setup for our text drawing needs.
     // First, we will be doing our drawing in Helvetica-36pt with the MacRoman encoding.
     // This is an 8-bit encoding that can reference standard ASCII characters
     // and many common characters used in the Americas and Western Europe.
-    CGContextSelectFont(context, "Helvetica", 14.0, kCGEncodingMacRoman);
+    CGContextSelectFont(self.context, "Helvetica", 14.0, kCGEncodingMacRoman);
     // Next we set the text matrix to flip our text upside down. We do this because the context itself
     // is flipped upside down relative to the expected orientation for drawing text (much like the case for drawing Images & PDF).
-    CGContextSetTextMatrix(context, CGAffineTransformMakeScale(1.0, -1.0));
+    CGContextSetTextMatrix(self.context, CGAffineTransformMakeScale(1.0, -1.0));
     // And now we actually draw some text. This screen will demonstrate the typical drawing modes used.
     
-    CGContextSetTextDrawingMode(context, kCGTextFill);
+    CGContextSetTextDrawingMode(self.context, kCGTextFill);
     
     
     CGPoint traceStartPos = CGPointMake(self.frame.size.width * kAltitudeTraceX, self.frame.size.height * kAltitudeTraceY);
     CGPoint traceEndPos = CGPointMake(traceStartPos.x, traceStartPos.y + self.frame.size.height * kAltitudeTraceLen);
     
-    CGContextShowTextAtPoint(context, traceStartPos.x, traceStartPos.y - 5, "m", 1);
+    CGContextShowTextAtPoint(self.context, traceStartPos.x, traceStartPos.y - 5, "m", 1);
     
     
     CGPoint middlePoint = CGPointMake(traceStartPos.x, traceStartPos.y + (traceEndPos.y - traceStartPos.y) / 2.0);
     NSString *altitudeValueStr = [NSString stringWithFormat:@"%.1f", altitude / 10.0];
-    CGContextShowTextAtPoint(context, middlePoint.x -30, middlePoint.y + 2,[altitudeValueStr UTF8String], altitudeValueStr.length);
+    CGContextShowTextAtPoint(self.context, middlePoint.x -30, middlePoint.y + 2,[altitudeValueStr UTF8String], altitudeValueStr.length);
     
     
-    CGContextMoveToPoint(context, traceStartPos.x, traceStartPos.y);
-    CGContextAddLineToPoint(context, traceEndPos.x, traceEndPos.y);
+    CGContextMoveToPoint(self.context, traceStartPos.x, traceStartPos.y);
+    CGContextAddLineToPoint(self.context, traceEndPos.x, traceEndPos.y);
     
     int traceMiddleValue = (int)(altitude * 10); //+ rand() % 10;
     int traceStartValue = traceMiddleValue + (int)(kAltitudeTraceRange / 2);  
@@ -552,48 +546,48 @@
             tickEndPos = CGPointMake(traceStartPos.x + kAltitudeTraceIntervalMarkLen, (traceStartPos.y + tickIdx * tickLen));
             NSString *traceValueStr = [NSString stringWithFormat:@"%.1f", traceValue / 10.0];
             CGPoint traceValueStrPos = CGPointMake(tickEndPos.x + 5, tickEndPos.y + 4);
-            CGContextShowTextAtPoint(context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr UTF8String], traceValueStr.length);
+            CGContextShowTextAtPoint(self.context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr UTF8String], traceValueStr.length);
         }
         else{//小刻度
             tickEndPos = CGPointMake(traceStartPos.x + kAltitudeTraceTickMarkLen, (traceStartPos.y + tickIdx * tickLen));
         }
         
-        CGContextMoveToPoint(context, tickStartPos.x, tickStartPos.y);
-        CGContextAddLineToPoint(context, tickEndPos.x, tickEndPos.y);
+        CGContextMoveToPoint(self.context, tickStartPos.x, tickStartPos.y);
+        CGContextAddLineToPoint(self.context, tickEndPos.x, tickEndPos.y);
         
         tickIdx++;
     }
     
-    CGContextStrokePath(context);
+    CGContextStrokePath(self.context);
 }
 
 - (void)drawDrone{
-    CGImageRef image = droneImage.CGImage;
+    CGImageRef image = self.droneImage.CGImage;
     
     CGRect imageRect;
-	imageRect.size = CGSizeMake(self.frame.size.width * kDroneWidth, droneImage.size.height / droneImage.size.width * self.frame.size.width * kDroneWidth);
+	imageRect.size = CGSizeMake(self.frame.size.width * kDroneWidth, self.droneImage.size.height / self.droneImage.size.width * self.frame.size.width * kDroneWidth);
     imageRect.origin = CGPointMake(self.frame.size.width / 2.0 - imageRect.size.width / 2.0, self.frame.size.height / 2.0 - imageRect.size.height);
     
-    CGContextSaveGState(context);
+    CGContextSaveGState(self.context);
     
-    CGContextScaleCTM(context, 1.0, -1.0);//2
-    CGContextTranslateCTM(context, 0, -self.frame.size.height);//4
+    CGContextScaleCTM(self.context, 1.0, -1.0);//2
+    CGContextTranslateCTM(self.context, 0, -self.frame.size.height);//4
     
-    CGContextDrawImage(context, imageRect, image);  //将图片画到context中，如果需要需要缩放，会自动缩放，imageRect用于定义在context中的哪个地方画image
+    CGContextDrawImage(self.context, imageRect, image);  //将图片画到context中，如果需要需要缩放，会自动缩放，imageRect用于定义在context中的哪个地方画image
     
-    CGContextRestoreGState(context);
+    CGContextRestoreGState(self.context);
 }
 
 //orientation的值范围[0, 360]
 - (void)drawOrientationTrace:(float)orientation{
-    CGContextSetRGBStrokeColor(context, 1.0, 1.0, 1.0, 1.0);
-	CGContextSetLineWidth(context, 2.0);
+    CGContextSetRGBStrokeColor(self.context, 1.0, 1.0, 1.0, 1.0);
+	CGContextSetLineWidth(self.context, 2.0);
     
     CGPoint traceStartPos = CGPointMake(self.frame.size.width * kOrientationTraceX, self.frame.size.height * kOrientationTraceY);
     CGPoint traceEndPos = CGPointMake(traceStartPos.x+ self.frame.size.width * kOrientationTraceLen, traceStartPos.y);
     
-    CGContextMoveToPoint(context, traceStartPos.x, traceStartPos.y);
-    CGContextAddLineToPoint(context, traceEndPos.x, traceEndPos.y);
+    CGContextMoveToPoint(self.context, traceStartPos.x, traceStartPos.y);
+    CGContextAddLineToPoint(self.context, traceEndPos.x, traceEndPos.y);
     
     int traceMiddleValue = (int)(orientation) + rand() % 30; 
     int traceStartValue = traceMiddleValue - (int)(kOrientationTraceRange / 2);  
@@ -605,19 +599,19 @@
     
     float tickLen = (kOrientationTraceInterval / (float)kOrientationTraceTicksPerInterval / (float)kOrientationTraceRange) * (self.frame.size.width * kOrientationTraceLen);
     
-    CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0);
+    CGContextSetRGBFillColor(self.context, 1.0, 1.0, 1.0, 1.0);
     // Some initial setup for our text drawing needs.
     // First, we will be doing our drawing in Helvetica-36pt with the MacRoman encoding.
     // This is an 8-bit encoding that can reference standard ASCII characters
     // and many common characters used in the Americas and Western Europe.
-    CGContextSelectFont(context, "Helvetica", 13.0, kCGEncodingMacRoman);
+    CGContextSelectFont(self.context, "Helvetica", 13.0, kCGEncodingMacRoman);
     // Next we set the text matrix to flip our text upside down. We do this because the context itself
     // is flipped upside down relative to the expected orientation for drawing text (much like the case for drawing Images & PDF).
-    CGContextSetTextMatrix(context, CGAffineTransformMakeScale(1.0, -1.0));
+    CGContextSetTextMatrix(self.context, CGAffineTransformMakeScale(1.0, -1.0));
     
     // And now we actually draw some text. This screen will demonstrate the typical drawing modes used.
     
-    CGContextSetTextDrawingMode(context, kCGTextFill);
+    CGContextSetTextDrawingMode(self.context, kCGTextFill);
     
     for(int traceValue = traceStartValue, tickIdx = 0; traceValue <= traceEndValue; traceValue += tickStepValue, tickIdx++){
         tickStartPos = CGPointMake(traceStartPos.x  + tickIdx * tickLen, traceStartPos.y);
@@ -658,26 +652,26 @@
             }
             
             CGPoint traceValueStrPos = CGPointMake(tickEndPos.x - 4, tickEndPos.y - 2);
-            CGContextShowTextAtPoint(context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr UTF8String], traceValueStr.length);
+            CGContextShowTextAtPoint(self.context, traceValueStrPos.x, traceValueStrPos.y,[traceValueStr UTF8String], traceValueStr.length);
             
-            CGContextMoveToPoint(context, tickStartPos.x, tickStartPos.y);
-            CGContextAddLineToPoint(context, tickEndPos.x, tickEndPos.y); 
+            CGContextMoveToPoint(self.context, tickStartPos.x, tickStartPos.y);
+            CGContextAddLineToPoint(self.context, tickEndPos.x, tickEndPos.y); 
             
-            CGContextMoveToPoint(context, tickStartPos.x, tickStartPos.y);
-            CGContextAddLineToPoint(context, tickEndPos.x, tickEndPos.y); 
+            CGContextMoveToPoint(self.context, tickStartPos.x, tickStartPos.y);
+            CGContextAddLineToPoint(self.context, tickEndPos.x, tickEndPos.y); 
         }
         else{//小刻度
             if(kOrientationTraceNeesDrawTicks){
                 tickEndPos = CGPointMake(traceStartPos.x + tickIdx * tickLen, traceStartPos.y -  kOrientationTraceTickMarkLen);
-                CGContextMoveToPoint(context, tickStartPos.x, tickStartPos.y);
-                CGContextAddLineToPoint(context, tickEndPos.x, tickEndPos.y);
+                CGContextMoveToPoint(self.context, tickStartPos.x, tickStartPos.y);
+                CGContextAddLineToPoint(self.context, tickEndPos.x, tickEndPos.y);
             }
         }
         
         
     }
     
-    CGContextStrokePath(context);
+    CGContextStrokePath(self.context);
 }
 
 
@@ -687,7 +681,7 @@
 
 
 -(void)drawRect:(CGRect)rect{
-    context= UIGraphicsGetCurrentContext();
+    self.context= UIGraphicsGetCurrentContext();
     
 //    float roll = 10 - rand()% 20;
 //    float pitch = 10 - rand()% 20;

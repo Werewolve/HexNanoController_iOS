@@ -45,47 +45,46 @@
 static inline float sign(float value)
 {
 	float result = 1.0;
-	if(value < 0)
+	if (value < 0)
 		result = -1.0;
 	
 	return result;
 }
 
 
-@interface HudViewController (){
-    CGPoint joystickRightCurrentPosition, joystickLeftCurrentPosition;
-    CGPoint joystickRightInitialPosition, joystickLeftInitialPosition;
-    BOOL buttonRightPressed, buttonLeftPressed;
-    CGPoint rightCenter, leftCenter;
+@interface HudViewController ()
+@property (nonatomic, assign) CGPoint joystickRightCurrentPosition, joystickLeftCurrentPosition;
+@property (nonatomic, assign) CGPoint joystickRightInitialPosition, joystickLeftInitialPosition;
+@property (nonatomic, assign) BOOL buttonRightPressed, buttonLeftPressed;
+@property (nonatomic, assign) CGPoint rightCenter, leftCenter;
     
-    float joystickAlpha;
+@property (nonatomic, assign) float joystickAlpha;
     
-    BOOL isLeftHanded;
-    BOOL accModeEnabled;
-    BOOL accModeReady;
+@property (nonatomic, assign) BOOL isLeftHanded;
+@property (nonatomic, assign) BOOL accModeEnabled;
+@property (nonatomic, assign) BOOL accModeReady;
     
-    float rightJoyStickOperableRadius;
-    float leftJoyStickOperableRadius;
+@property (nonatomic, assign) float rightJoyStickOperableRadius;
+@property (nonatomic, assign) float leftJoyStickOperableRadius;
     
-    BOOL isTransmitting;
+@property (nonatomic, assign) BOOL isTransmitting;
     
-    BOOL rudderIsLocked;
-    BOOL throttleIsLocked;
+@property (nonatomic, assign) BOOL rudderIsLocked;
+@property (nonatomic, assign) BOOL throttleIsLocked;
     
-    CGPoint rudderLockButtonCenter;
-    CGPoint throttleUpButtonCenter;
-    CGPoint throttleDownButtonCenter;
-    CGPoint upIndicatorImageViewCenter;
-    CGPoint downIndicatorImageViewCenter;
+@property (nonatomic, assign) CGPoint rudderLockButtonCenter;
+@property (nonatomic, assign) CGPoint throttleUpButtonCenter;
+@property (nonatomic, assign) CGPoint throttleDownButtonCenter;
+@property (nonatomic, assign) CGPoint upIndicatorImageViewCenter;
+@property (nonatomic, assign) CGPoint downIndicatorImageViewCenter;
     
-    CGPoint leftHandedRudderLockButtonCenter;
-    CGPoint leftHandedThrottleUpButtonCenter;
-    CGPoint leftHandedThrottleDownButtonCenter;
-    CGPoint leftHandedUpIndicatorImageViewCenter;
-    CGPoint leftHandedDownIndicatorImageViewCenter;
+@property (nonatomic, assign) CGPoint leftHandedRudderLockButtonCenter;
+@property (nonatomic, assign) CGPoint leftHandedThrottleUpButtonCenter;
+@property (nonatomic, assign) CGPoint leftHandedThrottleDownButtonCenter;
+@property (nonatomic, assign) CGPoint leftHandedUpIndicatorImageViewCenter;
+@property (nonatomic, assign) CGPoint leftHandedDownIndicatorImageViewCenter;
     
-    NSMutableDictionary *blockViewDict;
-}
+@property (nonatomic, strong) NSMutableDictionary *blockViewDict;
 
 @property(nonatomic, strong) Channel *aileronChannel;
 @property(nonatomic, strong) Channel *elevatorChannel;
@@ -96,7 +95,6 @@ static inline float sign(float value)
 @property(nonatomic, strong) Channel *aux3Channel;
 @property(nonatomic, strong) Channel *aux4Channel;
 
-
 @property(nonatomic, strong) Settings *settings;
 
 @property(nonatomic, strong) SettingsMenuViewController *settingMenuVC;
@@ -106,61 +104,41 @@ static inline float sign(float value)
 
 
 @implementation HudViewController
-@synthesize debugTextView;
-@synthesize aileronChannel = _aileronChannel;
-@synthesize elevatorChannel = _elevatorChannel;
-@synthesize rudderChannel = _rudderChannel;
-@synthesize throttleChannel = _throttleChannel;
-@synthesize aux1Channel = _aux1Channel;
-@synthesize aux2Channel = _aux2Channel;
-@synthesize aux3Channel = _aux3Channel;
-@synthesize aux4Channel = _aux4Channel;
 
-
-
-@synthesize settings = _settings;
-
-@synthesize settingMenuVC = _settingMenuVC;
-@synthesize helpVC = _helpVC;
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
     return (interfaceOrientation == UIInterfaceOrientationLandscapeLeft);
 }
 
-- (NSUInteger)supportedInterfaceOrientations{
+- (NSUInteger)supportedInterfaceOrientations {
     return UIInterfaceOrientationMaskLandscapeLeft;
 }
 
-- (BOOL)shouldAutorotate{
+- (BOOL)shouldAutorotate {
     return YES;
 }
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismissSettingsMenuView) name:kNotificationDismissSettingsMenuView object:nil];
-        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismissHelpView) name:kNotificationDismissHelpView object:nil];
         
         NSString *documentsDir= NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
         NSString *userSettingsFilePath = [documentsDir stringByAppendingPathComponent:@"Settings.plist"];
         
-        _settings = [[Settings alloc] initWithSettingsFile:userSettingsFilePath];
+        self.settings = [[Settings alloc] initWithSettingsFile:userSettingsFilePath];
         UIDevice *device = [UIDevice currentDevice];
         device.batteryMonitoringEnabled = YES;
         [device addObserver:self forKeyPath:@"batteryLevel" options:NSKeyValueObservingOptionNew context:nil];
         
         CMMotionManager *motionManager = [[BasicInfoManager sharedManager] motionManager];
         
-        if(motionManager.gyroAvailable == 0 && motionManager.accelerometerAvailable == 1)
-        {
+        if (motionManager.gyroAvailable == 0 && motionManager.accelerometerAvailable == 1) {
             //Only accelerometer
             motionManager.accelerometerUpdateInterval = 1.0 / 40;
             [motionManager startAccelerometerUpdates];
             NSLog(@"ACCELERO     [OK]");
-        } else if (motionManager.deviceMotionAvailable == 1){
+        } else if (motionManager.deviceMotionAvailable == 1) {
             //Accelerometer + gyro
             motionManager.deviceMotionUpdateInterval = 1.0 / 40;
             [motionManager startDeviceMotionUpdates];
@@ -168,11 +146,10 @@ static inline float sign(float value)
             NSLog(@"GYRO         [OK]");
         } else {
             NSLog(@"DEVICE MOTION ERROR - DISABLE");
-            accModeEnabled = FALSE;
+            self.accModeEnabled = FALSE;
         }
         
         [self setAcceleroRotationWithPhi:0.0 withTheta:0.0 withPsi:0.0];
-        
         
         [NSTimer scheduledTimerWithTimeInterval:(NSTimeInterval)(1.0 / 40) target:self selector:@selector(motionDataHandler) userInfo:nil repeats:YES];
     }
@@ -182,52 +159,52 @@ static inline float sign(float value)
 - (void)viewDidLoad{
     [super viewDidLoad];
     
-    rudderLockButtonCenter = rudderLockButton.center;
-    throttleUpButtonCenter = throttleUpButton.center;
-    throttleDownButtonCenter = throttleDownButton.center;
-    upIndicatorImageViewCenter = upIndicatorImageView.center;
-    downIndicatorImageViewCenter = downIndicatorImageView.center;
+    self.rudderLockButtonCenter = self.rudderLockButton.center;
+    self.throttleUpButtonCenter = self.throttleUpButton.center;
+    self.throttleDownButtonCenter = self.throttleDownButton.center;
+    self.upIndicatorImageViewCenter = self.upIndicatorImageView.center;
+    self.downIndicatorImageViewCenter = self.downIndicatorImageView.center;
     
     float hudFrameWidth = [[UIScreen mainScreen] bounds].size.height;
     
-    leftHandedRudderLockButtonCenter = CGPointMake(hudFrameWidth - rudderLockButtonCenter.x, rudderLockButtonCenter.y);
-    leftHandedThrottleUpButtonCenter = CGPointMake(hudFrameWidth - throttleUpButtonCenter.x, throttleUpButtonCenter.y);
-    leftHandedThrottleDownButtonCenter = CGPointMake(hudFrameWidth - throttleDownButtonCenter.x, throttleDownButtonCenter.y);
-    leftHandedUpIndicatorImageViewCenter = CGPointMake(hudFrameWidth - upIndicatorImageViewCenter.x, upIndicatorImageViewCenter.y);
-    leftHandedDownIndicatorImageViewCenter = CGPointMake(hudFrameWidth - downIndicatorImageViewCenter.x, downIndicatorImageViewCenter.y);
+    self.leftHandedRudderLockButtonCenter = CGPointMake(hudFrameWidth - self.rudderLockButtonCenter.x, self.rudderLockButtonCenter.y);
+    self.leftHandedThrottleUpButtonCenter = CGPointMake(hudFrameWidth - self.throttleUpButtonCenter.x, self.throttleUpButtonCenter.y);
+    self.leftHandedThrottleDownButtonCenter = CGPointMake(hudFrameWidth - self.throttleDownButtonCenter.x, self.throttleDownButtonCenter.y);
+    self.leftHandedUpIndicatorImageViewCenter = CGPointMake(hudFrameWidth - self.upIndicatorImageViewCenter.x, self.upIndicatorImageViewCenter.y);
+    self.leftHandedDownIndicatorImageViewCenter = CGPointMake(hudFrameWidth - self.downIndicatorImageViewCenter.x, self.downIndicatorImageViewCenter.y);
         
     if (UIUserInterfaceIdiomPad == UI_USER_INTERFACE_IDIOM()) {
-        rightJoyStickOperableRadius =  115;
-        leftJoyStickOperableRadius  =  115;
+        self.rightJoyStickOperableRadius =  115;
+        self.leftJoyStickOperableRadius  =  115;
     }
     else{
-        rightJoyStickOperableRadius =  70;
-        leftJoyStickOperableRadius  =  70;
+        self.rightJoyStickOperableRadius =  70;
+        self.leftJoyStickOperableRadius  =  70;
     }
 
-    _aileronChannel = [_settings channelByName:kChannelNameAileron];
-    _elevatorChannel = [_settings channelByName:kChannelNameElevator];
-    _rudderChannel = [_settings channelByName:kChannelNameRudder];
-    _throttleChannel = [_settings channelByName:kChannelNameThrottle];
-    _aux1Channel = [_settings channelByName:kChannelNameAUX1];
-    _aux2Channel = [_settings channelByName:kChannelNameAUX2];
-    _aux3Channel = [_settings channelByName:kChannelNameAUX3];
-    _aux4Channel = [_settings channelByName:kChannelNameAUX4];
+    self.aileronChannel = [self.settings channelByName:kChannelNameAileron];
+    self.elevatorChannel = [self.settings channelByName:kChannelNameElevator];
+    self.rudderChannel = [self.settings channelByName:kChannelNameRudder];
+    self.throttleChannel = [self.settings channelByName:kChannelNameThrottle];
+    self.aux1Channel = [self.settings channelByName:kChannelNameAUX1];
+    self.aux2Channel = [self.settings channelByName:kChannelNameAUX2];
+    self.aux3Channel = [self.settings channelByName:kChannelNameAUX3];
+    self.aux4Channel = [self.settings channelByName:kChannelNameAUX4];
 
-	rightCenter = CGPointMake(joystickRightThumbImageView.frame.origin.x + (joystickRightThumbImageView.frame.size.width / 2), joystickRightThumbImageView.frame.origin.y + (joystickRightThumbImageView.frame.size.height / 2));
-	joystickRightInitialPosition = CGPointMake(rightCenter.x - (joystickRightBackgroundImageView.frame.size.width / 2), rightCenter.y - (joystickRightBackgroundImageView.frame.size.height / 2));
-	leftCenter = CGPointMake(joystickLeftThumbImageView.frame.origin.x + (joystickLeftThumbImageView.frame.size.width / 2), joystickLeftThumbImageView.frame.origin.y + (joystickLeftThumbImageView.frame.size.height / 2));
-	joystickLeftInitialPosition = CGPointMake(leftCenter.x - (joystickLeftBackgroundImageView.frame.size.width / 2), leftCenter.y - (joystickLeftBackgroundImageView.frame.size.height / 2));
+	self.rightCenter = CGPointMake(self.joystickRightThumbImageView.frame.origin.x + (self.joystickRightThumbImageView.frame.size.width / 2), self.joystickRightThumbImageView.frame.origin.y + (self.joystickRightThumbImageView.frame.size.height / 2));
+	self.joystickRightInitialPosition = CGPointMake(self.rightCenter.x - (self.joystickRightBackgroundImageView.frame.size.width / 2), self.rightCenter.y - (self.joystickRightBackgroundImageView.frame.size.height / 2));
+	self.leftCenter = CGPointMake(self.joystickLeftThumbImageView.frame.origin.x + (self.joystickLeftThumbImageView.frame.size.width / 2), self.joystickLeftThumbImageView.frame.origin.y + (self.joystickLeftThumbImageView.frame.size.height / 2));
+	self.joystickLeftInitialPosition = CGPointMake(self.leftCenter.x - (self.joystickLeftBackgroundImageView.frame.size.width / 2), self.leftCenter.y - (self.joystickLeftBackgroundImageView.frame.size.height / 2));
     
-	joystickLeftCurrentPosition = joystickLeftInitialPosition;
-	joystickRightCurrentPosition = joystickRightInitialPosition;
+	self.joystickLeftCurrentPosition = self.joystickLeftInitialPosition;
+	self.joystickRightCurrentPosition = self.joystickRightInitialPosition;
 	
     
-    joystickAlpha = _settings.interfaceOpacity;
+    self.joystickAlpha = self.settings.interfaceOpacity;
     
-	//joystickAlpha = MIN(joystickRightBackgroundImageView.alpha, joystickRightThumbImageView.alpha);
-	joystickRightBackgroundImageView.alpha = joystickRightThumbImageView.alpha = joystickAlpha;
-	joystickLeftBackgroundImageView.alpha = joystickLeftThumbImageView.alpha = joystickAlpha;
+	//self.joystickAlpha = MIN(self.joystickRightBackgroundImageView.alpha, self.joystickRightThumbImageView.alpha);
+	self.joystickRightBackgroundImageView.alpha = self.joystickRightThumbImageView.alpha = self.joystickAlpha;
+	self.joystickLeftBackgroundImageView.alpha = self.joystickLeftThumbImageView.alpha = self.joystickAlpha;
 	
 	[self setBattery:(int)([UIDevice currentDevice].batteryLevel * 100)];
     
@@ -241,41 +218,38 @@ static inline float sign(float value)
     
     [self updateJoysticksForAccModeChanged];
     
-    if(isTransmitting == NO){
+    if (self.isTransmitting == NO) {
         [self startTransmission];
     }
     
-    if(blockViewDict == nil){
-        blockViewDict = [[NSMutableDictionary alloc] init];
+    if (self.blockViewDict == nil) {
+        self.blockViewDict = [[NSMutableDictionary alloc] init];
     }
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkTransmitterState) name:kNotificationTransmitterStateDidChange object:nil];
     
-    [[BasicInfoManager sharedManager] setDebugTextView:debugTextView];
-    [[BasicInfoManager sharedManager] setOsdView:osdView];
+//    [[BasicInfoManager sharedManager] setDebugTextView:debugTextView];
+    [[BasicInfoManager sharedManager] setOsdView:self.osdView];
 
-    warningLabel.text = NSLocalizedString(@"not connected", nil);
+    self.warningLabel.text = NSLocalizedString(@"not connected", nil);
     
-    [self setSwitchButton:altHoldSwitchButton withValue:_settings.isAltHoldMode];
+    [self setSwitchButton:self.altHoldSwitchButton withValue:self.settings.isAltHoldMode];
     
-    if (_settings.isHeadFreeMode) {
-        [_aux1Channel setValue:1];
-    }
-    else{
-        [_aux1Channel setValue:-1];
+    if (self.settings.isHeadFreeMode) {
+        [self.aux1Channel setValue:1];
+    } else {
+        [self.aux1Channel setValue:-1];
     }
 
-    if(_settings.isAltHoldMode){
-        [_aux2Channel setValue:1];
-    }
-    else{
-        [_aux2Channel setValue:-1];
+    if (self.settings.isAltHoldMode) {
+        [self.aux2Channel setValue:1];
+    } else {
+        [self.aux2Channel setValue:-1];
     }
     
     [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(updateUI) userInfo:nil repeats:YES];
     
-    
-    if (_settings.isBeginnerMode) {
+    if (self.settings.isBeginnerMode) {
         UIAlertView *alertView = [[UIAlertView alloc]       initWithTitle:NSLocalizedString(@"Beginner Mode", nil)
                 message:NSLocalizedString(@"Beginner Mode Info", nil)
                                                            delegate:self
@@ -285,44 +259,10 @@ static inline float sign(float value)
     }
 }
 
-
-- (void)viewDidUnload
-{
-    setttingButton = nil;
-    joystickLeftButton = nil;
-    joystickRightButton = nil;
-    joystickLeftThumbImageView = nil;
-    joystickLeftBackgroundImageView = nil;
-    joystickRightThumbImageView = nil;
-    joystickRightBackgroundImageView = nil;
-    batteryLevelLabel = nil;
-    batteryImageView = nil;
-    _settingMenuVC = nil;
-    _helpVC = nil;
-    warningView = nil;
-    warningLabel = nil;
-    rudderLockButton = nil;
-    statusInfoLabel = nil;
-    throttleUpButton = nil;
-    throttleDownButton = nil;
-    downIndicatorImageView = nil;
-    upIndicatorImageView = nil;
-    throttleValueLabel = nil;
-    [self setDebugTextView:nil];
-    osdView = nil;
-    rollValueTextLabel = nil;
-    pitchValueTextLabel = nil;
-    altValueTextLabel = nil;
-    headAngleValueTextLabel = nil;
-    altHoldSwitchButton = nil;
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-}
-
 - (void)didReceiveMemoryWarning{
     [super didReceiveMemoryWarning];
-    _settingMenuVC = nil;
-    _helpVC = nil;
+    self.settingMenuVC = nil;
+    self.helpVC = nil;
 }
 
 - (void)dealloc {
@@ -345,39 +285,38 @@ static inline float sign(float value)
 #pragma mark SettingsMenuViewControllerDelegate Methods
 
 - (void)settingsMenuViewController:(SettingsMenuViewController *)ctrl interfaceOpacityValueDidChange:(float)newValue{
-    joystickAlpha = newValue;
-    joystickLeftBackgroundImageView.alpha = joystickAlpha;
-    joystickLeftThumbImageView.alpha = joystickAlpha;
-    joystickRightBackgroundImageView.alpha = joystickAlpha;
-    joystickRightThumbImageView.alpha = joystickAlpha;
+    self.joystickAlpha = newValue;
+    self.joystickLeftBackgroundImageView.alpha = self.joystickAlpha;
+    self.joystickLeftThumbImageView.alpha = self.joystickAlpha;
+    self.joystickRightBackgroundImageView.alpha = self.joystickAlpha;
+    self.joystickRightThumbImageView.alpha = self.joystickAlpha;
 
 }
 
 - (void)settingsMenuViewController:(SettingsMenuViewController *)ctrl leftHandedValueDidChange:(BOOL)enabled{
-    isLeftHanded = enabled;
+    self.isLeftHanded = enabled;
     
-    [self josystickButtonDidTouchUp:joystickLeftButton forEvent:nil];
-    [self josystickButtonDidTouchUp:joystickRightButton forEvent:nil];
+    [self josystickButtonDidTouchUp:self.joystickLeftButton forEvent:nil];
+    [self josystickButtonDidTouchUp:self.joystickRightButton forEvent:nil];
 
-    if(isLeftHanded){
-        joystickLeftThumbImageView.image = [UIImage imageNamed:@"Joystick_Manuel_RETINA.png"];
-        joystickRightThumbImageView.image = [UIImage imageNamed:@"Joystick_Gyro_RETINA.png"];
+    if (self.isLeftHanded) {
+        self.joystickLeftThumbImageView.image = [UIImage imageNamed:@"Joystick_Manuel_RETINA.png"];
+        self.joystickRightThumbImageView.image = [UIImage imageNamed:@"Joystick_Gyro_RETINA.png"];
         
-        rudderLockButton.center       = leftHandedRudderLockButtonCenter;
-        throttleUpButton.center       = leftHandedThrottleUpButtonCenter;
-        throttleDownButton.center     = leftHandedThrottleDownButtonCenter;
-        upIndicatorImageView.center   = leftHandedUpIndicatorImageViewCenter;
-        downIndicatorImageView.center = leftHandedDownIndicatorImageViewCenter; 
-    }
-    else{
-        joystickLeftThumbImageView.image = [UIImage imageNamed:@"Joystick_Gyro_RETINA.png"];
-        joystickRightThumbImageView.image = [UIImage imageNamed:@"Joystick_Manuel_RETINA.png"];
+        self.rudderLockButton.center       = self.leftHandedRudderLockButtonCenter;
+        self.throttleUpButton.center       = self.leftHandedThrottleUpButtonCenter;
+        self.throttleDownButton.center     = self.leftHandedThrottleDownButtonCenter;
+        self.upIndicatorImageView.center   = self.leftHandedUpIndicatorImageViewCenter;
+        self.downIndicatorImageView.center = self.leftHandedDownIndicatorImageViewCenter;
+    } else {
+        self.joystickLeftThumbImageView.image = [UIImage imageNamed:@"Joystick_Gyro_RETINA.png"];
+        self.joystickRightThumbImageView.image = [UIImage imageNamed:@"Joystick_Manuel_RETINA.png"];
         
-        rudderLockButton.center       = rudderLockButtonCenter;
-        throttleUpButton.center       = throttleUpButtonCenter;
-        throttleDownButton.center     = throttleDownButtonCenter;
-        upIndicatorImageView.center   = upIndicatorImageViewCenter;
-        downIndicatorImageView.center = downIndicatorImageViewCenter; 
+        self.rudderLockButton.center       = self.rudderLockButtonCenter;
+        self.throttleUpButton.center       = self.throttleUpButtonCenter;
+        self.throttleDownButton.center     = self.throttleDownButtonCenter;
+        self.upIndicatorImageView.center   = self.upIndicatorImageViewCenter;
+        self.downIndicatorImageView.center = self.downIndicatorImageViewCenter;
     }
     
     [self updateJoysticksForAccModeChanged];
@@ -386,15 +325,15 @@ static inline float sign(float value)
 - (void)settingsMenuViewController:(SettingsMenuViewController *)ctrl accModeValueDidChange:(BOOL)enabled{
     CMMotionManager *motionManager = [[BasicInfoManager sharedManager] motionManager];
     
-    if(motionManager.gyroAvailable == 0 && motionManager.accelerometerAvailable == 1){
-        accModeEnabled = enabled;
+    if (motionManager.gyroAvailable == 0 && motionManager.accelerometerAvailable == 1) {
+        self.accModeEnabled = enabled;
         //Accelero ok
-    } else if (motionManager.deviceMotionAvailable == 1){
-        accModeEnabled = enabled;
+    } else if (motionManager.deviceMotionAvailable == 1) {
+        self.accModeEnabled = enabled;
         //Accelero + gyro ok
     } else {
         //Not gyro and not accelero
-        accModeEnabled = FALSE;
+        self.accModeEnabled = FALSE;
     }
     
     [self updateJoysticksForAccModeChanged];
@@ -405,11 +344,10 @@ static inline float sign(float value)
 }
 
 - (void)settingsMenuViewController:(SettingsMenuViewController *)ctrl headfreeModeValueDidChange:(BOOL)enabled{
-    if (_settings.isHeadFreeMode) {
-        [_aux1Channel setValue:1];
-    }
-    else{
-        [_aux1Channel setValue:-1];
+    if (self.settings.isHeadFreeMode) {
+        [self.aux1Channel setValue:1];
+    } else {
+        [self.aux1Channel setValue:-1];
     }
 }
 
@@ -423,14 +361,15 @@ static inline float sign(float value)
 -(void)blockJoystickHudForTakingOff{
 	NSString *blockViewIdentifier = [NSString stringWithFormat:@"%d",  ViewBlockJoyStickHud];
 	
-	if([blockViewDict valueForKey:blockViewIdentifier] != nil)
+	if ([self.blockViewDict valueForKey:blockViewIdentifier] != nil) {
 		return;
+    }
     
     CGRect blockViewPart1Frame = self.view.frame;
     blockViewPart1Frame.origin.x = 0;
     blockViewPart1Frame.origin.y = 0;
     blockViewPart1Frame.size.width = [[UIScreen mainScreen] bounds].size.height;
-    blockViewPart1Frame.size.height = joystickLeftButton.frame.origin.y + joystickLeftButton.frame.size.height;
+    blockViewPart1Frame.size.height = self.joystickLeftButton.frame.origin.y + self.joystickLeftButton.frame.size.height;
     
 	BlockViewStyle1 *blockViewPart1 = [[BlockViewStyle1 alloc] initWithFrame:blockViewPart1Frame];
 	blockViewPart1.backgroundColor = [UIColor colorWithWhite:1 alpha:0];
@@ -439,44 +378,45 @@ static inline float sign(float value)
 	UIView *blockView = blockViewPart1;
     
 	[self.view addSubview:blockView];
-	[blockViewDict setValue:blockView forKey:[NSString stringWithFormat:@"%d",  ViewBlockJoyStickHud]];
+	[self.blockViewDict setValue:blockView forKey:[NSString stringWithFormat:@"%d",  ViewBlockJoyStickHud]];
 	
 }
 
 - (void)unblockJoystickHudForTakingOff:(BOOL)animated{
 	NSString *blockViewIdentifier = [NSString stringWithFormat:@"%d",  ViewBlockJoyStickHud];
-	UIView *blockView = [blockViewDict valueForKey:blockViewIdentifier];
+	UIView *blockView = [self.blockViewDict valueForKey:blockViewIdentifier];
 	
-	if(blockView == nil)
+	if (blockView == nil) {
 		return;
+    }
 	
 	if (animated == YES) {
 		[UIView animateWithDuration:1
 						 animations:^{
 							 blockView.alpha = 0;
-						 } completion:^(BOOL finished){
+						 } completion:^(BOOL finished) {
 							 [blockView removeFromSuperview];
-							 [blockViewDict removeObjectForKey:blockViewIdentifier];
+							 [self.blockViewDict removeObjectForKey:blockViewIdentifier];
 						 }
 		 ];
-	}
-	else {
+	} else {
 		[blockView removeFromSuperview];
-		[blockViewDict removeObjectForKey:blockViewIdentifier];
+		[self.blockViewDict removeObjectForKey:blockViewIdentifier];
 	}
 }
 
 -(void)blockJoystickHudForStopping{
 	NSString *blockViewIdentifier = [NSString stringWithFormat:@"%d",  ViewBlockJoyStickHud2];
 	
-	if([blockViewDict valueForKey:blockViewIdentifier] != nil)
+	if ([self.blockViewDict valueForKey:blockViewIdentifier] != nil) {
 		return;
+    }
     
     CGRect blockViewPart1Frame = self.view.frame;
     blockViewPart1Frame.origin.x = 0;
-    blockViewPart1Frame.origin.y = joystickLeftButton.frame.origin.y;
+    blockViewPart1Frame.origin.y = self.joystickLeftButton.frame.origin.y;
     blockViewPart1Frame.size.width = [[UIScreen mainScreen] bounds].size.height;
-    blockViewPart1Frame.size.height = joystickLeftButton.frame.origin.y + joystickLeftButton.frame.size.height - joystickLeftButton.frame.origin.y;
+    blockViewPart1Frame.size.height = self.joystickLeftButton.frame.origin.y + self.joystickLeftButton.frame.size.height - self.joystickLeftButton.frame.origin.y;
     
 	BlockViewStyle1 *blockViewPart1 = [[BlockViewStyle1 alloc] initWithFrame:blockViewPart1Frame];
 	blockViewPart1.backgroundColor = [UIColor colorWithWhite:1 alpha:0];
@@ -486,71 +426,68 @@ static inline float sign(float value)
     
     
 	[self.view addSubview:blockView];
-	[blockViewDict setValue:blockView forKey:[NSString stringWithFormat:@"%d",  ViewBlockJoyStickHud2]];
+	[self.blockViewDict setValue:blockView forKey:[NSString stringWithFormat:@"%d",  ViewBlockJoyStickHud2]];
 	
 }
 
 - (void)unblockJoystickHudForStopping:(BOOL)animated{
 	NSString *blockViewIdentifier = [NSString stringWithFormat:@"%d",  ViewBlockJoyStickHud2];
-	UIView *blockView = [blockViewDict valueForKey:blockViewIdentifier];
+	UIView *blockView = [self.blockViewDict valueForKey:blockViewIdentifier];
 	
-	if(blockView == nil)
+	if (blockView == nil) {
 		return;
+    }
 	
 	if (animated == YES) {
 		[UIView animateWithDuration:1
 						 animations:^{
 							 blockView.alpha = 0;
-						 } completion:^(BOOL finished){
+						 } completion:^(BOOL finished) {
 							 [blockView removeFromSuperview];
-							 [blockViewDict removeObjectForKey:blockViewIdentifier];
+							 [self.blockViewDict removeObjectForKey:blockViewIdentifier];
 						 }
 		 ];
-	}
-	else {
+	} else {
 		[blockView removeFromSuperview];
-		[blockViewDict removeObjectForKey:blockViewIdentifier];
+		[self.blockViewDict removeObjectForKey:blockViewIdentifier];
 	}
 }
 
 - (void)updateStatusInfoLabel{
-    if(throttleIsLocked){
-        if(rudderIsLocked){
-            statusInfoLabel.text = NSLocalizedString(@"Throttle Rudder Locked", nil);
-        }
-        else {
-            statusInfoLabel.text = NSLocalizedString(@"Throttle Locked", nil);
+    if (self.throttleIsLocked) {
+        if (self.rudderIsLocked) {
+            self.statusInfoLabel.text = NSLocalizedString(@"Throttle Rudder Locked", nil);
+        } else {
+            self.statusInfoLabel.text = NSLocalizedString(@"Throttle Locked", nil);
         }
     }
     else {
-        if(rudderIsLocked){
-            statusInfoLabel.text = NSLocalizedString(@"Rudder Locked", nil);
-        }
-        else {
-            statusInfoLabel.text = @"";
+        if (self.rudderIsLocked) {
+            self.statusInfoLabel.text = NSLocalizedString(@"Rudder Locked", nil);
+        } else {
+            self.statusInfoLabel.text = @"";
         }
     }
 }
 
 - (void)updateJoystickCenter{
-    rightCenter = CGPointMake(joystickRightInitialPosition.x + (joystickRightBackgroundImageView.frame.size.width / 2), joystickRightInitialPosition.y +  (joystickRightBackgroundImageView.frame.size.height / 2));
-    leftCenter = CGPointMake(joystickLeftInitialPosition.x + (joystickLeftBackgroundImageView.frame.size.width / 2), joystickLeftInitialPosition.y +  (joystickLeftBackgroundImageView.frame.size.height / 2));
+    self.rightCenter = CGPointMake(self.joystickRightInitialPosition.x + (self.joystickRightBackgroundImageView.frame.size.width / 2), self.joystickRightInitialPosition.y +  (self.joystickRightBackgroundImageView.frame.size.height / 2));
+    self.leftCenter = CGPointMake(self.joystickLeftInitialPosition.x + (self.joystickLeftBackgroundImageView.frame.size.width / 2), self.joystickLeftInitialPosition.y +  (self.joystickLeftBackgroundImageView.frame.size.height / 2));
     
-    if(isLeftHanded){
-        joystickLeftThumbImageView.center = CGPointMake(leftCenter.x, leftCenter.y - _throttleChannel.value * leftJoyStickOperableRadius);
-    }
-    else{
-        joystickRightThumbImageView.center = CGPointMake(rightCenter.x, rightCenter.y - _throttleChannel.value * rightJoyStickOperableRadius);
+    if (self.isLeftHanded) {
+        self.joystickLeftThumbImageView.center = CGPointMake(self.leftCenter.x, self.leftCenter.y - self.throttleChannel.value * self.leftJoyStickOperableRadius);
+    } else {
+        self.joystickRightThumbImageView.center = CGPointMake(self.rightCenter.x, self.rightCenter.y - self.throttleChannel.value * self.rightJoyStickOperableRadius);
     }
 }
 
 - (void)updateUI{
     OSDData *osdData = [Transmitter sharedTransmitter].osdData;
 
-    rollValueTextLabel.text = [NSString stringWithFormat:@"%.1f", osdData.angleX];
-    pitchValueTextLabel.text = [NSString stringWithFormat:@"%.1f", osdData.angleY];
-    headAngleValueTextLabel.text = [NSString stringWithFormat:@"%.1f", osdData.head];
-    altValueTextLabel.text = [NSString stringWithFormat:@"%.1f", osdData.altitude];
+    self.rollValueTextLabel.text = [NSString stringWithFormat:@"%.1f", osdData.angleX];
+    self.pitchValueTextLabel.text = [NSString stringWithFormat:@"%.1f", osdData.angleY];
+    self.headAngleValueTextLabel.text = [NSString stringWithFormat:@"%.1f", osdData.head];
+    self.altValueTextLabel.text = [NSString stringWithFormat:@"%.1f", osdData.altitude];
 }
 
 - (void)checkTransmitterState{
@@ -560,135 +497,115 @@ static inline float sign(float value)
     TransmitterState outputState = [[Transmitter sharedTransmitter] outputState];
     
     if ((inputState == TransmitterStateOk) && (outputState == TransmitterStateOk)) {
-        warningLabel.text = NSLocalizedString(@"connected", nil);
-        [warningLabel setTextColor:[batteryLevelLabel textColor]];
-        warningView.hidden = YES;
-    }
-    else if((inputState == TransmitterStateOk) && (outputState != TransmitterStateOk)){
+        self.warningLabel.text = NSLocalizedString(@"connected", nil);
+        [self.warningLabel setTextColor:[self.batteryLevelLabel textColor]];
+        self.warningView.hidden = YES;
+    } else if ((inputState == TransmitterStateOk) && (outputState != TransmitterStateOk)) {
        // warningLabel.text = @"Can‘t to send data to WiFi Module, please check the connection is OK.";
-        warningLabel.text = NSLocalizedString(@"not connected", nil);
-        [warningLabel setTextColor:[UIColor redColor]];
-        warningView.hidden = NO;
-        
-    }
-    else if((inputState != TransmitterStateOk) && (outputState == TransmitterStateOk)){
+        self.warningLabel.text = NSLocalizedString(@"not connected", nil);
+        [self.warningLabel setTextColor:[UIColor redColor]];
+        self.warningView.hidden = NO;
+    } else if ((inputState != TransmitterStateOk) && (outputState == TransmitterStateOk)) {
         //warningLabel.text = @"Can't get data from WiFi modual, please check the connection is OK.";
-        warningLabel.text = NSLocalizedString(@"not connected", nil);
-        [warningLabel setTextColor:[UIColor redColor]];
-        warningView.hidden = NO;
-        
-        
-    }
-    else {
-        warningLabel.text = @"not connected";
-        [warningLabel setTextColor:[UIColor redColor]];
-        warningView.hidden = NO;
-        
-        
+        self.warningLabel.text = NSLocalizedString(@"not connected", nil);
+        [self.warningLabel setTextColor:[UIColor redColor]];
+        self.warningView.hidden = NO;
+    } else {
+        self.warningLabel.text = @"not connected";
+        [self.warningLabel setTextColor:[UIColor redColor]];
+        self.warningView.hidden = NO;
     }
 }
 
 - (OSStatus) startTransmission {
     enum PpmPolarity polarity = PPM_POLARITY_POSITIVE;
     
-    if(_settings.ppmPolarityIsNegative){
+    if (_settings.ppmPolarityIsNegative) {
         polarity = PPM_POLARITY_NEGATIVE;
     }
     
     //BOOL s = [[Transmitter sharedTransmitter] startTransmittingPpm];
     BOOL s = [[Transmitter sharedTransmitter] start];
     
-    isTransmitting = s;
+    self.isTransmitting = s;
     
-    osdView.osdData = [Transmitter sharedTransmitter].osdData;
+    self.osdView.osdData = [Transmitter sharedTransmitter].osdData;
     
     return s;
 }
 
 - (OSStatus) stopTransmission {
-    if (isTransmitting) {
+    if (self.isTransmitting) {
         BOOL s = [[Transmitter sharedTransmitter] stop];
-        isTransmitting = !s;
+        self.isTransmitting = !s;
         return !s;
     } else {
         return 0;
     }
 }
 
-- (void)dismissSettingsMenuView{
-    if(_settingMenuVC.view != nil)
-        [_settingMenuVC.view removeFromSuperview];
+- (void)dismissSettingsMenuView {
+    if (self.settingMenuVC.view != nil)
+        [self.settingMenuVC.view removeFromSuperview];
 }
 
-- (void)dismissHelpView{
-    if(_helpVC.view != nil){
-        [_helpVC.view removeFromSuperview];
-        _helpVC = nil;
+- (void)dismissHelpView {
+    if (self.helpVC.view != nil) {
+        [self.helpVC.view removeFromSuperview];
+        self.helpVC = nil;
     }
 }
 
-- (void)hideBatteryLevelUI
-{
-	batteryLevelLabel.hidden = YES;
-	batteryImageView.hidden = YES;	
+- (void)hideBatteryLevelUI {
+	self.batteryLevelLabel.hidden = YES;
+	self.batteryImageView.hidden = YES;
 }
 
-- (void)showBatteryLevelUI
-{
-	batteryLevelLabel.hidden = NO;
-	batteryImageView.hidden = NO;
+- (void)showBatteryLevelUI {
+	self.batteryLevelLabel.hidden = NO;
+	self.batteryImageView.hidden = NO;
 }
 
 
-- (void)setBattery:(int)percent
-{
+- (void)setBattery:(int)percent {
     static NSInteger prevImage = -1;
     static NSInteger prevPercent = -1;
     static BOOL wasHidden = NO;
-	if(percent < 0 && !wasHidden)
-	{
+	if (percent < 0 && !wasHidden) {
 		[self performSelectorOnMainThread:@selector(hideBatteryLevelUI) withObject:nil waitUntilDone:YES];		
         wasHidden = YES;
-	}
-	else if (percent >= 0)
-	{
-        if (wasHidden)
-        {
+	} else if (percent >= 0) {
+        if (wasHidden) {
             [self performSelectorOnMainThread:@selector(showBatteryLevelUI) withObject:nil waitUntilDone:YES];
             wasHidden = NO;
         }
         NSInteger imageNumber = ((percent < 10) ? 0 : (int)((percent / 33.4) + 1));
-        if (prevImage != imageNumber)
-        {
+        if (prevImage != imageNumber) {
             UIImage *image = [UIImage imageNamed:[NSString stringWithFormat:@"Btn_Battery_%ld_RETINA.png", (long)imageNumber]];
-            [batteryImageView performSelectorOnMainThread:@selector(setImage:) withObject:image waitUntilDone:YES];
+            [self.batteryImageView performSelectorOnMainThread:@selector(setImage:) withObject:image waitUntilDone:YES];
             prevImage = imageNumber;
         }
-        if (prevPercent != percent)
-        {
+        if (prevPercent != percent) {
             prevPercent = percent;
-            [batteryLevelLabel performSelectorOnMainThread:@selector(setText:) withObject:[NSString stringWithFormat:@"%d%%", percent] waitUntilDone:YES];
+            [self.batteryLevelLabel performSelectorOnMainThread:@selector(setText:) withObject:[NSString stringWithFormat:@"%d%%", percent] waitUntilDone:YES];
         }
 	}
 }
 
-- (void)refreshJoystickRight
-{
-	CGRect frame = joystickRightBackgroundImageView.frame;
-	frame.origin = joystickRightCurrentPosition;
-	joystickRightBackgroundImageView.frame = frame;
+- (void)refreshJoystickRight {
+	CGRect frame = self.joystickRightBackgroundImageView.frame;
+	frame.origin = self.joystickRightCurrentPosition;
+	self.joystickRightBackgroundImageView.frame = frame;
 }    
 
-- (void)refreshJoystickLeft
-{
-	CGRect frame = joystickLeftBackgroundImageView.frame;
-	frame.origin = joystickLeftCurrentPosition;
-	joystickLeftBackgroundImageView.frame = frame;
+- (void)refreshJoystickLeft {
+	CGRect frame = self.joystickLeftBackgroundImageView.frame;
+	frame.origin = self.joystickLeftCurrentPosition;
+	self.joystickLeftBackgroundImageView.frame = frame;
 }
 
 //更新摇杆点（joystickRightThumbImageView或joystickLeftThumbImageView）的位置，point是当前触摸点的位置
-- (void)updateVelocity:(CGPoint)point isRight:(BOOL)isRight
-{
+- (void)updateVelocity:(CGPoint)point isRight:(BOOL)isRight {
     static BOOL _runOnce = YES;
     static float leftThumbWidth = 0.0;
     static float rightThumbWidth = 0.0;
@@ -697,41 +614,38 @@ static inline float sign(float value)
     static float leftRadius = 0.0;
     static float rightRadius = 0.0;
     
-    if (_runOnce)
-    {
-        leftThumbWidth = joystickLeftThumbImageView.frame.size.width;
-        rightThumbWidth = joystickRightThumbImageView.frame.size.width;
-        leftThumbHeight = joystickLeftThumbImageView.frame.size.height;
-        rightThumbHeight = joystickRightThumbImageView.frame.size.height;
-        leftRadius = joystickLeftBackgroundImageView.frame.size.width / 2.0;
-        rightRadius = joystickRightBackgroundImageView.frame.size.width / 2.0;
+    if (_runOnce) {
+        leftThumbWidth = self.joystickLeftThumbImageView.frame.size.width;
+        rightThumbWidth = self.joystickRightThumbImageView.frame.size.width;
+        leftThumbHeight = self.joystickLeftThumbImageView.frame.size.height;
+        rightThumbHeight = self.joystickRightThumbImageView.frame.size.height;
+        leftRadius = self.joystickLeftBackgroundImageView.frame.size.width / 2.0;
+        rightRadius = self.joystickRightBackgroundImageView.frame.size.width / 2.0;
         _runOnce = NO;
     }
     
 	CGPoint nextpoint = CGPointMake(point.x, point.y);
-	CGPoint center = (isRight ? rightCenter : leftCenter);
-	UIImageView *thumbImage = (isRight ? joystickRightThumbImageView : joystickLeftThumbImageView);
+	CGPoint center = (isRight ? self.rightCenter : self.leftCenter);
+	UIImageView *thumbImage = (isRight ? self.joystickRightThumbImageView : self.joystickLeftThumbImageView);
 	
 	float dx = nextpoint.x - center.x;
 	float dy = nextpoint.y - center.y;
     
-    float thumb_radius = isRight ? rightJoyStickOperableRadius : leftJoyStickOperableRadius;
+    float thumb_radius = isRight ? self.rightJoyStickOperableRadius : self.leftJoyStickOperableRadius;
 	
-    if(fabsf(dx) > thumb_radius){
+    if (fabsf(dx) > thumb_radius) {
         if (dx > 0) {
-            nextpoint.x = center.x + rightJoyStickOperableRadius;
-        }
-        else {
-            nextpoint.x = center.x - rightJoyStickOperableRadius;
+            nextpoint.x = center.x + self.rightJoyStickOperableRadius;
+        } else {
+            nextpoint.x = center.x - self.rightJoyStickOperableRadius;
         }
     }
     
-    if(fabsf(dy) > thumb_radius){
-        if(dy > 0){
-            nextpoint.y = center.y + rightJoyStickOperableRadius;
-        }
-        else {
-             nextpoint.y = center.y - rightJoyStickOperableRadius;
+    if (fabsf(dy) > thumb_radius) {
+        if (dy > 0) {
+            nextpoint.y = center.y + self.rightJoyStickOperableRadius;
+        } else {
+             nextpoint.y = center.y - self.rightJoyStickOperableRadius;
         }
     }
 
@@ -741,33 +655,28 @@ static inline float sign(float value)
 	thumbImage.frame = frame;
 }
 
-- (void)updateThrottleValueLabel{
+- (void)updateThrottleValueLabel {
     float takeOffValue = clip(-1 + _settings.takeOffThrottle * 2 + _throttleChannel.trimValue, -1.0, 1.0); 
     
     if (_throttleChannel.isReversing) {
         takeOffValue = -takeOffValue;
     }
     
-    throttleValueLabel.text = [NSString stringWithFormat:@"%d", (int)(1500 + 500 * _throttleChannel.value)];
+    self.throttleValueLabel.text = [NSString stringWithFormat:@"%d", (int)(1500 + 500 * _throttleChannel.value)];
 }
 
 
-- (void)setSwitchButton:(UIButton *)switchButton withValue:(BOOL)active
-{
-    if (active)
-    {
+- (void)setSwitchButton:(UIButton *)switchButton withValue:(BOOL)active {
+    if (active) {
         switchButton.tag = SWITCH_BUTTON_CHECKED;
         [switchButton setImage:[UIImage imageNamed:@"Btn_ON.png"] forState:UIControlStateNormal];
-    }
-    else
-    {
+    } else {
         switchButton.tag = SWITCH_BUTTON_UNCHECKED;
         [switchButton setImage:[UIImage imageNamed:@"Btn_OFF.png"] forState:UIControlStateNormal];
     }
 }
 
-- (void)toggleSwitchButton:(UIButton *)switchButton
-{
+- (void)toggleSwitchButton:(UIButton *)switchButton {
     [self setSwitchButton:switchButton withValue:(SWITCH_BUTTON_UNCHECKED == switchButton.tag) ? YES : NO];
 }
 
@@ -775,15 +684,14 @@ static inline float sign(float value)
 - (IBAction)switchButtonClick:(id)sender {
     [self toggleSwitchButton:sender];
     
-    if(sender == altHoldSwitchButton){
-        _settings.isAltHoldMode = (SWITCH_BUTTON_CHECKED == [sender tag]) ? YES : NO;
-        [_settings save];
+    if (sender == self.altHoldSwitchButton) {
+        self.settings.isAltHoldMode = (SWITCH_BUTTON_CHECKED == [sender tag]) ? YES : NO;
+        [self.settings save];
         
-        if(_settings.isAltHoldMode){
-            [_aux2Channel setValue:1];
-        }
-        else{
-            [_aux2Channel setValue:-1];
+        if (self.settings.isAltHoldMode) {
+            [self.aux2Channel setValue:1];
+        } else {
+            [self.aux2Channel setValue:-1];
         }
     }
 }
@@ -795,10 +703,9 @@ static inline float sign(float value)
     
     previous_location = current_location;
     
-	if(sender == joystickRightButton)
-	{
+	if (sender == self.joystickRightButton) {
         static uint64_t right_press_previous_time = 0;
-        if(right_press_previous_time == 0) right_press_previous_time = mach_absolute_time();
+        if (right_press_previous_time == 0) right_press_previous_time = mach_absolute_time();
         
         uint64_t current_time = mach_absolute_time();
         static mach_timebase_info_data_t sRightPressTimebaseInfo;
@@ -806,73 +713,69 @@ static inline float sign(float value)
         float dt = 0;
         
         //dt calculus function of real elapsed time
-        if(sRightPressTimebaseInfo.denom == 0) (void) mach_timebase_info(&sRightPressTimebaseInfo);
+        if (sRightPressTimebaseInfo.denom == 0) (void) mach_timebase_info(&sRightPressTimebaseInfo);
         elapsedNano = (current_time-right_press_previous_time)*(sRightPressTimebaseInfo.numer / sRightPressTimebaseInfo.denom);
         dt = elapsedNano/1000000000.0;
         
         right_press_previous_time = current_time;
         
-        if(dt > 0.1 && dt < 0.3){
+        if (dt > 0.1 && dt < 0.3) {
             if (_settings.isBeginnerMode) {
-                if(_throttleChannel.value + kThrottleFineTuningStep > 1 + (kBeginnerThrottleChannelRatio - 1)){
-                    _throttleChannel.value = 1;
+                if (self.throttleChannel.value + kThrottleFineTuningStep > 1 + (kBeginnerThrottleChannelRatio - 1)) {
+                    self.throttleChannel.value = 1;
+                } else {
+                    self.throttleChannel.value += kThrottleFineTuningStep;
                 }
-                else {
-                    _throttleChannel.value += kThrottleFineTuningStep;
-                }
-            }
-            else{
-                if(_throttleChannel.value + kThrottleFineTuningStep > 1){
-                    _throttleChannel.value = 1;
-                }
-                else {
-                    _throttleChannel.value += kThrottleFineTuningStep;
+            } else {
+                if (self.throttleChannel.value + kThrottleFineTuningStep > 1) {
+                    self.throttleChannel.value = 1;
+                } else {
+                    self.throttleChannel.value += kThrottleFineTuningStep;
                 }
             }
             
             [self updateJoystickCenter];
         }
         
-		buttonRightPressed = YES;
-
-		joystickRightBackgroundImageView.alpha = joystickRightThumbImageView.alpha = 1.0;
-        
-        joystickRightCurrentPosition.x = current_location.x - (joystickRightBackgroundImageView.frame.size.width / 2);
+		self.buttonRightPressed = YES;
+		self.joystickRightBackgroundImageView.alpha = self.joystickRightThumbImageView.alpha = 1.0;
+        CGPoint xjoystickRightCurrentPosition = self.joystickRightCurrentPosition;
+        xjoystickRightCurrentPosition.x = current_location.x - (self.joystickRightBackgroundImageView.frame.size.width / 2);
+        self.joystickRightCurrentPosition = xjoystickRightCurrentPosition;
         
         CGPoint thumbCurrentLocation = CGPointZero;
         
-        if(isLeftHanded){
-            joystickRightCurrentPosition.y = current_location.y - (joystickRightBackgroundImageView.frame.size.height / 2);
+        if (self.isLeftHanded) {
+            xjoystickRightCurrentPosition.y = current_location.y - (self.joystickRightBackgroundImageView.frame.size.height / 2);
+            self.joystickRightCurrentPosition = xjoystickRightCurrentPosition;
             
             [self refreshJoystickRight];
             
             //摇杆中心点
-            rightCenter = CGPointMake(joystickRightBackgroundImageView.frame.origin.x + (joystickRightBackgroundImageView.frame.size.width / 2), joystickRightBackgroundImageView.frame.origin.y + (joystickRightBackgroundImageView.frame.size.height / 2));
+            self.rightCenter = CGPointMake(self.joystickRightBackgroundImageView.frame.origin.x + (self.joystickRightBackgroundImageView.frame.size.width / 2),self. joystickRightBackgroundImageView.frame.origin.y + (self.joystickRightBackgroundImageView.frame.size.height / 2));
             
-            thumbCurrentLocation = rightCenter;
-        }
-        else{
+            thumbCurrentLocation = self.rightCenter;
+        } else {
             float throttleValue = [_throttleChannel value];
             
             //NSLog(@"throttle value:%f", throttleValue);
 
-            joystickRightCurrentPosition.y = current_location.y - (joystickRightBackgroundImageView.frame.size.height / 2) + throttleValue * rightJoyStickOperableRadius;
-            
+            xjoystickRightCurrentPosition.y = current_location.y - (self.joystickRightBackgroundImageView.frame.size.height / 2) + throttleValue * self.rightJoyStickOperableRadius;
+            self.joystickRightCurrentPosition = xjoystickRightCurrentPosition;
+
             [self refreshJoystickRight];
             
             //摇杆中心点
-            rightCenter = CGPointMake(joystickRightBackgroundImageView.frame.origin.x + (joystickRightBackgroundImageView.frame.size.width / 2), joystickRightBackgroundImageView.frame.origin.y + (joystickRightBackgroundImageView.frame.size.height / 2));
+            self.rightCenter = CGPointMake(self.joystickRightBackgroundImageView.frame.origin.x + (self.joystickRightBackgroundImageView.frame.size.width / 2), self.joystickRightBackgroundImageView.frame.origin.y + (self.joystickRightBackgroundImageView.frame.size.height / 2));
             
-            thumbCurrentLocation = CGPointMake(rightCenter.x, current_location.y);
+            thumbCurrentLocation = CGPointMake(self.rightCenter.x, current_location.y);
         }
         
         //更新摇杆点（joystickRightThumbImageView或joystickLeftThumbImageView）的位置
         [self updateVelocity:thumbCurrentLocation isRight:YES];
-	}
-	else if(sender == joystickLeftButton)
-	{
+	} else if (sender == self.joystickLeftButton) {
         static uint64_t left_press_previous_time = 0;
-        if(left_press_previous_time == 0) left_press_previous_time = mach_absolute_time();
+        if (left_press_previous_time == 0) left_press_previous_time = mach_absolute_time();
         
         uint64_t current_time = mach_absolute_time();
         static mach_timebase_info_data_t sLeftPressTimebaseInfo;
@@ -880,14 +783,14 @@ static inline float sign(float value)
         float dt = 0;
         
         //dt calculus function of real elapsed time
-        if(sLeftPressTimebaseInfo.denom == 0) (void) mach_timebase_info(&sLeftPressTimebaseInfo);
+        if (sLeftPressTimebaseInfo.denom == 0) (void) mach_timebase_info(&sLeftPressTimebaseInfo);
         elapsedNano = (current_time-left_press_previous_time)*(sLeftPressTimebaseInfo.numer / sLeftPressTimebaseInfo.denom);
         dt = elapsedNano/1000000000.0;
         
         left_press_previous_time = current_time;
         
-        if(dt > 0.1 && dt < 0.3){
-            if(_throttleChannel.value - kThrottleFineTuningStep < -1){
+        if (dt > 0.1 && dt < 0.3) {
+            if (_throttleChannel.value - kThrottleFineTuningStep < -1) {
                 _throttleChannel.value = -1;
             }
             else {
@@ -896,36 +799,39 @@ static inline float sign(float value)
             [self updateJoystickCenter];
         }
         
-		buttonLeftPressed = YES;
+		self.buttonLeftPressed = YES;
         
-        joystickLeftBackgroundImageView.alpha = joystickLeftThumbImageView.alpha = 1.0;
+        self.joystickLeftBackgroundImageView.alpha = self.joystickLeftThumbImageView.alpha = 1.0;
 		
-		joystickLeftCurrentPosition.x = current_location.x - (joystickLeftBackgroundImageView.frame.size.width / 2);
+        CGPoint xjoystickLeftCurrentPosition = current_location;
+		xjoystickLeftCurrentPosition.x = current_location.x - (self.joystickLeftBackgroundImageView.frame.size.width / 2);
+        self.joystickLeftCurrentPosition = xjoystickLeftCurrentPosition;
         
         CGPoint thumbCurrentLocation = CGPointZero;
         
-        if(isLeftHanded){
+        if (self.isLeftHanded) {
             float throttleValue = [_throttleChannel value];
             
-            joystickLeftCurrentPosition.y = current_location.y - (joystickLeftBackgroundImageView.frame.size.height / 2) + throttleValue * leftJoyStickOperableRadius;
+            xjoystickLeftCurrentPosition.y = current_location.y - (self.joystickLeftBackgroundImageView.frame.size.height / 2) + throttleValue * self.leftJoyStickOperableRadius;
+            self.joystickLeftCurrentPosition = xjoystickLeftCurrentPosition;
             
             [self refreshJoystickLeft];
             
             //摇杆中心点
-            leftCenter = CGPointMake(joystickLeftBackgroundImageView.frame.origin.x + (joystickLeftBackgroundImageView.frame.size.width / 2),
-                                     joystickLeftBackgroundImageView.frame.origin.y + (joystickLeftBackgroundImageView.frame.size.height / 2));
+            self.leftCenter = CGPointMake(self.joystickLeftBackgroundImageView.frame.origin.x + (self.joystickLeftBackgroundImageView.frame.size.width / 2),
+                                     self.joystickLeftBackgroundImageView.frame.origin.y + (self.joystickLeftBackgroundImageView.frame.size.height / 2));
             
-            thumbCurrentLocation = CGPointMake(leftCenter.x, current_location.y);
-        }
-        else{
-            joystickLeftCurrentPosition.y = current_location.y - (joystickLeftBackgroundImageView.frame.size.height / 2);
+            thumbCurrentLocation = CGPointMake(self.leftCenter.x, current_location.y);
+        } else {
+            xjoystickLeftCurrentPosition.y = current_location.y - (self.joystickLeftBackgroundImageView.frame.size.height / 2);
+            self.joystickLeftCurrentPosition = xjoystickLeftCurrentPosition;
             
             [self refreshJoystickLeft];
             
             //摇杆中心点
-            leftCenter = CGPointMake(joystickLeftBackgroundImageView.frame.origin.x + (joystickLeftBackgroundImageView.frame.size.width / 2), joystickLeftBackgroundImageView.frame.origin.y + (joystickLeftBackgroundImageView.frame.size.height / 2));
+            self.leftCenter = CGPointMake(self.joystickLeftBackgroundImageView.frame.origin.x + (self.joystickLeftBackgroundImageView.frame.size.width / 2), self.joystickLeftBackgroundImageView.frame.origin.y + (self.joystickLeftBackgroundImageView.frame.size.height / 2));
             
-            thumbCurrentLocation = leftCenter;
+            thumbCurrentLocation = self.leftCenter;
         }
 
 		[self updateVelocity:thumbCurrentLocation isRight:NO];
@@ -933,21 +839,19 @@ static inline float sign(float value)
     
     
     
-    if (accModeEnabled) {
-        if (isLeftHanded) {
-            if(sender == joystickRightButton){
-                accModeReady = YES;
+    if (self.accModeEnabled) {
+        if (self.isLeftHanded) {
+            if (sender == self.joystickRightButton) {
+                self.accModeReady = YES;
             }
-        }
-        else{
-            if(sender == joystickLeftButton){
-                accModeReady = YES;
+        } else {
+            if (sender == self.joystickLeftButton) {
+                self.accModeReady = YES;
             }
         }
     }
     
-    if(accModeEnabled && accModeReady)
-    {
+    if (self.accModeEnabled && self.accModeReady) {
         // Start only if the first touch is within the pad's boundaries.
         // Allow touches to be tracked outside of the pad as long as the
         // screen continues to be pressed.
@@ -956,12 +860,12 @@ static inline float sign(float value)
         float phi, theta;
         
         //Get ACCELERO values
-        if(motionManager.gyroAvailable == 0 && motionManager.accelerometerAvailable == 1){
+        if (motionManager.gyroAvailable == 0 && motionManager.accelerometerAvailable == 1) {
             //Only accelerometer (iphone 3GS)
             current_acceleration.x = motionManager.accelerometerData.acceleration.x;
             current_acceleration.y = motionManager.accelerometerData.acceleration.y;
             current_acceleration.z = motionManager.accelerometerData.acceleration.z;
-        } else if (motionManager.deviceMotionAvailable == 1){
+        } else if (motionManager.deviceMotionAvailable == 1) {
             //Accelerometer + gyro (iphone 4)
             current_acceleration.x = motionManager.deviceMotion.gravity.x + motionManager.deviceMotion.userAcceleration.x;
             current_acceleration.y = motionManager.deviceMotion.gravity.y + motionManager.deviceMotion.userAcceleration.y;
@@ -978,74 +882,61 @@ static inline float sign(float value)
 }
 
 - (IBAction)josystickButtonDidTouchUp:(id)sender forEvent:(UIEvent *)event {
-	if(sender == joystickRightButton)
-	{
-		buttonRightPressed = NO;
+	if (sender == self.joystickRightButton) {
+		self.buttonRightPressed = NO;
 
-		joystickRightCurrentPosition = joystickRightInitialPosition;
-		joystickRightBackgroundImageView.alpha = joystickRightThumbImageView.alpha = joystickAlpha;
+		self.joystickRightCurrentPosition = self.joystickRightInitialPosition;
+		self.joystickRightBackgroundImageView.alpha = self.joystickRightThumbImageView.alpha = self.joystickAlpha;
 		
 		[self refreshJoystickRight];
         
-        if (isLeftHanded) {
-            [_aileronChannel setValue:0.0];
-            [_elevatorChannel setValue:0.0];
+        if (self.isLeftHanded) {
+            [self.aileronChannel setValue:0.0];
+            [self.elevatorChannel setValue:0.0];
+            self.rightCenter = CGPointMake(self.joystickRightBackgroundImageView.frame.origin.x + (self.joystickRightBackgroundImageView.frame.size.width / 2), self.joystickRightBackgroundImageView.frame.origin.y + (self.joystickRightBackgroundImageView.frame.size.height / 2));
+            self.accModeReady = NO;
             
-            rightCenter = CGPointMake(joystickRightBackgroundImageView.frame.origin.x + (joystickRightBackgroundImageView.frame.size.width / 2), joystickRightBackgroundImageView.frame.origin.y + (joystickRightBackgroundImageView.frame.size.height / 2));
-            
-            accModeReady = NO;
-            
-            if(accModeEnabled)
-            {
+            if (self.accModeEnabled) {
                 [self setAcceleroRotationWithPhi:0.0 withTheta:0.0 withPsi:0.0];
             }
-        }
-        else{
-            [_rudderChannel setValue:0.0];
-            
-            float throttleValue = [_throttleChannel value];
-            
-            rightCenter = CGPointMake(joystickRightBackgroundImageView.frame.origin.x + (joystickRightBackgroundImageView.frame.size.width / 2), 
-                                      joystickRightBackgroundImageView.frame.origin.y + (joystickRightBackgroundImageView.frame.size.height / 2) - throttleValue * rightJoyStickOperableRadius);
-            
-            
+        } else {
+            [self.rudderChannel setValue:0.0];
+            float throttleValue = [self.throttleChannel value];
+            self.rightCenter = CGPointMake(self.joystickRightBackgroundImageView.frame.origin.x + (self.joystickRightBackgroundImageView.frame.size.width / 2),
+                                      self.joystickRightBackgroundImageView.frame.origin.y + (self.joystickRightBackgroundImageView.frame.size.height / 2) - throttleValue * self.rightJoyStickOperableRadius);
         }
 
-		[self updateVelocity:rightCenter isRight:YES];
-	}
-	else if(sender == joystickLeftButton)
-	{
-		buttonLeftPressed = NO;
+		[self updateVelocity:self.rightCenter isRight:YES];
+	} else if (sender == self.joystickLeftButton) {
+		self.buttonLeftPressed = NO;
 
-		joystickLeftCurrentPosition = joystickLeftInitialPosition;
-		joystickLeftBackgroundImageView.alpha = joystickLeftThumbImageView.alpha = joystickAlpha;
+		self.joystickLeftCurrentPosition = self.joystickLeftInitialPosition;
+		self.joystickLeftBackgroundImageView.alpha = self.joystickLeftThumbImageView.alpha = self.joystickAlpha;
 		
 		[self refreshJoystickLeft];
         
-        if (isLeftHanded) {
-            [_rudderChannel setValue:0.0];
+        if (self.isLeftHanded) {
+            [self.rudderChannel setValue:0.0];
             
-            float throttleValue = [_throttleChannel value];
+            float throttleValue = [self.throttleChannel value];
             
-            leftCenter = CGPointMake(joystickLeftBackgroundImageView.frame.origin.x + (joystickLeftBackgroundImageView.frame.size.width / 2), 
-                                      joystickLeftBackgroundImageView.frame.origin.y + (joystickLeftBackgroundImageView.frame.size.height / 2) - throttleValue * rightJoyStickOperableRadius);
-        }
-        else{
-            [_aileronChannel setValue:0.0];
-            [_elevatorChannel setValue:0.0];
+            self.leftCenter = CGPointMake(self.joystickLeftBackgroundImageView.frame.origin.x + (self.joystickLeftBackgroundImageView.frame.size.width / 2),
+                                      self.joystickLeftBackgroundImageView.frame.origin.y + (self.joystickLeftBackgroundImageView.frame.size.height / 2) - throttleValue * self.rightJoyStickOperableRadius);
+        } else {
+            [self.aileronChannel setValue:0.0];
+            [self.elevatorChannel setValue:0.0];
             
-            leftCenter = CGPointMake(joystickLeftBackgroundImageView.frame.origin.x + (joystickLeftBackgroundImageView.frame.size.width / 2), joystickLeftBackgroundImageView.frame.origin.y + (joystickLeftBackgroundImageView.frame.size.height / 2));
+            self.leftCenter = CGPointMake(self.joystickLeftBackgroundImageView.frame.origin.x + (self.joystickLeftBackgroundImageView.frame.size.width / 2), self.joystickLeftBackgroundImageView.frame.origin.y + (self.joystickLeftBackgroundImageView.frame.size.height / 2));
             
-            accModeReady = NO;
+            self.accModeReady = NO;
             
-            if(accModeEnabled)
-            {
+            if (self.accModeEnabled) {
                 [self setAcceleroRotationWithPhi:0.0 withTheta:0.0 withPsi:0.0];
             }
 
         }
 		
-		[self updateVelocity:leftCenter isRight:NO];
+		[self updateVelocity:self.leftCenter isRight:NO];
 	}
 }
 
@@ -1055,258 +946,214 @@ static inline float sign(float value)
     static float rightBackgoundHeight = 0.0;
     static float leftBackgoundWidth = 0.0;
     static float leftBackgoundHeight = 0.0;
-    if (_runOnce)
-    {
-        rightBackgoundWidth = joystickRightBackgroundImageView.frame.size.width;
-        rightBackgoundHeight = joystickRightBackgroundImageView.frame.size.height;
-        leftBackgoundWidth = joystickLeftBackgroundImageView.frame.size.width;
-        leftBackgoundHeight = joystickLeftBackgroundImageView.frame.size.height;
+    if (_runOnce) {
+        rightBackgoundWidth = self.joystickRightBackgroundImageView.frame.size.width;
+        rightBackgoundHeight = self.joystickRightBackgroundImageView.frame.size.height;
+        leftBackgoundWidth = self.joystickLeftBackgroundImageView.frame.size.width;
+        leftBackgoundHeight = self.joystickLeftBackgroundImageView.frame.size.height;
         _runOnce = NO;
     }
     
 	UITouch *touch = [[event touchesForView:sender] anyObject];
 	CGPoint point = [touch locationInView:self.view];
     
-    float aileronElevatorValidBandRatio = 0.5 - _settings.aileronDeadBand / 2.0;
+    float aileronElevatorValidBandRatio = 0.5 - self.settings.aileronDeadBand / 2.0;
     
-    float rudderValidBandRatio = 0.5 - _settings.rudderDeadBand / 2.0;
+    float rudderValidBandRatio = 0.5 - self.settings.rudderDeadBand / 2.0;
 	
-	if(sender == joystickRightButton && buttonRightPressed)
-	{
+	if (sender == self.joystickRightButton && self.buttonRightPressed) {
         float rightJoystickXInput, rightJoystickYInput; 
         
         float rightJoystickXValidBand;  //右边摇杆x轴的无效区
         float rightJoystickYValidBand;  //右边摇杆y轴的无效区
         
-        if(isLeftHanded){
+        if (self.isLeftHanded) {
             rightJoystickXValidBand = aileronElevatorValidBandRatio; //X轴操作是Aileron
             rightJoystickYValidBand = aileronElevatorValidBandRatio; //Y轴操作是Elevator
-        }
-        else{
+        } else {
             rightJoystickXValidBand = rudderValidBandRatio;    
             rightJoystickYValidBand = 0.5;   //Y轴操作是油门
         }
         
-        if(!isLeftHanded && rudderIsLocked){  
+        if (!self.isLeftHanded && self.rudderIsLocked) {
             rightJoystickXInput = 0.0;  
-        }
-        //左右操作 (controlRatio * rightBackgoundWidth)是控制的有效区域，所以((rightBackgoundWidth / 2) - (controlRatio * rightBackgoundWidth))就是盲区了
-        else if((rightCenter.x - point.x) > ((rightBackgoundWidth / 2) - (rightJoystickXValidBand * rightBackgoundWidth)))   
-        {
-            float percent = ((rightCenter.x - point.x) - ((rightBackgoundWidth / 2) - (rightJoystickXValidBand * rightBackgoundWidth))) / ((rightJoystickXValidBand * rightBackgoundWidth));
-            if(percent > 1.0)
-                percent = 1.0;
-            
+        } else if ((self.rightCenter.x - point.x) > ((rightBackgoundWidth / 2) - (rightJoystickXValidBand * rightBackgoundWidth))) {
+            float percent = ((self.rightCenter.x - point.x) - ((rightBackgoundWidth / 2) - (rightJoystickXValidBand * rightBackgoundWidth))) / ((rightJoystickXValidBand * rightBackgoundWidth));
+            if (percent > 1.0) {
+                    percent = 1.0;
+            }
             rightJoystickXInput = -percent;
-        }
-        else if((point.x - rightCenter.x) > ((rightBackgoundWidth / 2) - (rightJoystickXValidBand * rightBackgoundWidth)))
-        {
-            float percent = ((point.x - rightCenter.x) - ((rightBackgoundWidth / 2) - (rightJoystickXValidBand * rightBackgoundWidth))) / ((rightJoystickXValidBand * rightBackgoundWidth));
-            if(percent > 1.0)
+        } else if ((point.x - self.rightCenter.x) > ((rightBackgoundWidth / 2) - (rightJoystickXValidBand * rightBackgoundWidth))) {
+            float percent = ((point.x - self.rightCenter.x) - ((rightBackgoundWidth / 2) - (rightJoystickXValidBand * rightBackgoundWidth))) / ((rightJoystickXValidBand * rightBackgoundWidth));
+            if (percent > 1.0) {
                 percent = 1.0;
-            
+            }
             rightJoystickXInput = percent;
-        }
-        else
-        {
+        } else {
             rightJoystickXInput = 0.0;
         }
         
         //NSLog(@"right x input:%.3f",rightJoystickXInput);
         
-        if (isLeftHanded) {
-            if (accModeEnabled == NO) {
-                if (_settings.isBeginnerMode) {
-                    [_aileronChannel setValue:rightJoystickXInput * kBeginnerAileronChannelRatio];
-                }
-                else{
-                    [_aileronChannel setValue:rightJoystickXInput];
+        if (self.isLeftHanded) {
+            if (self.accModeEnabled == NO) {
+                if (self.settings.isBeginnerMode) {
+                    [self.aileronChannel setValue:rightJoystickXInput * kBeginnerAileronChannelRatio];
+                } else {
+                    [self.aileronChannel setValue:rightJoystickXInput];
                 }
             }
-        }
-        else {
-            if(_settings.isBeginnerMode){
-                [_rudderChannel setValue:rightJoystickXInput * kBeginnerRudderChannelRatio];
-            }
-            else{
-                [_rudderChannel setValue:rightJoystickXInput];
+        } else {
+            if (self.settings.isBeginnerMode) {
+                [self.rudderChannel setValue:rightJoystickXInput * kBeginnerRudderChannelRatio];
+            } else {
+                [self.rudderChannel setValue:rightJoystickXInput];
             }
         }
         
-        if(throttleIsLocked && !isLeftHanded){
-            rightJoystickYInput = _throttleChannel.value;
-        }
-        //上下操作
-        else if((point.y - rightCenter.y) > ((rightBackgoundHeight / 2) - (rightJoystickYValidBand * rightBackgoundHeight)))
-        {
-            float percent = ((point.y - rightCenter.y) - ((rightBackgoundHeight / 2) - (rightJoystickYValidBand * rightBackgoundHeight))) / ((rightJoystickYValidBand * rightBackgoundHeight));
-            if(percent > 1.0)
+        if (self.throttleIsLocked && !self.isLeftHanded) {
+            rightJoystickYInput = self.throttleChannel.value;
+        } else if ((point.y - self.rightCenter.y) > ((rightBackgoundHeight / 2) - (rightJoystickYValidBand * rightBackgoundHeight))) {
+            float percent = ((point.y - self.rightCenter.y) - ((rightBackgoundHeight / 2) - (rightJoystickYValidBand * rightBackgoundHeight))) / ((rightJoystickYValidBand * rightBackgoundHeight));
+            if (percent > 1.0) {
                 percent = 1.0;
-            
+            }
             rightJoystickYInput = -percent;
-            
-        }
-        else if((rightCenter.y - point.y) > ((rightBackgoundHeight / 2) - (rightJoystickYValidBand * rightBackgoundHeight)))
-        {
-            float percent = ((rightCenter.y - point.y) - ((rightBackgoundHeight / 2) - (rightJoystickYValidBand * rightBackgoundHeight))) / ((rightJoystickYValidBand * rightBackgoundHeight));
-            if(percent > 1.0)
+        } else if ((self.rightCenter.y - point.y) > ((rightBackgoundHeight / 2) - (rightJoystickYValidBand * rightBackgoundHeight))) {
+            float percent = ((self.rightCenter.y - point.y) - ((rightBackgoundHeight / 2) - (rightJoystickYValidBand * rightBackgoundHeight))) / ((rightJoystickYValidBand * rightBackgoundHeight));
+            if (percent > 1.0) {
                 percent = 1.0;
-            
+            }
             rightJoystickYInput = percent;
-        }
-        else
-        {
+        } else {
             rightJoystickYInput = 0.0;
         }
         
         //NSLog(@"right y input:%.3f",rightJoystickYInput);
         
-        if (isLeftHanded) {
-            if (accModeEnabled == NO) {
-                if (_settings.isBeginnerMode) {
-                    [_elevatorChannel setValue:rightJoystickYInput * kBeginnerElevatorChannelRatio];
+        if (self.isLeftHanded) {
+            if (self.accModeEnabled == NO) {
+                if (self.settings.isBeginnerMode) {
+                    [self.elevatorChannel setValue:rightJoystickYInput * kBeginnerElevatorChannelRatio];
+                } else {
+                    [self.elevatorChannel setValue:rightJoystickYInput];
                 }
-                else{
-                    [_elevatorChannel setValue:rightJoystickYInput];
-                }
             }
-        }
-        else {
-            if (_settings.isBeginnerMode) {
-                [_throttleChannel setValue:(kBeginnerThrottleChannelRatio - 1) + rightJoystickYInput * kBeginnerThrottleChannelRatio];
+        } else {
+            if (self.settings.isBeginnerMode) {
+                [self.throttleChannel setValue:(kBeginnerThrottleChannelRatio - 1) + rightJoystickYInput * kBeginnerThrottleChannelRatio];
+            } else {
+                [self.throttleChannel setValue:rightJoystickYInput];
             }
-            else{
-                [_throttleChannel setValue:rightJoystickYInput];
-            }
-            
             [self updateThrottleValueLabel];
         }
-	}
-	else if(sender == joystickLeftButton
-            && buttonLeftPressed)
-	{
+	} else if (sender == self.joystickLeftButton && self.buttonLeftPressed) {
         float leftJoystickXInput, leftJoystickYInput;
         
         float leftJoystickXValidBand;  //右边摇杆x轴的无效区
         float leftJoystickYValidBand;  //右边摇杆y轴的无效区
         
-        if(isLeftHanded){
+        if (self.isLeftHanded) {
             leftJoystickXValidBand = rudderValidBandRatio;    
             leftJoystickYValidBand = 0.5;   //Y轴操作是油门
-        }
-        else{
+        } else {
             leftJoystickXValidBand = aileronElevatorValidBandRatio; //X轴操作是Aileron
             leftJoystickYValidBand = aileronElevatorValidBandRatio; //Y轴操作是Elevator
         }
         
-        if(isLeftHanded && rudderIsLocked){
+        if (self.isLeftHanded && self.rudderIsLocked) {
             leftJoystickXInput = 0.0;
-        }
-		else if((leftCenter.x - point.x) > ((leftBackgoundWidth / 2) - (leftJoystickXValidBand * leftBackgoundWidth)))
-		{
-			float percent = ((leftCenter.x - point.x) - ((leftBackgoundWidth / 2) - (leftJoystickXValidBand * leftBackgoundWidth))) / ((leftJoystickXValidBand * leftBackgoundWidth));
-			if(percent > 1.0)
+        } else if ((self.leftCenter.x - point.x) > ((leftBackgoundWidth / 2) - (leftJoystickXValidBand * leftBackgoundWidth))) {
+			float percent = ((self.leftCenter.x - point.x) - ((leftBackgoundWidth / 2) - (leftJoystickXValidBand * leftBackgoundWidth))) / ((leftJoystickXValidBand * leftBackgoundWidth));
+			if (percent > 1.0) {
 				percent = 1.0;
+            }
             
             leftJoystickXInput = -percent;
             
-		}
-		else if((point.x - leftCenter.x) > ((leftBackgoundWidth / 2) - (leftJoystickXValidBand * leftBackgoundWidth)))
-		{
-			float percent = ((point.x - leftCenter.x) - ((leftBackgoundWidth / 2) - (leftJoystickXValidBand * leftBackgoundWidth))) / ((leftJoystickXValidBand * leftBackgoundWidth));
-			if(percent > 1.0)
+		} else if ((point.x - self.leftCenter.x) > ((leftBackgoundWidth / 2) - (leftJoystickXValidBand * leftBackgoundWidth))) {
+			float percent = ((point.x - self.leftCenter.x) - ((leftBackgoundWidth / 2) - (leftJoystickXValidBand * leftBackgoundWidth))) / ((leftJoystickXValidBand * leftBackgoundWidth));
+			if (percent > 1.0) {
 				percent = 1.0;
-
+            }
+            
             leftJoystickXInput = percent;
-		}
-		else
-		{
+		} else {
             leftJoystickXInput = 0.0;
 		}	
         
        //NSLog(@"left x input:%.3f",leftJoystickXInput);
 		
-        if(isLeftHanded){
-            if(_settings.isBeginnerMode){
-                [_rudderChannel setValue:leftJoystickXInput * kBeginnerRudderChannelRatio];
-            }else{
-                [_rudderChannel setValue:leftJoystickXInput];
+        if (self.isLeftHanded) {
+            if (self.settings.isBeginnerMode) {
+                [self.rudderChannel setValue:leftJoystickXInput * kBeginnerRudderChannelRatio];
+            } else {
+                [self.rudderChannel setValue:leftJoystickXInput];
             }
-        }
-        else{
-            if (accModeEnabled == NO) {
-                if(_settings.isBeginnerMode){
-                    [_aileronChannel setValue:leftJoystickXInput * kBeginnerAileronChannelRatio];
-                }else{
-                    [_aileronChannel setValue:leftJoystickXInput];
+        } else {
+            if (self.accModeEnabled == NO) {
+                if (self.settings.isBeginnerMode) {
+                    [self.aileronChannel setValue:leftJoystickXInput * kBeginnerAileronChannelRatio];
+                } else {
+                    [self.aileronChannel setValue:leftJoystickXInput];
                 }
             }
         }
         
-        if(throttleIsLocked && isLeftHanded){
-            leftJoystickYInput = _throttleChannel.value;
-        }
-		else if((point.y - leftCenter.y) > ((leftBackgoundHeight / 2) - (leftJoystickYValidBand * leftBackgoundHeight)))
-		{
-			float percent = ((point.y - leftCenter.y) - ((leftBackgoundHeight / 2) - (leftJoystickYValidBand * leftBackgoundHeight))) / ((leftJoystickYValidBand * leftBackgoundHeight));
-			if(percent > 1.0)
+        if (self.throttleIsLocked && self.isLeftHanded) {
+            leftJoystickYInput = self.throttleChannel.value;
+        } else if ((point.y - self.leftCenter.y) > ((leftBackgoundHeight / 2) - (leftJoystickYValidBand * leftBackgoundHeight))) {
+			float percent = ((point.y - self.leftCenter.y) - ((leftBackgoundHeight / 2) - (leftJoystickYValidBand * leftBackgoundHeight))) / ((leftJoystickYValidBand * leftBackgoundHeight));
+			if (percent > 1.0) {
 				percent = 1.0;
+            }
             
             leftJoystickYInput = -percent;
-		}
-		else if((leftCenter.y - point.y) > ((leftBackgoundHeight / 2) - (leftJoystickYValidBand * leftBackgoundHeight)))
-		{
-			float percent = ((leftCenter.y - point.y) - ((leftBackgoundHeight / 2) - (leftJoystickYValidBand * leftBackgoundHeight))) / ((leftJoystickYValidBand * leftBackgoundHeight));
-			if(percent > 1.0)
+		} else if ((self.leftCenter.y - point.y) > ((leftBackgoundHeight / 2) - (leftJoystickYValidBand * leftBackgoundHeight))) {
+			float percent = ((self.leftCenter.y - point.y) - ((leftBackgoundHeight / 2) - (leftJoystickYValidBand * leftBackgoundHeight))) / ((leftJoystickYValidBand * leftBackgoundHeight));
+			if (percent > 1.0)
 				percent = 1.0;
             
             leftJoystickYInput = percent;
-		}
-		else
-		{  
+		} else {
             leftJoystickYInput = 0.0;
 		}		
         
         //NSLog(@"left y input:%.3f",leftJoystickYInput);
         
-        if(isLeftHanded){
-            if (_settings.isBeginnerMode) {
-                   [_throttleChannel setValue:(kBeginnerThrottleChannelRatio - 1) + leftJoystickYInput * kBeginnerThrottleChannelRatio];
-            }
-            else{
-                [_throttleChannel setValue:leftJoystickYInput];
+        if (self.isLeftHanded) {
+            if (self.settings.isBeginnerMode) {
+                   [self.throttleChannel setValue:(kBeginnerThrottleChannelRatio - 1) + leftJoystickYInput * kBeginnerThrottleChannelRatio];
+            } else {
+                [self.throttleChannel setValue:leftJoystickYInput];
             }
             
             [self updateThrottleValueLabel];
-        }
-        else{
-            if (accModeEnabled == NO) {
-                if (_settings.isBeginnerMode) {
-                    [_elevatorChannel setValue:leftJoystickYInput * kBeginnerElevatorChannelRatio];
-                }
-                else{
-                    [_elevatorChannel setValue:leftJoystickYInput];
+        } else {
+            if (self.accModeEnabled == NO) {
+                if (self.settings.isBeginnerMode) {
+                    [self.elevatorChannel setValue:leftJoystickYInput * kBeginnerElevatorChannelRatio];
+                } else {
+                    [self.elevatorChannel setValue:leftJoystickYInput];
                 }
             }
         }
 	}
     
-    BOOL isRight = (sender == joystickRightButton);
+    BOOL isRight = (sender == self.joystickRightButton);
     
     
-    if (isLeftHanded) {
-        if (isRight && buttonRightPressed && accModeEnabled) {
+    if (self.isLeftHanded) {
+        if (isRight && self.buttonRightPressed && self.accModeEnabled) {
             ;
-        }
-        else{
+        } else {
             [self updateVelocity:point isRight:isRight];
         }
     }
     else{
-        if ((isRight == NO) && buttonLeftPressed && accModeEnabled) {
+        if ((isRight == NO) && self.buttonLeftPressed && self.accModeEnabled) {
             ;
-        }
-        else{
+        } else {
             [self updateVelocity:point isRight:isRight];
         }
     }
@@ -1400,110 +1247,110 @@ static inline float sign(float value)
 }
 
 - (IBAction)buttonDidTouchDown:(id)sender {
-    if(sender == throttleUpButton){ 
-        upIndicatorImageView.hidden = NO;
+    if (sender == self.throttleUpButton) {
+        self.upIndicatorImageView.hidden = NO;
     }
-    else if(sender == throttleDownButton){
-        downIndicatorImageView.hidden = NO;
+    else if (sender == self.throttleDownButton) {
+        self.downIndicatorImageView.hidden = NO;
     }
 }
 
 - (IBAction)buttonDidDragEnter:(id)sender {
-    if(sender == throttleUpButton || sender == throttleDownButton){ 
+    if (sender == self.throttleUpButton || sender == self.throttleDownButton) {
         [self buttonDidTouchDown:sender];
     }
 }
 
 - (IBAction)buttonDidDragExit:(id)sender {
-    if(sender == throttleUpButton || sender == throttleDownButton){ 
+    if (sender == self.throttleUpButton || sender == self.throttleDownButton) {
         [self buttonDidTouchUpOutside:sender];
     }
 }
 
 - (IBAction)buttonDidTouchUpInside:(id)sender {
-    if(sender == setttingButton){
+    if (sender == self.setttingButton) {
         [self showSettingsMenuView];
     }
-    else if(sender == rudderLockButton){
-        rudderIsLocked = !rudderIsLocked;
+    else if (sender == self.rudderLockButton) {
+        self.rudderIsLocked = !self.rudderIsLocked;
         
-        if(rudderIsLocked){
+        if (self.rudderIsLocked) {
             if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-                [rudderLockButton setImage:[UIImage imageNamed:@"Switch_On_IPAD.png"] forState:UIControlStateNormal];
+                [self.rudderLockButton setImage:[UIImage imageNamed:@"Switch_On_IPAD.png"] forState:UIControlStateNormal];
             } 
             else {
-                [rudderLockButton setImage:[UIImage imageNamed:@"Switch_On_RETINA.png"] forState:UIControlStateNormal];
+                [self.rudderLockButton setImage:[UIImage imageNamed:@"Switch_On_RETINA.png"] forState:UIControlStateNormal];
             }
         }
         else{
             if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
-                [rudderLockButton setImage:[UIImage imageNamed:@"Switch_Off_IPAD.png"] forState:UIControlStateNormal];
+                [self.rudderLockButton setImage:[UIImage imageNamed:@"Switch_Off_IPAD.png"] forState:UIControlStateNormal];
             } 
             else {
-                [rudderLockButton setImage:[UIImage imageNamed:@"Switch_Off_RETINA.png"] forState:UIControlStateNormal];
+                [self.rudderLockButton setImage:[UIImage imageNamed:@"Switch_Off_RETINA.png"] forState:UIControlStateNormal];
             }
         }
         
         [self updateStatusInfoLabel];
     }
-    else if(sender == throttleUpButton){
-        if(_throttleChannel.value + kThrottleFineTuningStep > 1){
-            _throttleChannel.value = 1; 
+    else if (sender == self.throttleUpButton) {
+        if (self.throttleChannel.value + kThrottleFineTuningStep > 1) {
+            self.throttleChannel.value = 1;
         }
         else {
-            _throttleChannel.value += kThrottleFineTuningStep;
+            self.throttleChannel.value += kThrottleFineTuningStep;
         }
         [self updateJoystickCenter];
         
-        if(isLeftHanded){
-            joystickLeftThumbImageView.center = CGPointMake(joystickLeftThumbImageView.center.x, leftCenter.y - _throttleChannel.value * leftJoyStickOperableRadius);
+        if (self.isLeftHanded) {
+            self.joystickLeftThumbImageView.center = CGPointMake(self.joystickLeftThumbImageView.center.x, self.leftCenter.y - self.throttleChannel.value * self.leftJoyStickOperableRadius);
         }
         else{
-            joystickRightThumbImageView.center = CGPointMake(joystickRightThumbImageView.center.x, rightCenter.y - _throttleChannel.value * rightJoyStickOperableRadius);
+            self.joystickRightThumbImageView.center = CGPointMake(self.joystickRightThumbImageView.center.x, self.rightCenter.y - self.throttleChannel.value * self.rightJoyStickOperableRadius);
         }   
         
-        upIndicatorImageView.hidden = YES;
+        self.upIndicatorImageView.hidden = YES;
         
         [self updateThrottleValueLabel];
     }
-    else if(sender == throttleDownButton){
-        if(_throttleChannel.value - kThrottleFineTuningStep < -1){
-            _throttleChannel.value = -1; 
+    else if (sender == self.throttleDownButton) {
+        if (self.throttleChannel.value - kThrottleFineTuningStep < -1) {
+            self.throttleChannel.value = -1;
         }
         else {
-            _throttleChannel.value -= kThrottleFineTuningStep;
+            self.throttleChannel.value -= kThrottleFineTuningStep;
         }
         [self updateJoystickCenter];
         
-        downIndicatorImageView.hidden = YES;
+        self.downIndicatorImageView.hidden = YES;
         
         [self updateThrottleValueLabel];
     }
-    else if(sender == helpButton){
+    else if (sender == self.helpButton) {
         [self showHelpView];
     }
 }
 
 - (IBAction)buttonDidTouchUpOutside:(id)sender {
-    if(sender == throttleUpButton){ 
-        upIndicatorImageView.hidden = YES;
+    if (sender == self.throttleUpButton) {
+        self.upIndicatorImageView.hidden = YES;
     }
-    else if(sender == throttleDownButton){
-        downIndicatorImageView.hidden = YES;
+    else if (sender == self.throttleDownButton) {
+        self.downIndicatorImageView.hidden = YES;
     }
 }
 
 - (IBAction)buttonDidTouchCancel:(id)sender {
-    if(sender == throttleUpButton || sender == throttleDownButton){ 
+    if (sender == self.throttleUpButton || sender == self.throttleDownButton) {
         [self buttonDidTouchUpOutside:sender];
     }
 }
 
 - (IBAction)unlockButtonDidTouchUp:(id)sender {
-    _aileronChannel.value = 0;
-    _elevatorChannel.value = 0;
-    _rudderChannel.value = 0;
-    _throttleChannel.value = -1;
+    self.aileronChannel.value = 0;
+    self.elevatorChannel.value = 0;
+    self.rudderChannel.value = 0;
+    self.throttleChannel.value = -1;
     
     [self updateThrottleValueLabel];
     [self updateJoystickCenter];
@@ -1540,7 +1387,7 @@ static inline float sign(float value)
 - (void)motionDataHandler
 {
     static uint64_t previous_time = 0;
-    if(previous_time == 0) previous_time = mach_absolute_time();
+    if (previous_time == 0) previous_time = mach_absolute_time();
     
     uint64_t current_time = mach_absolute_time();
     static mach_timebase_info_data_t sTimebaseInfo;
@@ -1564,7 +1411,7 @@ static inline float sign(float value)
     float phi = 0.0, theta = 0.0;
     
     //dt calculus function of real elapsed time
-    if(sTimebaseInfo.denom == 0) (void) mach_timebase_info(&sTimebaseInfo);
+    if (sTimebaseInfo.denom == 0) (void) mach_timebase_info(&sTimebaseInfo);
     elapsedNano = (current_time-previous_time)*(sTimebaseInfo.numer / sTimebaseInfo.denom);
     previous_time = current_time;
     dt = elapsedNano/1000000000.0;
@@ -1573,7 +1420,7 @@ static inline float sign(float value)
     CMMotionManager *motionManager = [[BasicInfoManager sharedManager] motionManager];
     
     //Get ACCELERO values
-    if(motionManager.gyroAvailable == 0 && motionManager.accelerometerAvailable == 1)
+    if (motionManager.gyroAvailable == 0 && motionManager.accelerometerAvailable == 1)
     {
         //Only accelerometer (iphone 3GS)
         current_acceleration.x = motionManager.accelerometerData.acceleration.x;
@@ -1590,7 +1437,7 @@ static inline float sign(float value)
     
     //NSLog(@"Before Shake %f %f %f",current_acceleration.x, current_acceleration.y, current_acceleration.z);
     
-    if( isnan(current_acceleration.x) || isnan(current_acceleration.y) || isnan(current_acceleration.z)
+    if ( isnan(current_acceleration.x) || isnan(current_acceleration.y) || isnan(current_acceleration.z)
        || fabs(current_acceleration.x) > 10 || fabs(current_acceleration.y) > 10 || fabs(current_acceleration.z)>10)
     {
         static uint32_t count = 0;
@@ -1601,7 +1448,7 @@ static inline float sign(float value)
     }
     
     //INIT accelero variables
-    if(first_time_accelero == TRUE)
+    if (first_time_accelero == TRUE)
     {
         first_time_accelero = FALSE;
         last_acceleration.x = current_acceleration.x;
@@ -1625,16 +1472,16 @@ static inline float sign(float value)
 #define ACCELERO_THRESHOLD          0.2
 #define ACCELERO_FASTMOVE_THRESHOLD	1.3
     
-    if(fabs(highPassFilterX) > ACCELERO_FASTMOVE_THRESHOLD ||
+    if (fabs(highPassFilterX) > ACCELERO_FASTMOVE_THRESHOLD ||
        fabs(highPassFilterY) > ACCELERO_FASTMOVE_THRESHOLD ||
-       fabs(highPassFilterZ) > ACCELERO_FASTMOVE_THRESHOLD){
+       fabs(highPassFilterZ) > ACCELERO_FASTMOVE_THRESHOLD) {
         ;
     }
     else{
-        if(accModeEnabled){
-            if(accModeReady == NO){
-                [_aileronChannel setValue:0];
-                [_elevatorChannel setValue:0];
+        if (self.accModeEnabled) {
+            if (self.accModeReady == NO) {
+                [self.aileronChannel setValue:0];
+                [self.elevatorChannel setValue:0];
             }
             else{
                 
@@ -1668,7 +1515,7 @@ static inline float sign(float value)
                 + (accelero_rotation[2][2] * current_acceleration.z);
                 
                 //IF sequence to remove the angle jump problem when accelero mesure X angle AND Y angle AND Z change of sign
-                if(current_acceleration_rotate.y > -ACCELERO_THRESHOLD && current_acceleration_rotate.y < ACCELERO_THRESHOLD)
+                if (current_acceleration_rotate.y > -ACCELERO_THRESHOLD && current_acceleration_rotate.y < ACCELERO_THRESHOLD)
                 {
                     angle_acc_x = atan2f(current_acceleration_rotate.x,
                                          sign(-current_acceleration_rotate.z)*sqrtf(current_acceleration_rotate.y*current_acceleration_rotate.y+current_acceleration_rotate.z*current_acceleration_rotate.z));
@@ -1680,7 +1527,7 @@ static inline float sign(float value)
                 }
                 
                 //IF sequence to remove the angle jump problem when accelero mesure X angle AND Y angle AND Z change of sign
-                if(current_acceleration_rotate.x > -ACCELERO_THRESHOLD && current_acceleration_rotate.x < ACCELERO_THRESHOLD)
+                if (current_acceleration_rotate.x > -ACCELERO_THRESHOLD && current_acceleration_rotate.x < ACCELERO_THRESHOLD)
                 {
                     angle_acc_y = atan2f(current_acceleration_rotate.y,
                                          sign(-current_acceleration_rotate.z)*sqrtf(current_acceleration_rotate.x*current_acceleration_rotate.x+current_acceleration_rotate.z*current_acceleration_rotate.z));
@@ -1706,7 +1553,7 @@ static inline float sign(float value)
                     angle_gyro_y += current_angular_rate_y * dt;
                     angle_gyro_z += current_angular_rate_z * dt;
                     
-                    if(first_time_gyro == TRUE)
+                    if (first_time_gyro == TRUE)
                     {
                         first_time_gyro = FALSE;
                         
@@ -1744,10 +1591,10 @@ static inline float sign(float value)
                 //NSLog(@"%*.2f  %*.2f  %*.2f  %*.2f  %*.2f",2,-angle_acc_x*180/PI,2,-angle_acc_y*180/PI,2,current_acceleration_rotate.x,2,current_acceleration_rotate.y,2,current_acceleration_rotate.z);
                 //Adapt the command values Normalize between -1 = 1.57rad and 1 = 1.57 rad
                 //and reverse the values in regards of the screen orientation
-                if(motionManager.gyroAvailable == 0 && motionManager.accelerometerAvailable == 1)
+                if (motionManager.gyroAvailable == 0 && motionManager.accelerometerAvailable == 1)
                 {
                     //Only accelerometer (iphone 3GS)
-                    if(1)//screenOrientationRight
+                    if (1)//screenOrientationRight
                     {
                         theta = -angle_acc_x;
                         phi = -angle_acc_y;
@@ -1767,13 +1614,13 @@ static inline float sign(float value)
                 //Clamp the command sent
                 theta = theta / M_PI_2;
                 phi   = phi / M_PI_2;
-                if(theta > 1)
+                if (theta > 1)
                     theta = 1;
-                if(theta < -1)
+                if (theta < -1)
                     theta = -1;
-                if(phi > 1)
+                if (phi > 1)
                     phi = 1;
-                if(phi < -1)
+                if (phi < -1)
                     phi = -1;
                 
                 //NSLog(@"ctrldata.iphone_theta %f", theta);
@@ -1790,26 +1637,26 @@ static inline float sign(float value)
             }
         }
         else{
-            if (accModeReady) {
+            if (self.accModeReady) {
             }
         }
     }
 }
 
 - (void)updateJoysticksForAccModeChanged{
-    if (accModeEnabled) {
-        if (isLeftHanded) {
-            joystickLeftBackgroundImageView.hidden = NO;
-            joystickRightBackgroundImageView.hidden = YES;
+    if (self.accModeEnabled) {
+        if (self.isLeftHanded) {
+            self.joystickLeftBackgroundImageView.hidden = NO;
+            self.joystickRightBackgroundImageView.hidden = YES;
         }
         else{
-            joystickLeftBackgroundImageView.hidden = YES;
-            joystickRightBackgroundImageView.hidden = NO;
+            self.joystickLeftBackgroundImageView.hidden = YES;
+            self.joystickRightBackgroundImageView.hidden = NO;
         }
     }
     else{
-        joystickLeftBackgroundImageView.hidden = NO;
-        joystickRightBackgroundImageView.hidden = NO;
+        self.joystickLeftBackgroundImageView.hidden = NO;
+        self.joystickRightBackgroundImageView.hidden = NO;
     }
 }
 

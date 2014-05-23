@@ -34,11 +34,7 @@
 #define kKeySettingsChannels @"Channels"
 
 
-@interface Settings : NSObject{
-    NSString *_path;
-    NSMutableArray *_channelArray;
-}
-
+@interface Settings : NSObject
 @property(nonatomic, strong) NSMutableDictionary *settingsData;
 
 //改变以下值，都不会自动保存到持久化文件中,需要持久化，需要调用save方法

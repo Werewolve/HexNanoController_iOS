@@ -20,65 +20,62 @@
 @end
 
 
-@interface OSDData : NSObject{
-    int present;
-}
+@interface OSDData : NSObject
 
-@property(nonatomic, readonly) int version;
+@property(nonatomic, readonly, assign) int version;
 
-@property(nonatomic, readonly) int multiType;
+@property(nonatomic, readonly, assign) int multiType;
 
-@property(nonatomic, readonly) float gyroX;
-@property(nonatomic, readonly) float gyroY;
-@property(nonatomic, readonly) float gyroZ;
+@property(nonatomic, readonly, assign) float gyroX;
+@property(nonatomic, readonly, assign) float gyroY;
+@property(nonatomic, readonly, assign) float gyroZ;
 
-@property(nonatomic, readonly) float accX;
-@property(nonatomic, readonly) float accY;
-@property(nonatomic, readonly) float accZ;
+@property(nonatomic, readonly, assign) float accX;
+@property(nonatomic, readonly, assign) float accY;
+@property(nonatomic, readonly, assign) float accZ;
 
-@property(nonatomic, readonly) float magX;
-@property(nonatomic, readonly) float magY;
-@property(nonatomic, readonly) float magZ;
+@property(nonatomic, readonly, assign) float magX;
+@property(nonatomic, readonly, assign) float magY;
+@property(nonatomic, readonly, assign) float magZ;
 
-@property(nonatomic, readonly) float altitude;
-@property(nonatomic, readonly) float head;
-@property(nonatomic, readonly) float angleX;
-@property(nonatomic, readonly) float angleY;
+@property(nonatomic, readonly, assign) float altitude;
+@property(nonatomic, readonly, assign) float head;
+@property(nonatomic, readonly, assign) float angleX;
+@property(nonatomic, readonly, assign) float angleY;
 
-@property(nonatomic, readonly) int gpsSatCount;
-@property(nonatomic, readonly) int gpsLongitude;
-@property(nonatomic, readonly) int gpsLatitude;
-@property(nonatomic, readonly) int gpsAltitude;
-@property(nonatomic, readonly) int gpsDistanceToHome;
-@property(nonatomic, readonly) int gpsDirectionToHome;
-@property(nonatomic, readonly) int gpsFix;
-@property(nonatomic, readonly) int gpsUpdate;
-@property(nonatomic, readonly) int gpsSpeed;
+@property(nonatomic, readonly, assign) int gpsSatCount;
+@property(nonatomic, readonly, assign) int gpsLongitude;
+@property(nonatomic, readonly, assign) int gpsLatitude;
+@property(nonatomic, readonly, assign) int gpsAltitude;
+@property(nonatomic, readonly, assign) int gpsDistanceToHome;
+@property(nonatomic, readonly, assign) int gpsDirectionToHome;
+@property(nonatomic, readonly, assign) int gpsFix;
+@property(nonatomic, readonly, assign) int gpsUpdate;
+@property(nonatomic, readonly, assign) int gpsSpeed;
 
-@property(nonatomic, readonly) float rcThrottle;
-@property(nonatomic, readonly) float rcYaw;
-@property(nonatomic, readonly) float rcRoll;
-@property(nonatomic, readonly) float rcPitch;
-@property(nonatomic, readonly) float rcAux1;
-@property(nonatomic, readonly) float rcAux2;
-@property(nonatomic, readonly) float rcAux3;
-@property(nonatomic, readonly) float rcAux4;
+@property(nonatomic, readonly, assign) float rcThrottle;
+@property(nonatomic, readonly, assign) float rcYaw;
+@property(nonatomic, readonly, assign) float rcRoll;
+@property(nonatomic, readonly, assign) float rcPitch;
+@property(nonatomic, readonly, assign) float rcAux1;
+@property(nonatomic, readonly, assign) float rcAux2;
+@property(nonatomic, readonly, assign) float rcAux3;
+@property(nonatomic, readonly, assign) float rcAux4;
 
-@property(nonatomic, readonly) float debug1;
-@property(nonatomic, readonly) float debug2;
-@property(nonatomic, readonly) float debug3;
-@property(nonatomic, readonly) float debug4;
+@property(nonatomic, readonly, assign) float debug1;
+@property(nonatomic, readonly, assign) float debug2;
+@property(nonatomic, readonly, assign) float debug3;
+@property(nonatomic, readonly, assign) float debug4;
 
 
-@property(nonatomic, readonly) int pMeterSum;
-@property(nonatomic, readonly) int byteVbat;
+@property(nonatomic, readonly, assign) int pMeterSum;
+@property(nonatomic, readonly, assign) int byteVbat;
 
-@property(nonatomic, readonly) int cycleTime;
-@property(nonatomic, readonly) int i2cError;
+@property(nonatomic, readonly, assign) int cycleTime;
+@property(nonatomic, readonly, assign) int i2cError;
 
-@property(nonatomic, readonly) int mode;
-@property(nonatomic, readonly) int present;
-
+@property(nonatomic, readonly, assign) int mode;
+@property(nonatomic, readonly, assign) int present;
 
 @property(nonatomic, weak) id<OSDDataDelegate> delegate;
 

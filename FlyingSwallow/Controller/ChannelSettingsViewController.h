@@ -23,40 +23,30 @@
 
 #define kNotificationDismissChannelSettingsView @"NotificationDissmissChannelSettingsView"
 
-@interface ChannelSettingsViewController : UIViewController{
-    IBOutlet UILabel *channelSettingsTitleLabel;
-    
-    IBOutlet UILabel *isReversedTitleLabel;
-    IBOutlet UILabel *trimValueTitleLabel;
-    IBOutlet UILabel *outputAdjustableRangeTitleLabel;
-    IBOutlet UILabel *outputPpmRangeTitleLabel;
-    IBOutlet UILabel *defaultOuputValueTitleLabel;
-    
-    IBOutlet UIButton *isReversedSwitchButton;
-    IBOutlet FSSlider *trimValueSlider;
-    IBOutlet UILabel *trimValueLabel;
-    IBOutlet FSSlider *outputAdjustableRangeSlider;
-    IBOutlet UILabel *outputAdjustableRangeLabel;
-    IBOutlet UILabel *outputPpmRangeLabel;
-    IBOutlet UITextField *defaultOutputValueTextField;
-    IBOutlet FSSlider *defaultOutputValueSlider;
-    IBOutlet UILabel *defaultOutputValueLabel;
-    
-    IBOutlet UIView *defaultOutputValueView;
-    IBOutlet UIButton *dismissButton;
-    IBOutlet UIButton *defaultButton;
-}
-
+@interface ChannelSettingsViewController : UIViewController
+@property (nonatomic, weak) IBOutlet UILabel *channelSettingsTitleLabel;
+@property (nonatomic, weak) IBOutlet UILabel *isReversedTitleLabel;
+@property (nonatomic, weak) IBOutlet UILabel *trimValueTitleLabel;
+@property (nonatomic, weak) IBOutlet UILabel *outputAdjustableRangeTitleLabel;
+@property (nonatomic, weak) IBOutlet UILabel *outputPpmRangeTitleLabel;
+@property (nonatomic, weak) IBOutlet UILabel *defaultOuputValueTitleLabel;
+@property (nonatomic, weak) IBOutlet UIButton *isReversedSwitchButton;
+@property (nonatomic, weak) IBOutlet FSSlider *trimValueSlider;
+@property (nonatomic, weak) IBOutlet UILabel *trimValueLabel;
+@property (nonatomic, weak) IBOutlet FSSlider *outputAdjustableRangeSlider;
+@property (nonatomic, weak) IBOutlet UILabel *outputAdjustableRangeLabel;
+@property (nonatomic, weak) IBOutlet UILabel *outputPpmRangeLabel;
+@property (nonatomic, weak) IBOutlet UITextField *defaultOutputValueTextField;
+@property (nonatomic, weak) IBOutlet FSSlider *defaultOutputValueSlider;
+@property (nonatomic, weak) IBOutlet UILabel *defaultOutputValueLabel;
+@property (nonatomic, weak) IBOutlet UIView *defaultOutputValueView;
+@property (nonatomic, weak) IBOutlet UIButton *dismissButton;
+@property (nonatomic, weak) IBOutlet UIButton *defaultButton;
 //当重新设置channel后，UI显示的内容会随之更新
 @property(nonatomic, strong) Channel *channel;
-
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil channel:(Channel *)channel;
-
 - (IBAction)buttonClick:(id)sender;
 - (IBAction)switchButtonClick:(id)sender;
 - (IBAction)sliderValueChanged:(id)sender;
 - (IBAction)sliderRelease:(id)sender;
-
-
-
 @end

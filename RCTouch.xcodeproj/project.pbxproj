@@ -17,7 +17,7 @@
 		E01CC8BD16F4CB360006921B /* BasicInfoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E01CC8BC16F4CB360006921B /* BasicInfoManager.m */; };
 		E01CC8C416F4D9260006921B /* drone.png in Resources */ = {isa = PBXBuildFile; fileRef = E01CC8C216F4D9260006921B /* drone.png */; };
 		E01CC8C516F4D9260006921B /* world.jpg in Resources */ = {isa = PBXBuildFile; fileRef = E01CC8C316F4D9260006921B /* world.jpg */; };
-		E01D3474171E707D00618DC0 /* BleSerialManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E01D3473171E707D00618DC0 /* BleSerialManager.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		E01D3474171E707D00618DC0 /* BleSerialManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E01D3473171E707D00618DC0 /* BleSerialManager.m */; };
 		E05AA5E7169B4227009DA2A7 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = E0E3D35A169B2AE300DC30C6 /* Default.png */; };
 		E05AA5E8169B42C3009DA2A7 /* Default-Portrait~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = E0E3D364169B31AE00DC30C6 /* Default-Portrait~ipad.png */; };
 		E05AA5F3169B494B009DA2A7 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E0E3D358169B2A9000DC30C6 /* Default@2x.png */; };
@@ -43,7 +43,7 @@
 		E0C70A46169868FF0012570B /* Up_Indicator.png in Resources */ = {isa = PBXBuildFile; fileRef = E0C70A44169868FF0012570B /* Up_Indicator.png */; };
 		E0CCFAAC1685C494000266A9 /* Settings.plist in Resources */ = {isa = PBXBuildFile; fileRef = E0CCFAAB1685C494000266A9 /* Settings.plist */; };
 		E0CCFAB01685C63C000266A9 /* Settings.m in Sources */ = {isa = PBXBuildFile; fileRef = E0CCFAAF1685C63C000266A9 /* Settings.m */; };
-		E0CCFAB31685CB95000266A9 /* Channel.m in Sources */ = {isa = PBXBuildFile; fileRef = E0CCFAB21685CB95000266A9 /* Channel.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		E0CCFAB31685CB95000266A9 /* Channel.m in Sources */ = {isa = PBXBuildFile; fileRef = E0CCFAB21685CB95000266A9 /* Channel.m */; };
 		E0D0141D16887DFC003E3F19 /* ChannelSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E0D0141C16887DFC003E3F19 /* ChannelSettingsViewController.m */; };
 		E0D0142016887E1C003E3F19 /* ChannelSettingsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E0D0141F16887E1C003E3F19 /* ChannelSettingsViewController.xib */; };
 		E0D0142216887E2E003E3F19 /* ChannelSettingsViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = E0D0142116887E2E003E3F19 /* ChannelSettingsViewController_iPhone.xib */; };
@@ -52,7 +52,7 @@
 		E0DDF9C31684698500F2A21E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0DDF9C21684698500F2A21E /* CoreGraphics.framework */; };
 		E0DDF9C91684698500F2A21E /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E0DDF9C71684698500F2A21E /* InfoPlist.strings */; };
 		E0DDF9CB1684698500F2A21E /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E0DDF9CA1684698500F2A21E /* main.m */; };
-		E0DDF9CF1684698500F2A21E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E0DDF9CE1684698500F2A21E /* AppDelegate.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		E0DDF9CF1684698500F2A21E /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E0DDF9CE1684698500F2A21E /* AppDelegate.m */; };
 		E0DDF9E516846E3700F2A21E /* HudViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E0DDF9E416846E3700F2A21E /* HudViewController.m */; };
 		E0DDF9E716846E7C00F2A21E /* HudViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E0DDF9E616846E7C00F2A21E /* HudViewController.xib */; };
 		E0DDF9E916846F4600F2A21E /* HudViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = E0DDF9E816846F4600F2A21E /* HudViewController_iPhone.xib */; };
@@ -62,7 +62,7 @@
 		E0DDFA27168474A200F2A21E /* Picto_Close_Window.png in Resources */ = {isa = PBXBuildFile; fileRef = E0DDFA24168474A200F2A21E /* Picto_Close_Window.png */; };
 		E0DDFA28168474A200F2A21E /* Picto_Warning.png in Resources */ = {isa = PBXBuildFile; fileRef = E0DDFA25168474A200F2A21E /* Picto_Warning.png */; };
 		E0DDFA3B16847E3100F2A21E /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E0DDFA3A16847E3100F2A21E /* AudioToolbox.framework */; };
-		E0DDFA4216849CEC00F2A21E /* SettingsMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E0DDFA4116849CEC00F2A21E /* SettingsMenuViewController.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		E0DDFA4216849CEC00F2A21E /* SettingsMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E0DDFA4116849CEC00F2A21E /* SettingsMenuViewController.m */; };
 		E0DDFA4716849D5000F2A21E /* SettingsMenuViewController_iPhone.xib in Resources */ = {isa = PBXBuildFile; fileRef = E0DDFA4616849D5000F2A21E /* SettingsMenuViewController_iPhone.xib */; };
 		E0DDFA4916849D6000F2A21E /* SettingsMenuViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E0DDFA4816849D6000F2A21E /* SettingsMenuViewController.xib */; };
 		E0DDFA6916849EBE00F2A21E /* arrow_left_gray.png in Resources */ = {isa = PBXBuildFile; fileRef = E0DDFA4B16849EBE00F2A21E /* arrow_left_gray.png */; };
@@ -133,7 +133,7 @@
 		E0EAAFE5174CB638007FB982 /* HudViewController_iPhone_tall.xib in Resources */ = {isa = PBXBuildFile; fileRef = E0EAAFE4174CB638007FB982 /* HudViewController_iPhone_tall.xib */; };
 		E0EAAFE7174CC019007FB982 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E0EAAFE6174CC019007FB982 /* Default-568h@2x.png */; };
 		E0EAAFE9174CCDDF007FB982 /* hud_frame_RETINA_TALL.png in Resources */ = {isa = PBXBuildFile; fileRef = E0EAAFE8174CCDDF007FB982 /* hud_frame_RETINA_TALL.png */; };
-		E0F5127B16F31982009CEF70 /* Transmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = E0F5127A16F31982009CEF70 /* Transmitter.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		E0F5127B16F31982009CEF70 /* Transmitter.m in Sources */ = {isa = PBXBuildFile; fileRef = E0F5127A16F31982009CEF70 /* Transmitter.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -843,6 +843,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -879,6 +880,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -908,7 +910,6 @@
 		E0DDF9D31684698500F2A21E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -926,7 +927,6 @@
 		E0DDF9D41684698500F2A21E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
