@@ -11,6 +11,7 @@
 #define kNotificationDismissHelpView @"NotificationDissmissHelpView"
 
 @interface HelpViewController : UIViewController<UIScrollViewDelegate>
+
 @property (nonatomic, weak) IBOutlet UILabel *pageTitleLabel;
 @property (nonatomic, weak) IBOutlet UIPageControl *pageControl;
 @property (nonatomic, weak) IBOutlet UIScrollView *settingsPageScrollView;
@@ -20,5 +21,7 @@
 @property (nonatomic, weak) IBOutlet UIView *pageView04;
 @property (nonatomic, weak) IBOutlet UIView *pageView05;
 @property (nonatomic, weak) IBOutlet UIButton *closeBtn;
+
 - (IBAction)close:(id)sender;
+
 @end

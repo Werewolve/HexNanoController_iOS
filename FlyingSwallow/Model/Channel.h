@@ -18,7 +18,6 @@
 //  THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
-@class Settings;
 
 #define kKeyChannelName @"Name"
 #define kKeyChannelIsReversed @"IsReversed"
@@ -35,7 +34,9 @@
 #define kChannelNameAUX3 @"AUX3"
 #define kChannelNameAUX4 @"AUX4"
 
+@class Settings;
 @interface Channel : NSObject
+
 @property(nonatomic, strong, readonly) NSString *name;
 @property(nonatomic, assign) BOOL isReversing;
 @property(nonatomic, assign) float trimValue;
@@ -44,5 +45,7 @@
 @property(nonatomic, assign) float value;
 @property(nonatomic, assign) int idx;
 @property(nonatomic, weak) Settings *ownerSettings;
+
 - (id)initWithSetting:(Settings *)settings idx:(int)idx;
+
 @end

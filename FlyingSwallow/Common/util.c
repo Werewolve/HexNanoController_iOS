@@ -17,11 +17,10 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
 float clip(float value, float min, float max) {
-	if(value>max)
+	if (value>max)
 		return max;
-	if(value<min)
+	if (value<min)
 		return min;
 	return value;
 }

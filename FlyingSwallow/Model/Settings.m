@@ -23,33 +23,31 @@
 @interface Settings () {
     NSMutableArray *_channelArray;
 }
+
 @property (nonatomic, strong) NSString *path;
+
 @end
 
 @implementation Settings
 
 - (id)initWithSettingsFile:(NSString *)settingsFilePath{
     self = [super init];
-    
-    if(self){
+    if (self) {
         self.path = settingsFilePath;
-        
         self.settingsData = [[NSMutableDictionary alloc] initWithContentsOfFile:_path];
         NSArray *channelDataArray = self.settingsData[kKeySettingsChannels];
         NSUInteger channelCount = [channelDataArray count];
         _channelArray = [[NSMutableArray alloc] initWithCapacity:channelCount];
-
-        for(int channelIdx = 0; channelIdx < channelCount; channelIdx++){
+        
+        for (int channelIdx = 0; channelIdx < channelCount; channelIdx++) {
             Channel *channel = [[Channel alloc] initWithSetting:self idx:channelIdx];
             [_channelArray addObject:channel];
-            
         }
     }
-    
     return self;
 }
 
-- (void)setInterfaceOpacity:(float)interfaceOpacity{
+- (void)setInterfaceOpacity:(float)interfaceOpacity {
     self.settingsData[kKeySettingsInterfaceOpacity] = @(interfaceOpacity);
 }
 
@@ -57,7 +55,7 @@
     return [self.settingsData[kKeySettingsInterfaceOpacity] floatValue];
 }
 
-- (void)setIsLeftHanded:(BOOL)isLeftHanded{
+- (void)setIsLeftHanded:(BOOL)isLeftHanded {
     self.settingsData[kKeySettingsIsLeftHanded] = @(isLeftHanded);
 }
 
@@ -65,7 +63,7 @@
     return [self.settingsData[kKeySettingsIsLeftHanded] boolValue];
 }
 
-- (void)setIsAccMode:(BOOL)isAccMode{
+- (void)setIsAccMode:(BOOL)isAccMode {
     self.settingsData[kKeySettingsIsAccMode] = @(isAccMode);
 }
 
@@ -73,7 +71,7 @@
     return [self.settingsData[kKeySettingsIsAccMode] boolValue];
 }
 
-- (void)setIsHeadFreeMode:(BOOL)isHeadFreeMode{
+- (void)setIsHeadFreeMode:(BOOL)isHeadFreeMode {
     self.settingsData[kKeySettingsIsHeadFreeMode] = @(isHeadFreeMode);
 }
 
@@ -81,7 +79,7 @@
     return [self.settingsData[kKeySettingsIsHeadFreeMode] boolValue];
 }
 
-- (void)setIsAltHoldMode:(BOOL)isAltHoldMode{
+- (void)setIsAltHoldMode:(BOOL)isAltHoldMode {
     self.settingsData[kKeySettingsIsAltHoldMode] = @(isAltHoldMode);
 }
 
@@ -89,7 +87,7 @@
     return [self.settingsData[kKeySettingsIsAltHoldMode] boolValue];
 }
 
-- (void)setIsBeginnerMode:(BOOL)isBeginnerMode{
+- (void)setIsBeginnerMode:(BOOL)isBeginnerMode {
     self.settingsData[kKeySettingsIsBeginnerMode] = @(isBeginnerMode);
 }
 
@@ -97,7 +95,7 @@
     return [self.settingsData[kKeySettingsIsBeginnerMode] boolValue];
 }
 
-- (void)setPpmPolarityIsNegative:(BOOL)ppmPolarityIsNegative{
+- (void)setPpmPolarityIsNegative:(BOOL)ppmPolarityIsNegative {
     self.settingsData[kKeySettingsPpmPolarityIsNegative] = @(ppmPolarityIsNegative);
 }
 
@@ -105,7 +103,7 @@
     return [self.settingsData[kKeySettingsPpmPolarityIsNegative] boolValue];
 }
 
-- (void)setAileronDeadBand:(float)aileronDeadBand{
+- (void)setAileronDeadBand:(float)aileronDeadBand {
     self.settingsData[kKeySettingsAileronDeadBand] = @(aileronDeadBand);
 }
 
@@ -113,7 +111,7 @@
     return [self.settingsData[kKeySettingsAileronDeadBand] floatValue];
 }
 
-- (void)setElevatorDeadBand:(float)elevatorDeadBand{
+- (void)setElevatorDeadBand:(float)elevatorDeadBand {
     self.settingsData[kKeySettingsElevatorDeadBand] = @(elevatorDeadBand);
 }
 
@@ -121,7 +119,7 @@
     return [self.settingsData[kKeySettingsElevatorDeadBand] floatValue];
 }
 
-- (void)setRudderDeadBand:(float)rudderDeadBand{
+- (void)setRudderDeadBand:(float)rudderDeadBand {
     self.settingsData[kKeySettingsRudderDeadBand] = @(rudderDeadBand);
 }
 
@@ -129,7 +127,7 @@
     return [self.settingsData[kKeySettingsRudderDeadBand] floatValue];
 }
 
-- (void)setTakeOffThrottle:(float)takeOffThrottle{
+- (void)setTakeOffThrottle:(float)takeOffThrottle {
     self.settingsData[kKeySettingsTakeOffThrottle] = @(takeOffThrottle);
 }
 
@@ -137,33 +135,32 @@
     return [self.settingsData[kKeySettingsTakeOffThrottle] floatValue];
 }
 
-- (void)save{
+- (void)save {
     [self.settingsData writeToFile:_path atomically:YES];
 }
 
-- (NSUInteger)channelCount{
+- (NSUInteger)channelCount {
     return [_channelArray count];
 }
 
-- (Channel *)channelAtIndex:(NSUInteger)i{
-    if(i < [_channelArray count]){
+- (Channel *)channelAtIndex:(NSUInteger)i {
+    if (i < [_channelArray count]) {
         return _channelArray[i];
-    }
-    else {
+    } else {
         return nil;
     }
 }
 
-- (Channel *)channelByName:(NSString*)name{
-    for(Channel *channel in _channelArray){
-        if([name isEqualToString:[channel name]]){
+- (Channel *)channelByName:(NSString*)name {
+    for (Channel *channel in _channelArray) {
+        if ([name isEqualToString:[channel name]]) {
             return channel;
         }
     }
     return nil;
 }
 
-- (void)changeChannelFrom:(NSUInteger)from to:(NSUInteger)to{
+- (void)changeChannelFrom:(NSUInteger)from to:(NSUInteger)to {
     Channel *channel = _channelArray[from];
 	[_channelArray removeObjectAtIndex:from];
 	[_channelArray insertObject:channel atIndex:to];
@@ -180,38 +177,29 @@
 	}
 }
 
-- (void)resetToDefault{
+- (void)resetToDefault {
     NSString *defaultSettingsFilePath = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"plist"];
-    
     Settings *defaultSettings = [[Settings alloc] initWithSettingsFile:defaultSettingsFilePath];
     self.settingsData = [defaultSettings.settingsData mutableCopy];
-
     NSUInteger channelCount = [defaultSettings channelCount];
     
-    for(NSUInteger defaultChannelIdx = 0; defaultChannelIdx < channelCount; defaultChannelIdx++){
+    for (NSUInteger defaultChannelIdx = 0; defaultChannelIdx < channelCount; defaultChannelIdx++) {
         Channel *defaultChannel = [[Channel alloc] initWithSetting:defaultSettings idx:(int)defaultChannelIdx];
-
         Channel *channel = [self channelByName:defaultChannel.name];
         
-        if(channel.idx != defaultChannelIdx){
+        if (channel.idx != defaultChannelIdx) {
             Channel *needsReordedChannel = _channelArray[defaultChannelIdx];
             needsReordedChannel.idx = channel.idx;
-            
             [_channelArray exchangeObjectAtIndex:defaultChannelIdx withObjectAtIndex:channel.idx];
-            
             channel.idx = (int)defaultChannelIdx;
         }
-
+        
         channel.isReversing = defaultChannel.isReversing;
         channel.trimValue = defaultChannel.trimValue;
         channel.outputAdjustabledRange = defaultChannel.outputAdjustabledRange;
         channel.defaultOutputValue = defaultChannel.defaultOutputValue;
         channel.value = channel.defaultOutputValue;
-
     }
-    
 }
-
-
 
 @end

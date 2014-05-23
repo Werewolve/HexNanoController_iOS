@@ -19,24 +19,14 @@
 
 #import "BlockViewStyle1.h"
 
-
 @implementation BlockViewStyle1
 
 - (id)initWithFrame:(CGRect)frame{
     self = [super initWithFrame:frame];
     if (self) {
-        self.backgroundColor = [UIColor colorWithWhite:0.5 alpha:0.2];
+        self.backgroundColor = [UIColor colorWithWhite:0.5f alpha:0.2f];
     }
     return self;
 }
-
-/*
- // Only override drawRect: if you perform custom drawing.
- // An empty implementation adversely affects performance during animation.
- - (void)drawRect:(CGRect)rect {
- // Drawing code.
- }
- */
-
 
 @end

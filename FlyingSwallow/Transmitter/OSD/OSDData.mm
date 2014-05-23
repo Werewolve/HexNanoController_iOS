@@ -94,8 +94,8 @@ using namespace std;
 
 @implementation OSDData
 
-- (id)init{
-    if(self =[super init]){
+- (id)init {
+    if (self =[super init]) {
         self.rcThrottle = 1500;
         self.rcRoll     = 1500;
         self.rcPitch    = 1500;
@@ -104,14 +104,12 @@ using namespace std;
         self.rcAux2     =1500;
         self.rcAux3     =1500;
         self.rcAux4     =1500;
-
     }
-    
     return self;
 }
 
-- (id)initWithOSDData:(OSDData *)osdData{
-    if(self = [super init]){
+- (id)initWithOSDData:(OSDData *)osdData {
+    if (self = [super init]) {
         self.version = osdData.version;
         
         self.multiType = osdData.multiType;
@@ -170,57 +168,25 @@ using namespace std;
     return self;
 }
 
-- (Float32)read32{
-//    uint32_t part1 = (inBuf[p++]&0xff);
-//    uint32self.t part2 = ((inBuf[p++]&0xff)<<8);
-//    uint32_t part3 = ((inBuf[p++]&0xff)<<16);
-//    uint32_t part4 = ((inBuf[p++]&0xff)<<24);
-//    
-//    uint32_t num = part1 + part2 + part3 + part4;
-//    
-//    float num2 = 10;
-//    
-//    
-//    memcpy(&num2, &num, 4);
-//    
-//    
-//    return num2;
-    
+- (Float32)read32 {
     return (inBuf[p++]&0xff) + ((inBuf[p++]&0xff)<<8) + ((inBuf[p++]&0xff)<<16) + ((inBuf[p++]&0xff)<<24);
 }
 
 - (float)int32ToFloat:(int)intNum{
     float floatNum;
-    
     memcpy((void *)(&floatNum), (void *)(&intNum), 4);
-    
     return floatNum;
 }
 
-- (int16_t)read16{
-    return (inBuf[p++]&0xff) + ((inBuf[p++])<<8); 
+- (int16_t)read16 {
+    return (inBuf[p++]&0xff) + ((inBuf[p++])<<8);
 }
 
 - (int)read8 {
     return inBuf[p++]&0xff;
 }
 
-- (void)parseRawData:(NSData *)data{
-//    if ((currentTime - mainInfoUpdateTime) >(double)(1000 / updateFreq)* CLOCKS_PER_SEC / 1000.0) {
-//        printf("\n***time durantion:%lfms", (currentTime - mainInfoUpdateTime) / (float)CLOCKS_PER_SEC * 1000);
-//        
-//        mainInfoUpdateTime = currentTime;
-//        
-//        printf("\nrequest \n");
-//        
-//        //vector<byte> requestList = requestMSPList(mainInfoRequest, 12);
-//        
-//        if(_delegate != nil){
-//           // NSData *request = [NSData dataWithBytes:requestList.data() length:requestList.size()];
-//           // [_delegate sendOsdDataUpdateRequest:request];
-//        }
-//    }
-    
+- (void)parseRawData:(NSData *)data {
     NSUInteger byteCount = data.length;
     
     byte * dataPtr = (byte *)data.bytes;
@@ -266,7 +232,7 @@ using namespace std;
             if ((checksum&0xFF) == (c&0xFF)) {
                 if (err_rcvd) {
                     //printf("Copter did not understand request type %d\n", c);
-                     c_state = IDLE;
+                    c_state = IDLE;
                     
                 } else {
                     /* we got a valid response packet, evaluate it */
@@ -277,8 +243,8 @@ using namespace std;
                 NSLog(@"<%d %d> {",(cmd&0xFF), (dataSize&0xFF));
                 
                 for (idx = 0; idx < dataSize; idx++) {
-                    if (idx != 0) { 
-                        printf(" ");   
+                    if (idx != 0) {
+                        printf(" ");
                     }
                     printf("%d",(inBuf[idx] & 0xFF));
                 }
@@ -292,7 +258,7 @@ using namespace std;
             }
             c_state = IDLE;
         }
-
+        
     }
 }
 
@@ -303,8 +269,8 @@ using namespace std;
         case MSP_IDENT:
             self.version = [self read8];
             self.multiType = [self read8];
-            [self read8]; // MSP version
-            [self read32];// capability
+            [self read8];
+            [self read32];
             break;
         case MSP_STATUS:
             self.cycleTime = [self read16];
@@ -321,21 +287,21 @@ using namespace std;
             self.gyroZ = [self read16] / 8;
             self.magX = [self read16] / 3;
             self.magY = [self read16] / 3;
-            self.magZ = [self read16] / 3;             
+            self.magZ = [self read16] / 3;
             break;
         case MSP_SERVO:
-            for(i=0;i<8;i++) 
-                servo[i] = [self read16]; 
+            for(i=0;i<8;i++)
+                servo[i] = [self read16];
             break;
         case MSP_MOTOR:
-            for(i=0;i<8;i++) 
-                mot[i] = [self read16]; 
+            for(i=0;i<8;i++)
+                mot[i] = [self read16];
             break;
         case MSP_RC:
             self.rcRoll     = [self read16];
             self.rcPitch    = [self read16];
             self.rcYaw      = [self read16];
-            self.rcThrottle = [self read16];    
+            self.rcThrottle = [self read16];
             self.rcAux1 = [self read16];
             self.rcAux2 = [self read16];
             self.rcAux3 = [self read16];
@@ -347,28 +313,28 @@ using namespace std;
             self.gpsLatitude = [self read32];
             self.gpsLongitude = [self read32];
             self.gpsAltitude = [self read16];
-            self.gpsSpeed = [self read16]; 
+            self.gpsSpeed = [self read16];
             break;
         case MSP_COMP_GPS:
             self.gpsDistanceToHome = [self read16];
             self.gpsDirectionToHome = [self read16];
-            self.gpsUpdate = [self read8]; 
+            self.gpsUpdate = [self read8];
             break;
         case MSP_ATTITUDE:
-            self.angleX = [self read16]/10;  //[-180,180]，往右roll时，为正数
-            self.angleY = [self read16]/10;  //[-180,180]，头往上仰时，为负
-            self.head = [self read16]; 
+            self.angleX = [self read16]/10;
+            self.angleY = [self read16]/10;
+            self.head = [self read16];
             
-            if(self.delegate != nil) {
+            if (self.delegate != nil) {
                 [self.delegate osdDataDidUpdateOneFrame:self];
             }
             break;
         case MSP_ALTITUDE:
-            self.altitude = (float) [self read32]; //[self int32ToFloat:[self read32]];
+            self.altitude = (float) [self read32];
             break;
         case MSP_BAT:
             self.byteVbat = [self read8];
-            self.pMeterSum = [self read16]; 
+            self.pMeterSum = [self read16];
             break;
         case MSP_RC_TUNING:
             break;
@@ -400,7 +366,6 @@ using namespace std;
         default:
             NSLog(@"error: Don't know how to handle reply:%d datasize:%d", icmd, aDataSize);
             break;
-           
     }
 }
 

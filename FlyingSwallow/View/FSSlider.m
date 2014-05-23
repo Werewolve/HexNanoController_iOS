@@ -8,7 +8,6 @@
 
 #import "FSSlider.h"
 #import "Macros.h"
-//#import "ARDroneTypes.h"
 
 #define HELVETICA       @"HelveticaNeue-CondensedBold"
 #define WHITE(a)        [UIColor colorWithWhite:1.f alpha:(a)]
@@ -16,19 +15,17 @@
 #define ORANGE(a)       [UIColor colorWithRed:255.f/255.f green:120.f/255.f blue:0.f/255.f alpha:(a)]
 
 @interface FSSlider()
+
 @property (nonatomic, readwrite, strong) UILabel* minLabel;
 @property (nonatomic, readwrite, strong) UILabel* maxLabel;
 @property (nonatomic, assign) CGFloat defaultSliderHeight;
 @property (nonatomic, assign) CGFloat sliderHeight;
 @property (nonatomic, assign) float minLabelBlackValue;
 @property (nonatomic, assign) float maxLabelBlackValue;
+
 @end
 
-
 @implementation FSSlider
-
-@synthesize minLabel = _minLabel;
-@synthesize maxLabel = _maxLabel;
 
 #define LABEL_OFFSET 10.f
 
@@ -44,11 +41,11 @@
         
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
             if (SYSTEM_VERSION_LESS_THAN(@"6.0")) {
-                scrollBarGray = [[UIImage imageNamed:@"scroll_bar_gray_iPad.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:0];
-                scrollBarOrange = [[UIImage imageNamed:@"scroll_bar_orange_iPad.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:0];
-            } else{
-                scrollBarGray = [[UIImage imageNamed:@"scroll_bar_gray_iPad.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 20, 0, 20) resizingMode:UIImageResizingModeTile];
-                scrollBarOrange = [[UIImage imageNamed:@"scroll_bar_orange_iPad.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 20, 0, 20)resizingMode:UIImageResizingModeTile];
+                scrollBarGray = [[UIImage imageNamed:@"scroll_bar_gray_iPad.png"] stretchableImageWithLeftCapWidth:20.0f topCapHeight:0.0f];
+                scrollBarOrange = [[UIImage imageNamed:@"scroll_bar_orange_iPad.png"] stretchableImageWithLeftCapWidth:20.0f topCapHeight:0.0f];
+            } else {
+                scrollBarGray = [[UIImage imageNamed:@"scroll_bar_gray_iPad.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0f, 20.0f, 0.0f, 20.0f) resizingMode:UIImageResizingModeTile];
+                scrollBarOrange = [[UIImage imageNamed:@"scroll_bar_orange_iPad.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0f, 20.0f, 0.0f, 20.0f)resizingMode:UIImageResizingModeTile];
             }
             
             scrollBtn = [UIImage imageNamed:@"scroll_btn_iPad.png"];
@@ -56,11 +53,11 @@
             
         } else {
             if (SYSTEM_VERSION_LESS_THAN(@"6.0")) {
-                scrollBarGray = [[UIImage imageNamed:@"scroll_bar_gray.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:0];
-                scrollBarOrange = [[UIImage imageNamed:@"scroll_bar_orange.png"] stretchableImageWithLeftCapWidth:20 topCapHeight:0];
-            } else{
-                scrollBarGray = [[UIImage imageNamed:@"scroll_bar_gray.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 20, 0, 20) resizingMode:UIImageResizingModeTile];
-                scrollBarOrange = [[UIImage imageNamed:@"scroll_bar_orange.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0, 20, 0, 20)resizingMode:UIImageResizingModeTile];
+                scrollBarGray = [[UIImage imageNamed:@"scroll_bar_gray.png"] stretchableImageWithLeftCapWidth:20.0f topCapHeight:0.0f];
+                scrollBarOrange = [[UIImage imageNamed:@"scroll_bar_orange.png"] stretchableImageWithLeftCapWidth:20.0f topCapHeight:0.0f];
+            } else {
+                scrollBarGray = [[UIImage imageNamed:@"scroll_bar_gray.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0f, 20.0f, 0.0f, 20.0f) resizingMode:UIImageResizingModeTile];
+                scrollBarOrange = [[UIImage imageNamed:@"scroll_bar_orange.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(0.0f, 20.0f, 0.0f, 20.0f)resizingMode:UIImageResizingModeTile];
             }
             scrollBtn = [UIImage imageNamed:@"scroll_btn.png"];
         }
@@ -100,13 +97,13 @@
         
         CGRect frame = _minLabel.frame;
         frame.origin.x = LABEL_OFFSET;
-        frame.origin.y = (self.frame.size.height - frame.size.height) / 2.f;
-        [_minLabel setFrame:frame];
+        frame.origin.y = (self.frame.size.height - frame.size.height) * 0.5f.f;
+        [self.minLabel setFrame:frame];
         
         frame = _maxLabel.frame;
         frame.origin.x = self.frame.size.width - frame.size.width - LABEL_OFFSET;
-        frame.origin.y = (self.frame.size.height - frame.size.height) / 2.f;
-        [_maxLabel setFrame:frame];
+        frame.origin.y = (self.frame.size.height - frame.size.height) * 0.5f.f;
+        [self.maxLabel setFrame:frame];
         
         self.minLabelBlackValue = ((self.minLabel.frame.size.width + LABEL_OFFSET) / (self.frame.size.width)) * (self.maximumValue - self.minimumValue) + self.minimumValue;
         self.maxLabelBlackValue = (1.0 - ((self.maxLabel.frame.size.width + LABEL_OFFSET) / (self.frame.size.width))) * (self.maximumValue - self.minimumValue) + self.minimumValue;
@@ -114,19 +111,14 @@
     return self;
 }
 
-- (void)drawRect:(CGRect)rect
-{
+- (void)drawRect:(CGRect)rect {
     [super drawRect:rect];
-    
-    //[self addSubview:self.minLabel];
-    //[self addSubview:self.maxLabel];
     
     [self insertSubview:self.minLabel atIndex:2];
     [self insertSubview:self.maxLabel atIndex:3];
 }
 
 - (CGRect)thumbRectForBounds:(CGRect)bounds trackRect:(CGRect)rect value:(float)value {
-    // Called when value changes
     if (value <= self.minLabelBlackValue) {
         [self.minLabel setTextColor:BLACK(1.f)];
     } else {
@@ -138,7 +130,6 @@
     } else {
         [self.maxLabel setTextColor:WHITE(1.f)];
     }
-    
     return [super thumbRectForBounds:bounds trackRect:rect value:value];
 }
 

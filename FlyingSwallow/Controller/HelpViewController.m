@@ -10,9 +10,11 @@
 #import "Macros.h"
 
 @interface HelpViewController ()
+
 @property (nonatomic, strong) NSMutableArray *pageViewArray;
 @property (nonatomic, strong) NSMutableArray *pageTitleArray;
 @property (nonatomic, assign) NSUInteger pageCount;
+
 @end
 
 @implementation HelpViewController
@@ -46,7 +48,7 @@
     
     self.pageCount = self.pageViewArray.count;
     
-    CGFloat x = 0.f;
+    CGFloat x = 0.0f;
     for (UIView *pageView in self.pageViewArray) {
         CGRect frame = pageView.frame;
         frame.origin.x = x;
@@ -55,21 +57,14 @@
         x += pageView.frame.size.width;
     }
     [self.settingsPageScrollView  setContentSize:CGSizeMake(x, self.settingsPageScrollView.frame.size.height)];
-    
     [self.pageControl setNumberOfPages:self.pageCount];
     [self.pageControl setCurrentPage:0];
     
     self.pageTitleLabel.text = NSLocalizedString(@"BLE DEVICES",nil);
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-}
-
-
 - (void)scrollViewDidScroll:(UIScrollView *)_scrollView {
-	NSUInteger currentPage = (NSUInteger) (self.settingsPageScrollView.contentOffset.x + .5f * self.settingsPageScrollView.frame.size.width) / self.settingsPageScrollView.frame.size.width;
-    
+	NSUInteger currentPage = (NSUInteger) (self.settingsPageScrollView.contentOffset.x + 0.5f * self.settingsPageScrollView.frame.size.width) / self.settingsPageScrollView.frame.size.width;
     [self.pageControl setCurrentPage:currentPage];
     [self.pageTitleLabel setText:self.pageTitleArray[currentPage]];
 }
@@ -77,4 +72,5 @@
 - (IBAction)close:(id)sender {
     [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationDismissHelpView object:self userInfo:nil];
 }
+
 @end

@@ -17,11 +17,9 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
-
 #ifndef FlyingSwallow_util_h
 #define FlyingSwallow_util_h
 
 float clip(float value, float min, float max);
-
 
 #endif

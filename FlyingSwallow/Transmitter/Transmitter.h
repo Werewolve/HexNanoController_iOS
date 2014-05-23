@@ -23,10 +23,12 @@ typedef enum {
 #define kNotificationTransmitterStateDidChange @"NotificationTransmitterStateDidChange"
 
 @interface Transmitter: NSObject <OSDDataDelegate, BleSerialManagerDelegate>
+
 @property (nonatomic, assign) TransmitterState outputState;
 @property (nonatomic, assign) TransmitterState inputState ;
 @property (nonatomic, strong) OSDData *osdData;
 @property (nonatomic, strong, readonly) BleSerialManager *bleSerialManager;
+
 + (Transmitter *)sharedTransmitter;
 - (BOOL)start;
 - (BOOL)stop;
@@ -34,4 +36,5 @@ typedef enum {
 - (BOOL)isConnected;
 - (BOOL)transmmitData:(NSData *)data;
 - (BOOL)transmmitSimpleCommand:(unsigned char)commandName;
+
 @end

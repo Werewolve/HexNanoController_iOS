@@ -20,9 +20,5 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-
-@interface BlockViewStyle1 : UIView {
-
-}
-
+@interface BlockViewStyle1 : UIView
 @end

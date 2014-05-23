@@ -8,17 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-
 @class OSDData;
-
 @protocol OSDDataDelegate <NSObject>
-
-//- (void)OSDDataDidUpdateTimeOut:(OSDData *)osdData;
-
 - (void)osdDataDidUpdateOneFrame:(OSDData *)osdData;
-
 @end
-
 
 @interface OSDData : NSObject
 
@@ -67,7 +60,6 @@
 @property(nonatomic, readonly, assign) float debug3;
 @property(nonatomic, readonly, assign) float debug4;
 
-
 @property(nonatomic, readonly, assign) int pMeterSum;
 @property(nonatomic, readonly, assign) int byteVbat;
 
@@ -81,6 +73,5 @@
 
 - (id)initWithOSDData:(OSDData *)osdData;
 - (void)parseRawData:(NSData *)data;
-
 
 @end

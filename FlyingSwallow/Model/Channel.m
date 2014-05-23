@@ -23,8 +23,10 @@
 #import "util.h"
 
 @interface Channel()
+
 @property(nonatomic, strong, readwrite) NSString *name;
 @property(nonatomic, strong) NSMutableDictionary *data;
+
 @end
 
 @implementation Channel
@@ -46,13 +48,12 @@
 }
 
 - (void)setValue:(float)value {
-	_value = clip(value, -1.0, 1.0);
-	float outputValue = clip(value + self.trimValue, -1.0, 1.0);
+	_value = clip(value, -1.0f, 1.0f);
+	float outputValue = clip(value + self.trimValue, -1.0f, 1.0f);
 	if (self.isReversing) {
 		outputValue = -outputValue;
 	}
 	outputValue *= self.outputAdjustabledRange;
-    
     [[Transmitter sharedTransmitter] setPpmValue:outputValue atChannel:self.idx];
 }
 

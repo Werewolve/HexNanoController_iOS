@@ -22,27 +22,21 @@
 #import "Settings.h"
 #import "util.h"
 
-@interface ChannelSettingsViewController ()
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil;
-
-@end
-
 @implementation ChannelSettingsViewController
 
-- (void)updateIsReversedSwitchButton{
+- (void)updateIsReversedSwitchButton {
     [self setSwitchButton:self.isReversedSwitchButton withValue:self.channel.isReversing];
 }
 
-- (void)updateTrimValueSlider{
+- (void)updateTrimValueSlider {
     self.trimValueSlider.value = self.channel.trimValue;
 }
 
-- (void)updateTrimValueLabel{
+- (void)updateTrimValueLabel {
     self.trimValueLabel.text = [NSString stringWithFormat:@"%.2f", self.channel.trimValue];
 }
 
-- (void)updateOutputAdjustableRangeSlider{
+- (void)updateOutputAdjustableRangeSlider {
     self.outputAdjustableRangeSlider.value = self.channel.outputAdjustabledRange;
 }
 
@@ -50,21 +44,18 @@
     self.outputAdjustableRangeLabel.text = [NSString stringWithFormat:@"%.2f", self.channel.outputAdjustabledRange];
 }
 
-- (void)updateoOtputPpmRangeLabel{
+- (void)updateoOtputPpmRangeLabel {
     int minOutputPpm = (int)(1500 + 500 * clip(-1 + self.channel.trimValue, -1, 1) * self.channel.outputAdjustabledRange);
     int maxOutputPpm = (int)(1500 + 500 * clip(1 + self.channel.trimValue, -1, 1) * self.channel.outputAdjustabledRange);
-    
     self.outputPpmRangeLabel.text = [NSString stringWithFormat:@"%d~%dus", minOutputPpm, maxOutputPpm];
 }
 
 - (void)updateDefaultOutputValueLabel{
-    float outputValue = clip(self.channel.defaultOutputValue+ self.channel.trimValue, -1.0, 1.0); 
+    float outputValue = clip(self.channel.defaultOutputValue+ self.channel.trimValue, -1.0f, 1.0f);
     if (self.channel.isReversing) {
         outputValue = -outputValue;
     }
-    
-    float defaultPpmValue = 1500 + 500 * (outputValue * self.channel.outputAdjustabledRange);
-    
+    float defaultPpmValue = 1500.0f + 500.0f * (outputValue * self.channel.outputAdjustabledRange);
     self.defaultOutputValueLabel.text = [NSString stringWithFormat:@"%.2f, %dus", self.channel.defaultOutputValue, (int)defaultPpmValue];
 }
 
@@ -82,10 +73,10 @@
     [self updateDefaultOutputValueSlider];
     [self updateDefaultOutputValueLabel];
     
-    if([self.channel.name isEqualToString:kChannelNameAileron] 
-       || [self.channel.name isEqualToString:kChannelNameElevator]
-       || [self.channel.name isEqualToString:kChannelNameRudder]
-       || [self.channel.name isEqualToString:kChannelNameThrottle]){
+    if ([self.channel.name isEqualToString:kChannelNameAileron]
+        || [self.channel.name isEqualToString:kChannelNameElevator]
+        || [self.channel.name isEqualToString:kChannelNameRudder]
+        || [self.channel.name isEqualToString:kChannelNameThrottle]) {
         self.defaultOutputValueView.hidden = YES;
     } else {
         self.defaultOutputValueView.hidden = NO;
@@ -116,15 +107,6 @@
     [self setSwitchButton:switchButton withValue:(0 == switchButton.tag) ? YES : NO];
 }
 
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil channel:(Channel *)channel{
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
@@ -136,12 +118,12 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.isReversedTitleLabel.text            = NSLocalizedString(@"IS REVERSING",nil);
-    self.trimValueTitleLabel.text             = NSLocalizedString(@"TRIM VALUE",nil);
-    self.outputAdjustableRangeTitleLabel.text = NSLocalizedString(@"OUTPUT ADJUSTABLE RANGE",nil);
-    self.outputPpmRangeTitleLabel.text        = NSLocalizedString(@"OUTPUT PPM RANGE",nil);
-    self.defaultOuputValueTitleLabel.text     = NSLocalizedString(@"DEFAULT OUTPUT VALUE",nil);
-    [self.defaultButton setTitle:NSLocalizedString(@"Default",nil) forState:UIControlStateNormal];
+    self.isReversedTitleLabel.text = NSLocalizedString(@"IS REVERSING", nil);
+    self.trimValueTitleLabel.text = NSLocalizedString(@"TRIM VALUE", nil);
+    self.outputAdjustableRangeTitleLabel.text = NSLocalizedString(@"OUTPUT ADJUSTABLE RANGE", nil);
+    self.outputPpmRangeTitleLabel.text = NSLocalizedString(@"OUTPUT PPM RANGE", nil);
+    self.defaultOuputValueTitleLabel.text = NSLocalizedString(@"DEFAULT OUTPUT VALUE", nil);
+    [self.defaultButton setTitle:NSLocalizedString(@"Default", nil) forState:UIControlStateNormal];
     
     [self updateAllValueUI];
     [self udpateChannelSettingsTitleLabel];
@@ -151,67 +133,60 @@
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
-
-- (void)resetToDefault{
+- (void)resetToDefault {
     self.channel.isReversing = NO;
-    self.channel.trimValue = 0;
-    self.channel.outputAdjustabledRange = 1;
-    self.channel.defaultOutputValue = 0;
+    self.channel.trimValue = 0.0f;
+    self.channel.outputAdjustabledRange = 1.0f;
+    self.channel.defaultOutputValue = 0.0f;
     
-    if([self.channel.name isEqualToString:kChannelNameThrottle])
-        self.channel.value = 0;
-    else
-        self.channel.value = 0;
+    if ([self.channel.name isEqualToString:kChannelNameThrottle]) {
+        self.channel.value = 0.0f;
+    } else {
+        self.channel.value = 0.0f;
+    }
     
     [self.channel.ownerSettings save];
-    
     [self updateAllValueUI];
 }
 
 - (IBAction)buttonClick:(id)sender {
-    if(sender == self.dismissButton){
+    if (sender == self.dismissButton) {
         [[NSNotificationCenter defaultCenter] postNotificationName:kNotificationDismissChannelSettingsView object:self userInfo:nil];
-    } else if(sender == self.defaultButton) {
+    } else if (sender == self.defaultButton) {
         [self resetToDefault];
-    } else {
-        ;
     }
 }
 
 - (IBAction)switchButtonClick:(id)sender {
-    if(sender == self.isReversedSwitchButton){
+    if (sender == self.isReversedSwitchButton) {
         self.channel.isReversing = self.isReversedSwitchButton.tag == 1 ? NO : YES;
-        
         [self.channel.ownerSettings save];
-        
         [self updateIsReversedSwitchButton];
     }
 }
 
 - (IBAction)sliderValueChanged:(id)sender {
-    if(sender == self.trimValueSlider) {
+    if (sender == self.trimValueSlider) {
         self.channel.trimValue = self.trimValueSlider.value;
         [self updateTrimValueLabel];
         [self updateoOtputPpmRangeLabel];
         [self updateDefaultOutputValueLabel];
         self.channel.value = self.channel.defaultOutputValue;
-    } else if(sender == self.outputAdjustableRangeSlider) {
+    } else if (sender == self.outputAdjustableRangeSlider) {
         self.channel.outputAdjustabledRange = self.outputAdjustableRangeSlider.value;
         [self updateOutputAdjustableRangeLabel];
         [self updateoOtputPpmRangeLabel];
         [self updateDefaultOutputValueLabel];
         self.channel.value = self.channel.defaultOutputValue;
-    } else if(sender == self.defaultOutputValueSlider){
-        if(![self.channel.name isEqualToString:kChannelNameAileron] 
-           && ![self.channel.name isEqualToString:kChannelNameElevator]
-           && ![self.channel.name isEqualToString:kChannelNameRudder]
-           && ![self.channel.name isEqualToString:kChannelNameThrottle]){
+    } else if (sender == self.defaultOutputValueSlider) {
+        if (![self.channel.name isEqualToString:kChannelNameAileron]
+            && ![self.channel.name isEqualToString:kChannelNameElevator]
+            && ![self.channel.name isEqualToString:kChannelNameRudder]
+            && ![self.channel.name isEqualToString:kChannelNameThrottle]) {
             self.channel.defaultOutputValue = self.defaultOutputValueSlider.value;
             self.channel.value = self.channel.defaultOutputValue;
             [self updateDefaultOutputValueLabel];
         }
-    } else{
-
     }
 }
 

@@ -26,21 +26,22 @@
 #import "Transmitter.h"
 #import "OSDCommon.h"
 
-#define kAileronElevatorMaxDeadBandRatio 0.2
-#define kRudderMaxDeadBandRatio 0.2
+#define kAileronElevatorMaxDeadBandRatio 0.2f
+#define kRudderMaxDeadBandRatio 0.2f
 
 #define kChannelListTableView 0
 #define kPeripheralDeviceListTabelView 1
 
-typedef enum settings_alert_dialog{
+typedef enum settings_alert_dialog {
     settings_alert_dialog_connect,
     settings_alert_dialog_disconnect,
     settings_alert_dialog_default,
     settings_alert_dialog_calibrate_mag,
     settings_alert_dialog_calibrate_acc
-}settings_alert_dialog;
+} settings_alert_dialog;
 
 @interface SettingsMenuViewController ()
+
 @property (nonatomic, strong) NSMutableArray *pageViewArray;
 @property (nonatomic, strong) NSMutableArray *pageTitleArray;
 @property (nonatomic, assign) NSUInteger pageCount;
@@ -50,17 +51,10 @@ typedef enum settings_alert_dialog{
 @property (nonatomic, strong) CBPeripheral *selectedPeripheral;
 @property (nonatomic, assign) BOOL isTryingConnect;
 @property (nonatomic, assign) BOOL isTryingDisconnect;
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil;
+
 @end
 
 @implementation SettingsMenuViewController
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-    }
-    return self;
-}
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil settings:(Settings *)settings {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -79,15 +73,14 @@ typedef enum settings_alert_dialog{
     self.peripheralListTableView.tag = kPeripheralDeviceListTabelView;
 }
 
-
 - (void)updateSettingsUI {
     [self setSwitchButton:self.leftHandedSwitchButton withValue:self.settings.isLeftHanded];
     [self setSwitchButton:self.accModeSwitchButton withValue:self.settings.isAccMode];
     [self setSwitchButton:self.beginnerModeSwitchButton withValue:self.settings.isBeginnerMode];
     [self setSwitchButton:self.headfreeModeSwitchButton withValue:self.settings.isHeadFreeMode];
     
-    self.interfaceOpacitySlider.value = self.settings.interfaceOpacity * 100;
-    self.interfaceOpacityLabel.text = [NSString stringWithFormat:@"%d%%", (int)(self.settings.interfaceOpacity * 100)];
+    self.interfaceOpacitySlider.value = self.settings.interfaceOpacity * 100.0f;
+    self.interfaceOpacityLabel.text = [NSString stringWithFormat:@"%d%%", (int)(self.settings.interfaceOpacity * 100.0f)];
     [self setSwitchButton:self.ppmPolarityReversedSwitchButton withValue:self.settings.ppmPolarityIsNegative];
     self.takeOffThrottleSlider.value = self.settings.takeOffThrottle;
     [self updateTakeOffThrottleLabel];
@@ -100,8 +93,7 @@ typedef enum settings_alert_dialog{
     [self.channelListTableView reloadData];
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
     
     self.leftHandedTitleLabel.text = NSLocalizedString(@"LEFT HANDED", nil);
@@ -125,7 +117,7 @@ typedef enum settings_alert_dialog{
     
     self.pageCount = self.pageViewArray.count;
     
-    CGFloat x = 0.f;
+    CGFloat x = 0.0f;
     for (UIView *pageView in self.pageViewArray) {
         CGRect frame = pageView.frame;
         frame.origin.x = x;
@@ -158,12 +150,9 @@ typedef enum settings_alert_dialog{
     self.channelListTableView.backgroundView.hidden = YES;
     
     NSString *currentLan = [NSLocale preferredLanguages][0];
-    
     NSURL *aboutFileURL = nil;
-    
     if (![currentLan isEqual:@"en"] && ![currentLan isEqual:@"zh-Hans"] && ![currentLan isEqual:@"zh-Hant"]) {
         NSBundle *enBundle =[NSBundle bundleWithPath:[[NSBundle mainBundle] pathForResource:@"en" ofType:@"lproj"]];
-        
         aboutFileURL = [NSURL fileURLWithPath:[enBundle pathForResource:@"About" ofType:@"html"]];
     } else {
         aboutFileURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"About" ofType:@"html"]];
@@ -171,20 +160,14 @@ typedef enum settings_alert_dialog{
     
     NSURLRequest *request = [NSURLRequest requestWithURL:aboutFileURL];
     [self.aboutWebView loadRequest:request];
-    
     [self updateSettingsUI];
-    
     if (self.peripheralList == nil) {
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleNotificationPeripheralListDidChange) name:kNotificationPeripheralListDidChange object:nil];
-        
         self.peripheralList =  [[[Transmitter sharedTransmitter] bleSerialManager] bleSerialList];
-        
         [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(updateConnectionState) userInfo:nil repeats:YES];
-        
         [self.connectionActivityIndicatorView stopAnimating];
         self.connectionActivityIndicatorView.hidden = YES;
     }
-    
     self.selectedPeripheral = [[Transmitter sharedTransmitter] bleSerialManager].currentBleSerial;
 }
 
@@ -240,7 +223,7 @@ typedef enum settings_alert_dialog{
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     
-    if ([self.channelSettingsVC.view superview] == nil) {
+    if (![self.channelSettingsVC.view superview]) {
         self.channelSettingsVC = nil;
     }
 }
@@ -262,19 +245,18 @@ typedef enum settings_alert_dialog{
 - (void)updateTakeOffThrottleLabel {
     Channel *throttleChannel = [self.settings channelByName:kChannelNameThrottle];
     
-    float outputValue = clip(-1 + self.settings.takeOffThrottle * 2 + throttleChannel.trimValue, -1.0, 1.0);
+    float outputValue = clip(-1 + self.settings.takeOffThrottle * 2.0f + throttleChannel.trimValue, -1.0f, 1.0f);
     
     if (throttleChannel.isReversing) {
         outputValue = -outputValue;
     }
     
-    float takeOffThrottle = 1500 + 500 * (outputValue * throttleChannel.outputAdjustabledRange);
-    
+    float takeOffThrottle = 1500.0f + 500.0f * (outputValue * throttleChannel.outputAdjustabledRange);
     self.takeOffThrottleLabel.text = [NSString stringWithFormat:@"%.2f, %dus", self.settings.takeOffThrottle, (int)takeOffThrottle];
 }
 
 - (void)updateRudderDeadBandLabel {
-    self.rudderDeadBandLabel.text = [NSString stringWithFormat:@"%.2f%%", self.settings.rudderDeadBand * 100];
+    self.rudderDeadBandLabel.text = [NSString stringWithFormat:@"%.2f%%", self.settings.rudderDeadBand * 100.0f];
 }
 
 - (void)updateRudderDeadBandSlider {
@@ -282,15 +264,15 @@ typedef enum settings_alert_dialog{
 }
 
 - (void)updateAileronElevatorDeadBandLabel {
-    self.aileronElevatorDeadBandLabel.text = [NSString stringWithFormat:@"%.2f%%", self.settings.aileronDeadBand * 100];
+    self.aileronElevatorDeadBandLabel.text = [NSString stringWithFormat:@"%.2f%%", self.settings.aileronDeadBand * 100.0f];
 }
 
 - (void)updateAileronElevatorDeadBandSlider {
     self.aileronElevatorDeadBandSlider.value = self.settings.aileronDeadBand / (float)kAileronElevatorMaxDeadBandRatio;
 }
 
-
 #pragma mark UIWebViewDelegate Methods
+
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
 	if (navigationType == UIWebViewNavigationTypeLinkClicked) {
 		[[UIApplication sharedApplication] openURL:[request URL]];
@@ -299,8 +281,6 @@ typedef enum settings_alert_dialog{
 		return YES;
 	}
 }
-#pragma mark UIWebViewDelegate Methods end
-
 
 #pragma mark UITableViewDelegate Methods
 
@@ -308,7 +288,6 @@ typedef enum settings_alert_dialog{
     if (tableView.tag == kChannelListTableView) {
         if ([indexPath section] == ChannelListTableViewSectionChannels) {
             Channel *channel = [self.settings channelAtIndex:[indexPath row]];
-            
             if (self.channelSettingsVC == nil) {
                 if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
                     self.channelSettingsVC  = [[ChannelSettingsViewController alloc] initWithNibName:@"ChannelSettingsViewController" bundle:nil channel:channel];
@@ -317,37 +296,27 @@ typedef enum settings_alert_dialog{
                 }
             }
             self.channelSettingsVC.channel = channel;
-            
             [self.view addSubview:self.channelSettingsVC.view];
         }
-    }
-    else if (tableView.tag == kPeripheralDeviceListTabelView) {
+    } else if (tableView.tag == kPeripheralDeviceListTabelView) {
         CBPeripheral *peripheral = self.peripheralList[[indexPath row]];
         NSString *deviceName = peripheral.name;
-        
         self.selectedPeripheral = peripheral;
-        
         NSString *title = [NSString stringWithFormat:@"%@ - %@", NSLocalizedString(@"Connection", nil), deviceName];
-        
         if ([[[Transmitter sharedTransmitter] bleSerialManager] currentBleSerial] == peripheral) {
-            // if ([peripheral isConnected]) {
             if ([[Transmitter sharedTransmitter] isConnected]) {
                 NSString *msg = NSLocalizedString(@"Disconnect to Flexbot?", nil);
                 [self showAlertViewWithTitle:title cancelButtonTitle:NSLocalizedString(@"Cancel", nil) okButtonTitle:NSLocalizedString(@"Disconnect", nil) message:msg tag:settings_alert_dialog_disconnect];
-            }
-            else {
+            } else {
                 NSString *msg = NSLocalizedString(@"Connect to Flexbot?", nil);
                 [self showAlertViewWithTitle:title cancelButtonTitle:NSLocalizedString(@"Cancel", nil) okButtonTitle:NSLocalizedString(@"Connect", nil) message:msg tag:settings_alert_dialog_connect];
             }
-        }
-        else {
+        } else {
             NSString *msg = NSLocalizedString(@"Connect to Flexbot?", nil);
             [self showAlertViewWithTitle:title cancelButtonTitle:NSLocalizedString(@"Cancel", nil) okButtonTitle:NSLocalizedString(@"Connect", nil) message:msg tag:settings_alert_dialog_connect];
         }
     }
 }
-
-#pragma mark UITableViewDelegate Methods end
 
 #pragma mark UITableViewDataSource Methods
 
@@ -360,10 +329,8 @@ typedef enum settings_alert_dialog{
         switch (section) {
             case ChannelListTableViewSectionChannels:
                 return 8;
-                break;
             default:
                 return 0;
-                break;
         }
     } else {
         return self.peripheralList.count;
@@ -375,10 +342,8 @@ typedef enum settings_alert_dialog{
         switch (section) {
             case ChannelListTableViewSectionChannels:
                 return NSLocalizedString(@"CHANNELS", nil);
-                break;
             default:
                 return @"";
-                break;
         }
     } else {
         return nil;
@@ -395,18 +360,12 @@ typedef enum settings_alert_dialog{
                     cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellId];
                     [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
                 }
-                
                 Channel *channel = [self.settings channelAtIndex:[indexPath row]];
-                
                 cell.textLabel.text = [NSString stringWithFormat:@"%u: %@", [channel idx] + 1, [channel name]];
-                
                 int minOutputPpm = (int)(1500 + 500 * clip(-1 + channel.trimValue, -1, 1) * channel.outputAdjustabledRange);
                 int maxOutputPpm = (int)(1500 + 500 * clip(1 + channel.trimValue, -1, 1) * channel.outputAdjustabledRange);
-                
                 NSString *ppmRangeText = [NSString stringWithFormat:@"%d~%dus", minOutputPpm, maxOutputPpm];
-                
                 cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ %@:%.2f %@:%.2f %@", [channel isReversing] ? NSLocalizedString(@"Reversed", nil):NSLocalizedString(@"Normal", nil), NSLocalizedString(@"Trim", nil), [channel trimValue], NSLocalizedString(@"Adjustable", nil), [channel outputAdjustabledRange], ppmRangeText];
-                
                 return cell;
             }
             default:
@@ -419,11 +378,8 @@ typedef enum settings_alert_dialog{
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellId];
             [cell setAccessoryType:UITableViewCellAccessoryDisclosureIndicator];
         }
-        
         CBPeripheral *peripheral = self.peripheralList[[indexPath row]];
-        //        cell.textLabel.text = @"Flexbot";
         cell.textLabel.text = peripheral.name;
-        //        cell.detailTextLabel.text = [NSString stringWithFormat:@"RRSI:%d", [peripheral.RSSI intValue]];
         cell.detailTextLabel.text = [peripheral.identifier UUIDString];
         if ([peripheral isConnected] && [self.selectedPeripheral isEqual:peripheral]) {
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
@@ -436,14 +392,13 @@ typedef enum settings_alert_dialog{
 
 #pragma mark UITableViewDataSource Methods end
 
-
 - (void)setSwitchButton:(UIButton *)switchButton withValue:(BOOL)active {
     if (active) {
         switchButton.tag = SWITCH_BUTTON_CHECKED;
-        [switchButton setImage:[UIImage imageNamed:@"Btn_ON.png"] forState:UIControlStateNormal];
+        [switchButton setImage:[UIImage imageNamed:@"Btn_ON"] forState:UIControlStateNormal];
     } else {
         switchButton.tag = SWITCH_BUTTON_UNCHECKED;
-        [switchButton setImage:[UIImage imageNamed:@"Btn_OFF.png"] forState:UIControlStateNormal];
+        [switchButton setImage:[UIImage imageNamed:@"Btn_OFF"] forState:UIControlStateNormal];
     }
 }
 
@@ -451,9 +406,8 @@ typedef enum settings_alert_dialog{
     [self setSwitchButton:switchButton withValue:(SWITCH_BUTTON_UNCHECKED == switchButton.tag) ? YES : NO];
 }
 
-
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-	NSUInteger currentPage = (int) (self.settingsPageScrollView.contentOffset.x + .5f * self.settingsPageScrollView.frame.size.width) / self.settingsPageScrollView.frame.size.width;
+	NSUInteger currentPage = (int) (self.settingsPageScrollView.contentOffset.x + 0.5f * self.settingsPageScrollView.frame.size.width) / self.settingsPageScrollView.frame.size.width;
     
     if (currentPage == 0) {
         [self.previousPageButton setHidden:YES];
@@ -469,55 +423,48 @@ typedef enum settings_alert_dialog{
         [self.previousPageButton setHidden:NO];
         [self.nextPageButton setHidden:NO];
     }
-    
     [self.pageControl setCurrentPage:currentPage];
     [self.pageTitleLabel setText:self.pageTitleArray[currentPage]];
 }
 
 - (void)showPreviousPageView {
-    int nextPage = ((int) (self.settingsPageScrollView.contentOffset.x + .5f * self.settingsPageScrollView.frame.size.width) / self.settingsPageScrollView.frame.size.width) - 1;
+    int nextPage = ((int)(self.settingsPageScrollView.contentOffset.x + 0.5f * self.settingsPageScrollView.frame.size.width) / self.settingsPageScrollView.frame.size.width) - 1;
     if (0 > nextPage) {
         nextPage = 0;
     }
     CGFloat nextOffset = nextPage * self.settingsPageScrollView.frame.size.width;
-    
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDuration:0.3f];
-    [self.settingsPageScrollView setContentOffset:CGPointMake(nextOffset, 0.f) animated:NO];
+    [self.settingsPageScrollView setContentOffset:CGPointMake(nextOffset, 0.0f) animated:NO];
     [UIView commitAnimations];
 }
 
-- (void)showNextPageView{
-    NSUInteger nextPage = ((int) (self.settingsPageScrollView.contentOffset.x + .5f * self.settingsPageScrollView.frame.size.width) / self.settingsPageScrollView.frame.size.width) + 1;
+- (void)showNextPageView {
+    NSUInteger nextPage = ((int)(self.settingsPageScrollView.contentOffset.x + 0.5f * self.settingsPageScrollView.frame.size.width) / self.settingsPageScrollView.frame.size.width) + 1;
     if (self.pageCount <= nextPage) {
         nextPage = self.pageCount - 1;
     }
     CGFloat nextOffset = nextPage * self.settingsPageScrollView.frame.size.width;
-    
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDuration:0.3f];
-    [self.settingsPageScrollView setContentOffset:CGPointMake(nextOffset, 0.f) animated:NO];
+    [self.settingsPageScrollView setContentOffset:CGPointMake(nextOffset, 0.0f) animated:NO];
     [UIView commitAnimations];
 }
 
 - (void)resetToDefaultSettings {
     [self.settings resetToDefault];
     [self.settings save];
-    
     [self updateSettingsUI];
     
     if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:leftHandedValueDidChange:)]) {
         [self.delegate settingsMenuViewController:self leftHandedValueDidChange:self.settings.isLeftHanded];
     }
-    
     if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:accModeValueDidChange:)]) {
         [self.delegate settingsMenuViewController:self accModeValueDidChange:self.settings.isAccMode];
     }
-    
     if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:ppmPolarityReversed:)]) {
         [self.delegate settingsMenuViewController:self ppmPolarityReversed:self.settings.ppmPolarityIsNegative];
     }
-    
     if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:interfaceOpacityValueDidChange:)]) {
         [self.delegate settingsMenuViewController:self interfaceOpacityValueDidChange:self.settings.interfaceOpacity];
     }
@@ -534,7 +481,6 @@ typedef enum settings_alert_dialog{
 
 - (void)switchScan {
     BleSerialManager *manager = [[Transmitter sharedTransmitter] bleSerialManager];
-    
     if ([manager isScanning]) {
         [self.peripheralListScanButton setTitle:NSLocalizedString(@"Scan", nil) forState:UIControlStateNormal];
         self.isScanningTextLabel.hidden = YES;
@@ -558,15 +504,11 @@ typedef enum settings_alert_dialog{
     cmd[1] = 'M';
     cmd[2] = '<';
     cmd[3] = 0;
-    cmd[4] = cmdName; // MSP_ACC_CALIBRATION
-    
+    cmd[4] = cmdName;
     unsigned char checkSum = 0;
-    
     checkSum ^= (cmd[3] & 0xFF);
     checkSum ^= (cmd[4] & 0xFF);
-    
     cmd[5] = checkSum;
-    
     return [NSData dataWithBytes:cmd length:6];
 }
 
@@ -596,7 +538,6 @@ typedef enum settings_alert_dialog{
         [[Transmitter sharedTransmitter] transmmitSimpleCommand:MSP_TRIM_LEFT];
     } else if (sender == self.rightTrimButton) {
         [[Transmitter sharedTransmitter] transmmitSimpleCommand:MSP_TRIM_RIGHT];
-    } else {
     }
 }
 
@@ -606,35 +547,30 @@ typedef enum settings_alert_dialog{
     if (sender == self.leftHandedSwitchButton) {
         self.settings.isLeftHanded = (SWITCH_BUTTON_CHECKED == [sender tag]) ? YES : NO;
         [self.settings save];
-        
         if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:leftHandedValueDidChange:)]) {
             [self.delegate settingsMenuViewController:self leftHandedValueDidChange:self.settings.isLeftHanded];
         }
     } else if (sender == self.ppmPolarityReversedSwitchButton) {
         self.settings.ppmPolarityIsNegative = (SWITCH_BUTTON_CHECKED == [sender tag]) ? YES : NO;
         [self.settings save];
-        
         if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:ppmPolarityReversed:)]) {
             [self.delegate settingsMenuViewController:self ppmPolarityReversed:self.settings.ppmPolarityIsNegative];
         }
     } else if (sender == self.accModeSwitchButton) {
         self.settings.isAccMode = (SWITCH_BUTTON_CHECKED == [sender tag]) ? YES : NO;
         [self.settings save];
-        
         if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:accModeValueDidChange:)]) {
             [self.delegate settingsMenuViewController:self accModeValueDidChange:self.settings.isAccMode];
         }
     } else if (sender == self.beginnerModeSwitchButton) {
         self.settings.isBeginnerMode = (SWITCH_BUTTON_CHECKED == [sender tag]) ? YES : NO;
         [self.settings save];
-        
         if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:beginnerModeValueDidChange:)]) {
             [self.delegate settingsMenuViewController:self beginnerModeValueDidChange:self.settings.isBeginnerMode];
         }
     } else if (sender == self.headfreeModeSwitchButton) {
         self.settings.isHeadFreeMode = (SWITCH_BUTTON_CHECKED == [sender tag]) ? YES : NO;
         [self.settings save];
-        
         if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:headfreeModeValueDidChange:)]) {
             [self.delegate settingsMenuViewController:self headfreeModeValueDidChange:self.settings.isHeadFreeMode];
         }
@@ -644,7 +580,6 @@ typedef enum settings_alert_dialog{
 - (IBAction)sliderRelease:(id)sender {
     if (sender == self.interfaceOpacitySlider) {
         [self.settings save];
-        
         if ([self.delegate respondsToSelector:@selector(settingsMenuViewController:interfaceOpacityValueDidChange:)]) {
             [self.delegate settingsMenuViewController:self interfaceOpacityValueDidChange:self.settings.interfaceOpacity];
         }
@@ -664,15 +599,13 @@ typedef enum settings_alert_dialog{
     } else if (sender == self.takeOffThrottleSlider) {
         self.settings.takeOffThrottle = self.takeOffThrottleSlider.value;
         [self updateTakeOffThrottleLabel];
-    } else if (sender == self.aileronElevatorDeadBandSlider) { //无效区在0~kAileronElevatorMaxDeadBandRatio之间
+    } else if (sender == self.aileronElevatorDeadBandSlider) {
         self.settings.aileronDeadBand = kAileronElevatorMaxDeadBandRatio * self.aileronElevatorDeadBandSlider.value;
         self.settings.elevatorDeadBand = self.settings.aileronDeadBand;
-        
         [self updateAileronElevatorDeadBandLabel];
-    } else if (sender == self.rudderDeadBandSlider) { //无效区在0~kRudderMaxDeadBandRatio之间
+    } else if (sender == self.rudderDeadBandSlider) {
         self.settings.rudderDeadBand = kRudderMaxDeadBandRatio * self.rudderDeadBandSlider.value;
         [self updateRudderDeadBandLabel];
-    } else {
     }
 }
 
@@ -681,21 +614,18 @@ typedef enum settings_alert_dialog{
 }
 
 - (void)showAlertViewWithTitle:(NSString *)title cancelButtonTitle:(NSString *)cancelButtonTitle okButtonTitle:(NSString *)okButtonTitle message:(NSString *)message tag:(int)tag {
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title
-                                                        message:message
-                                                       delegate:self
-                                              cancelButtonTitle:cancelButtonTitle
-                                              otherButtonTitles:okButtonTitle, nil];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:title message:message delegate:self cancelButtonTitle:cancelButtonTitle otherButtonTitles:okButtonTitle, nil];
     alertView.tag = tag;
     [alertView show];
 }
 
 #pragma mark UIAlertViewDelegate Methods
+
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (buttonIndex == 1) {
         switch (alertView.tag) {
             case settings_alert_dialog_connect:
-                if ([[[Transmitter sharedTransmitter] bleSerialManager] isScanning]) { // stop scanning
+                if ([[[Transmitter sharedTransmitter] bleSerialManager] isScanning]) {
                     [self switchScan];
                 }
                 [[[Transmitter sharedTransmitter] bleSerialManager] disconnect];
@@ -712,17 +642,15 @@ typedef enum settings_alert_dialog{
                 [self resetToDefaultSettings];
                 break;
             case settings_alert_dialog_calibrate_mag:
-                [[[Transmitter sharedTransmitter] bleSerialManager] sendData:[self getSimpleSetCmd:206]]; // MSP_MAG_CALIBRATION
+                [[[Transmitter sharedTransmitter] bleSerialManager] sendData:[self getSimpleSetCmd:206]];
                 break;
             case settings_alert_dialog_calibrate_acc:
-                [[[Transmitter sharedTransmitter] bleSerialManager] sendData:[self getSimpleSetCmd:205]];  // MSP_ACC_CALIBRATION
+                [[[Transmitter sharedTransmitter] bleSerialManager] sendData:[self getSimpleSetCmd:205]];
                 break;
             default:
                 break;
         }
-    } else {
     }
 }
-#pragma mark UIAlertViewDelegate Methods end
 
 @end

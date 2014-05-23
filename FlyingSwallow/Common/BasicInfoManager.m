@@ -9,12 +9,12 @@
 #import "BasicInfoManager.h"
 
 @interface BasicInfoManager ()
-@property (nonatomic, readwrite, strong)  CMMotionManager *motionManager;
+@property (nonatomic, readwrite, strong) CMMotionManager *motionManager;
 @end
 
 @implementation BasicInfoManager
 
-+ (id)sharedManager{
++ (id)sharedManager {
     static BasicInfoManager* sharedManager = nil;
 	
 	static dispatch_once_t onceToken;
@@ -25,11 +25,10 @@
 }
 
 - (CMMotionManager *)motionManager{
-    if (_motionManager == nil) {
-        self.motionManager =  [[CMMotionManager alloc] init];
+    if (!_motionManager) {
+        self.motionManager = [[CMMotionManager alloc] init];
     }
     return _motionManager;
 }
-
 
 @end

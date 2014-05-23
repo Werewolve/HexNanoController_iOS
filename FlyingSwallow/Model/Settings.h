@@ -18,7 +18,6 @@
 //  THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
-@class Channel;
 
 #define kKeySettingsInterfaceOpacity @"InterfaceOpacity"
 #define kKeySettingsIsLeftHanded @"IsLeftHanded"
@@ -33,11 +32,10 @@
 #define kKeySettingsTakeOffThrottle @"TakeOffThrottle"
 #define kKeySettingsChannels @"Channels"
 
-
+@class Channel;
 @interface Settings : NSObject
-@property(nonatomic, strong) NSMutableDictionary *settingsData;
 
-//改变以下值，都不会自动保存到持久化文件中,需要持久化，需要调用save方法
+@property(nonatomic, strong) NSMutableDictionary *settingsData;
 
 @property(nonatomic, assign) float interfaceOpacity;
 @property(nonatomic, assign) BOOL  isLeftHanded;
@@ -51,18 +49,12 @@
 @property(nonatomic, assign) float rudderDeadBand;
 @property(nonatomic, assign) float takeOffThrottle;
 
-
-- (id)initWithSettingsFile:(NSString *)settingsFilePath; 
-
+- (id)initWithSettingsFile:(NSString *)settingsFilePath;
 - (NSUInteger)channelCount;
 - (Channel *)channelAtIndex:(NSUInteger)i;
 - (Channel *)channelByName:(NSString*)name;
-
 - (void)changeChannelFrom:(NSUInteger)from to:(NSUInteger)to;
-
-//持久化
 - (void)save;
-
 - (void)resetToDefault;
 
 @end
